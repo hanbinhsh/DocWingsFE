@@ -12,7 +12,6 @@
 				<div class="ibox-content">
 					<h2>注册文档之翼账号</h2>
 					<p>注册账号以管理文件</p>
-
 					<form id="form" action="form_wizard.html#" class="wizard-big">
 						<h1>账户</h1>
 						<fieldset style="margin-left: 15px;">
