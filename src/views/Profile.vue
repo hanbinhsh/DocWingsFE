@@ -24,7 +24,7 @@
                         </li>
 
                         <li>
-                            <a href="file_manager"><i class="fa fa-laptop"></i> <span
+                            <a href="UserHome"><i class="fa fa-laptop"></i> <span
                                     class="nav-label">主页</span></a>
                         </li>
                         <li>

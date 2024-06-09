@@ -3,8 +3,9 @@ morris.js v0.5.0
 Copyright 2014 Olly Smith All rights reserved.
 Licensed under the BSD-2-Clause License.
 */
-
-
+import jQuery from 'jquery';
+import $ from 'jquery';
+import Raphael from "./raphael-2.1.0.min.js"
 (function() {
   var $, Morris, minutesSpecHelper, secondsSpecHelper,
     __slice = [].slice,

@@ -1,3 +1,5 @@
+import jQuery from 'jquery';
+import $ from 'jquery';
 $(function() {
     Morris.Donut({
         element: 'morris-donut-chart',
