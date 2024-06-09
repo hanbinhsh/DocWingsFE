@@ -256,6 +256,7 @@ function animationHover(element, animation) {
             }, 2000);
         });
 }
+export default animationHover;
 
 function SmoothlyMenu() {
     if (!$('body').hasClass('mini-navbar') || $('body').hasClass('body-small')) {

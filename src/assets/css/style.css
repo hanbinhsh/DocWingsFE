@@ -6,27 +6,6 @@
  *   version 2.7.1
  *
 */
-/* .m-t > .form-group{
-  margin-bottom: 15px;
-  border:1px;
-}
-.form-group > .form-control, .btn-primary {
-  height: 34px;
-}
-.form-group > .form-control::placeholder{
-  color: #999999;
-  font-size: 15px;
-}
-.btn-block{
-  display: block;
-  width: 100%;
-}
-.btn-group-sm>.btn, .btn-sm {
-  padding: 5px 10px;
-  font-size: 12px;
-  line-height: 1.5;
-  border-radius: 3px;
-} */
 .mainpage{
   background-color: #3B3B3B;
 }

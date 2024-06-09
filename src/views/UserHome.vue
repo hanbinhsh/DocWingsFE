@@ -1,7 +1,6 @@
 <template>
     <div class="mainpage">
         <div id="wrapper">
-            <jsp:useBean id="student" class="bean.Student" scope="session" />
             <nav class="navbar-default navbar-static-side" role="navigation">
                 <div class="sidebar-collapse">
                     <ul class="nav metismenu" id="side-menu">
@@ -507,14 +506,19 @@
     import $ from 'jquery'
     import "../assets/js/plugins/metisMenu/jquery.metisMenu.js"
     import "../assets/js/plugins/slimscroll/jquery.slimscroll.min.js"
-    import "../assets/js/inspinia.js"
+    import animationHover from "../assets/js/inspinia.js"
     import "../assets/js/plugins/pace/pace.min.js"
     import Raphael from "../assets/js/plugins/morris/raphael-2.1.0.min.js"
     import "../assets/js/plugins/morris/morris.js"
     import "../assets/js/demo/morris-demo.js"
     export default {
 		name: 'UserHome',
-		methods: {
+		mounted() {
+            $(document).ready(function(){
+                $('.file-box').each(function() {
+                    animationHover(this, 'pulse');
+                });
+            });
 		}
 	}
 </script>
