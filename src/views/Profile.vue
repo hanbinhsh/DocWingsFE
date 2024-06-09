@@ -174,15 +174,10 @@
 </template>
 
 <style scoped>
-	@import '../assets/css/bootstrap.min.css';
-    @import '../assets/font-awesome/css/font-awesome.css';
-    @import '../assets/css/animate.css';
-    @import '../assets/css/style.css';
 </style>
 
 <script>
     import $ from 'jquery'
-    import "../assets/js/bootstrap.min.js"
     import "../assets/js/plugins/metisMenu/jquery.metisMenu.js"
     import "../assets/js/plugins/slimscroll/jquery.slimscroll.min.js"
     import "../assets/js/inspinia.js"

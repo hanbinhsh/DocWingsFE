@@ -29,10 +29,6 @@
 </template>
 
 <style scoped>
-	@import '../assets/css/bootstrap.min.css';
-    @import '../assets/font-awesome/css/font-awesome.css';
-    @import '../assets/css/animate.css';
-    @import '../assets/css/style.css';
 	@import '../assets/css/plugins/toastr/toastr.min.css';
 </style>
 
@@ -50,7 +46,6 @@ import {ref} from 'vue';
 import {useRouter} from 'vue-router';
 import axios from "axios";
 import toastr from "../assets/js/plugins/toastr/toastr.min.js"
-import "../assets/js/bootstrap.min.js"
 import "../assets/js/plugins/metisMenu/jquery.metisMenu.js"
 import "../assets/js/plugins/slimscroll/jquery.slimscroll.min.js"
 import "../assets/js/bootstrap.min.js"

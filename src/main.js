@@ -6,4 +6,10 @@ import store from './store'
 // import 'bootstrap'
 // import 'bootstrap/dist/css/bootstrap.min.css'
 
+import './assets/css/bootstrap.min.css';
+import "./assets/js/bootstrap.min.js";
+import './assets/font-awesome/css/font-awesome.css';
+import './assets/css/animate.css';
+import './assets/css/style.css';
+
 createApp(App).use(store).use(router).mount('#app')
