@@ -1,20 +1,19 @@
 <template>
     <div class="mainpage">
         <div id="wrapper">
-            <jsp:useBean id="student" class="bean.Student" scope="session" />
             <nav class="navbar-default navbar-static-side" role="navigation">
                 <div class="sidebar-collapse">
                     <ul class="nav metismenu" id="side-menu">
                         <li class="nav-header">
                             <div class="dropdown profile-element">
                                 <span>
-                                    <img alt="image" class="img-circle" src="img/profile_small.jpg" />
+                                    <img alt="image" class="img-circle" src="../assets/img/profile_small.jpg" />
                                 </span>
-                                <a data-toggle="dropdown" class="dropdown-toggle" href="profile.jsp">
+                                <a data-toggle="dropdown" class="dropdown-toggle" href="profile">
                                     <span class="clear">
                                         <span class="block m-t-xs">
                                             <strong class="font-bold">
-                                                <jsp:getProperty property="name" name="student" />
+                                                NAME
                                                 <span class="text-muted text-xs block">Art Director</span>
                                             </strong>
                                         </span>
@@ -25,14 +24,14 @@
                         </li>
 
                         <li>
-                            <a href="file_manager.jsp"><i class="fa fa-laptop"></i> <span
+                            <a href="userhome"><i class="fa fa-laptop"></i> <span
                                     class="nav-label">主页</span></a>
                         </li>
                         <li>
                             <a href="typography.html#"><i class="fa fa-folder-o"></i> <span
                                     class="nav-label">文件管理</span><span class="fa arrow"></span></a>
                             <ul class="nav nav-second-level collapse">
-                                <li><a href="allFiles.jsp">所有文件</a></li>
+                                <li><a href="allFiles">所有文件</a></li>
                                 <li><a href="table_basic.html">图片</a></li>
                                 <li><a href="table_data_tables.html">文档</a></li>
                                 <li><a href="table_foo_table.html">视频</a></li>
@@ -41,7 +40,7 @@
                             </ul>
                         </li>
                         <li>
-                            <a href="share.jsp"><i class="fa fa-share-square-o"></i> <span
+                            <a href="share"><i class="fa fa-share-square-o"></i> <span
                                     class="nav-label">分享</span></a>
                         </li>
                         <li>
@@ -53,10 +52,10 @@
                                     class="nav-label">用户组编辑</span></a>
                         </li>
                         <li class="active">
-                            <a href="log.jsp"><i class="fa fa-file-text-o"></i> <span class="nav-label">日志</span></a>
+                            <a href="log"><i class="fa fa-file-text-o"></i> <span class="nav-label">日志</span></a>
                         </li>
                         <li>
-                            <a href="profile.jsp"><i class="fa fa-diamond"></i> <span class="nav-label">个人资料</span></a>
+                            <a href="profile"><i class="fa fa-diamond"></i> <span class="nav-label">个人资料</span></a>
                         </li>
                     </ul>
                 </div>
@@ -67,7 +66,7 @@
                     <nav class="navbar navbar-static-top  " role="navigation" style="margin-bottom: 0">
                         <div class="navbar-header">
                             <a style="height:30px" class="navbar-minimalize minimalize-styl-2 btn btn-primary "
-                                href="file_manager.jsp#"><i style="margin-top:2px" class="fa fa-bars"></i> </a>
+                                href="file_manager#"><i style="margin-top:2px" class="fa fa-bars"></i> </a>
                             <form role="search" class="navbar-form-custom" action="search_results.html">
                                 <div class="form-group">
                                     <input type="text" placeholder="输入要查找的文件......" class="form-control"
@@ -135,15 +134,15 @@
                                                 <dt>Participants:</dt>
                                                 <dd class="project-people">
                                                     <a href="project_detail.html"><img alt="image" class="img-circle"
-                                                            src="img/a3.jpg"></a>
+                                                            src="../assets/img/a3.jpg"></a>
                                                     <a href="project_detail.html"><img alt="image" class="img-circle"
-                                                            src="img/a1.jpg"></a>
+                                                            src="../assets/img/a1.jpg"></a>
                                                     <a href="project_detail.html"><img alt="image" class="img-circle"
-                                                            src="img/a2.jpg"></a>
+                                                            src="../assets/img/a2.jpg"></a>
                                                     <a href="project_detail.html"><img alt="image" class="img-circle"
-                                                            src="img/a4.jpg"></a>
+                                                            src="../assets/img/a4.jpg"></a>
                                                     <a href="project_detail.html"><img alt="image" class="img-circle"
-                                                            src="img/a5.jpg"></a>
+                                                            src="../assets/img/a5.jpg"></a>
                                                 </dd>
                                             </dl>
                                         </div>
@@ -184,7 +183,7 @@
                                                                 <div class="feed-element">
                                                                     <a href="project_detail.html#" class="pull-left">
                                                                         <img alt="image" class="img-circle"
-                                                                            src="img/a2.jpg">
+                                                                            src="../assets/img/a2.jpg">
                                                                     </a>
                                                                     <div class="media-body ">
                                                                         <small class="pull-right">2h ago</small>
@@ -206,7 +205,7 @@
                                                                 <div class="feed-element">
                                                                     <a href="project_detail.html#" class="pull-left">
                                                                         <img alt="image" class="img-circle"
-                                                                            src="img/a3.jpg">
+                                                                            src="../assets/img/a3.jpg">
                                                                     </a>
                                                                     <div class="media-body ">
                                                                         <small class="pull-right">2h ago</small>
@@ -219,7 +218,7 @@
                                                                 <div class="feed-element">
                                                                     <a href="project_detail.html#" class="pull-left">
                                                                         <img alt="image" class="img-circle"
-                                                                            src="img/a4.jpg">
+                                                                            src="../assets/img/a4.jpg">
                                                                     </a>
                                                                     <div class="media-body ">
                                                                         <small class="pull-right text-navy">5h
@@ -240,7 +239,7 @@
                                                                 <div class="feed-element">
                                                                     <a href="project_detail.html#" class="pull-left">
                                                                         <img alt="image" class="img-circle"
-                                                                            src="img/a5.jpg">
+                                                                            src="../assets/img/a5.jpg">
                                                                     </a>
                                                                     <div class="media-body ">
                                                                         <small class="pull-right">2h ago</small>
@@ -262,7 +261,7 @@
                                                                 <div class="feed-element">
                                                                     <a href="project_detail.html#" class="pull-left">
                                                                         <img alt="image" class="img-circle"
-                                                                            src="img/profile.jpg">
+                                                                            src="../assets/img/profile.jpg">
                                                                     </a>
                                                                     <div class="media-body ">
                                                                         <small class="pull-right">23h ago</small>
@@ -275,7 +274,7 @@
                                                                 <div class="feed-element">
                                                                     <a href="project_detail.html#" class="pull-left">
                                                                         <img alt="image" class="img-circle"
-                                                                            src="img/a7.jpg">
+                                                                            src="../assets/img/a7.jpg">
                                                                     </a>
                                                                     <div class="media-body ">
                                                                         <small class="pull-right">46h ago</small>
@@ -539,7 +538,7 @@
                     <div class="col-lg-3">
                         <div class="wrapper wrapper-content project-manager">
                             <h4>Project description</h4>
-                            <img src="img/zender_logo.png" class="img-responsive">
+                            <img src="../assets/img/zender_logo.png" class="img-responsive">
                             <p class="small">
                                 There are many variations of passages of Lorem Ipsum available, but the majority have
                                 suffered alteration in some form, by injected humour, or randomised words which don't
@@ -589,3 +588,39 @@
         </div>
     </div>
 </template>
+
+<script>
+import $ from 'jquery'
+import "../assets/js/plugins/metisMenu/jquery.metisMenu.js"
+import "../assets/js/plugins/slimscroll/jquery.slimscroll.min.js"
+import animationHover from "../assets/js/inspinia.js"
+import "../assets/js/plugins/pace/pace.min.js"
+export default {
+    name: 'Log',
+    mounted() {
+        $(document).ready(function () {
+            $('#loading-example-btn').click(function () {
+                btn = $(this);
+                simpleLoad(btn, true)
+                // Ajax example
+                // $.ajax().always(function () {
+                // simpleLoad($(this), false)
+                // });
+                simpleLoad(btn, false)
+            });
+        });
+
+        function simpleLoad(btn, state) {
+            if (state) {
+                btn.children().addClass('fa-spin');
+                btn.contents().last().replaceWith(" Loading");
+            } else {
+                setTimeout(function () {
+                    btn.children().removeClass('fa-spin');
+                    btn.contents().last().replaceWith(" Refresh");
+                }, 2000);
+            }
+        }
+    }
+}
+</script>

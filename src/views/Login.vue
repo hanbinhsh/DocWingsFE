@@ -81,7 +81,7 @@ async function login() {
 		console.log(response.data)
 		if (response.data === 2||response.data === 1) {
 		toastr.clear();
-		router.replace('/profile'); // 使用后端返回的路径
+		router.replace('/userhome'); // 使用后端返回的路径
 		} else if (response.data === 0) {
 		toastr.error("用户名或密码错误！请重新登录！", "错误");
 		username.value = '';

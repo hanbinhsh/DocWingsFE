@@ -30,6 +30,12 @@ const routes = [
     name: 'userhome',
     component: () => import('../views/UserHome.vue'),
     meta: { title: '用户主页' }
+  },
+  {
+    path: '/log',
+    name: 'log',
+    component: () => import('../views/Log.vue'),
+    meta: { title: '日志' }
   }
 ]
 

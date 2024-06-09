@@ -12,5 +12,4 @@ import './assets/font-awesome/css/font-awesome.css';
 import './assets/css/animate.css';
 import './assets/css/style.css';
 
-
 createApp(App).use(store).use(router).mount('#app')
