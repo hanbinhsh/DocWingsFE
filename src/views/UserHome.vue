@@ -23,14 +23,14 @@
                             <div class="logo-element">DW+</div>
                         </li>
                         <li class="active">
-                            <a href="file_manager"><i class="fa fa-laptop"></i> <span
+                            <a href="userhome"><i class="fa fa-laptop"></i> <span
                                     class="nav-label">主页</span></a>
                         </li>
                         <li>
-                            <a href="typography.html#"><i class="fa fa-folder-o"></i> <span
+                            <a><i class="fa fa-folder-o"></i> <span
                                     class="nav-label">文件管理</span><span class="fa arrow"></span></a>
                             <ul class="nav nav-second-level collapse">
-                                <li><a href="allFiles">所有文件</a></li>
+                                <li><a href="allfiles">所有文件</a></li>
                                 <li><a href="table_basic.html">图片</a></li>
                                 <li><a href="table_data_tables.html">文档</a></li>
                                 <li><a href="table_foo_table.html">视频</a></li>
@@ -502,21 +502,36 @@
 <style scoped>
 </style>
 
+<script setup>
+import "../assets/js/plugins/morris/morris.js"
+import Raphael from "../assets/js/plugins/morris/raphael-2.1.0.min.js"
+</script>
+
 <script>
     import $ from 'jquery'
     import "../assets/js/plugins/metisMenu/jquery.metisMenu.js"
     import "../assets/js/plugins/slimscroll/jquery.slimscroll.min.js"
     import animationHover from "../assets/js/inspinia.js"
     import "../assets/js/plugins/pace/pace.min.js"
-    import Raphael from "../assets/js/plugins/morris/raphael-2.1.0.min.js"
-    import "../assets/js/plugins/morris/morris.js"
-    import "../assets/js/demo/morris-demo.js"
+
     export default {
 		name: 'UserHome',
 		mounted() {
             $(document).ready(function(){
                 $('.file-box').each(function() {
                     animationHover(this, 'pulse');
+                });
+            });
+            // 图表使用
+            $(function() {
+                Morris.Donut({
+                    element: 'morris-donut-chart',
+                    data: [{ label: "剩余空间", value: 12 },
+                        { label: "文档", value: 30 },
+                        { label: "其他", value: 20 } ],
+                    resize: true,
+                    colors: ['#87d6c6', '#54cdb4','#1ab394'],
+                    formatter: function (y, data) { return y + '%' },
                 });
             });
 		}

@@ -1,6 +1,11 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
 
+import UserHome from '../views/UserHome.vue';
+import Profile from '../views/Profile.vue';
+import AllFiles from '../views/AllFiles.vue';
+import Log from '../views/Log.vue';
+
 const routes = [
   {
     path: '/',
@@ -22,20 +27,26 @@ const routes = [
   {
     path: '/profile',
     name: 'profile',
-    component: () => import('../views/Profile.vue'),
+    component: Profile,
     meta: { title: '个人资料' }
   },
   {
     path: '/userhome',
     name: 'userhome',
-    component: () => import('../views/UserHome.vue'),
+    component: UserHome,
     meta: { title: '用户主页' }
   },
   {
     path: '/log',
     name: 'log',
-    component: () => import('../views/Log.vue'),
+    component: Log,
     meta: { title: '日志' }
+  },
+  {
+    path: '/allfiles',
+    name: 'allfiles',
+    component: AllFiles,
+    meta: { title: '所有文件' }
   }
 ]
 

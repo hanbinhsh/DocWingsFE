@@ -28,7 +28,7 @@
                                     class="nav-label">主页</span></a>
                         </li>
                         <li>
-                            <a href="typography.html#"><i class="fa fa-folder-o"></i> <span
+                            <a><i class="fa fa-folder-o"></i> <span
                                     class="nav-label">文件管理</span><span class="fa arrow"></span></a>
                             <ul class="nav nav-second-level collapse">
                                 <li><a href="allFiles">所有文件</a></li>
