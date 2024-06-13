@@ -1,0 +1,32 @@
+现有三张Mysql数据表，请你根据logs中所有的user_id查询所有用户的用户名,用户组名,电子邮件,行为,重要性,时间
+
+DROP TABLE IF EXISTS `usergroup`;
+CREATE TABLE `usergroup`  (
+  `group_id` int AUTO_INCREMENT PRIMARY KEY		NOT NULL	COMMENT '用户组ID',
+  `group_name` varchar(20) UNIQUE				NOT NULL	COMMENT '用户组名',
+  `auth` tinyint 								NOT NULL	COMMENT '权限'
+);
+
+DROP TABLE IF EXISTS `user`;
+CREATE TABLE `user`  (
+  `user_id` int AUTO_INCREMENT PRIMARY KEY  	NOT NULL	COMMENT '用户ID',
+  `user_name` varchar(20) UNIQUE				NOT NULL	COMMENT '用户名',
+  `psw` varchar(64)  							NOT NULL	COMMENT '用户密码',
+  `email` varchar(32) UNIQUE 					NOT NULL	COMMENT '电子邮件',
+  `group_id` int DEFAULT 0						NOT NULL	COMMENT '用户组ID',
+  `is_admin` boolean DEFAULT false	 			NOT NULL	COMMENT '是否是管理员',
+  `phone` varchar(32) 				 			NOT NULL	COMMENT '电话号码',
+  FOREIGN KEY (`group_id`) REFERENCES usergroup(`group_id`)
+);
+
+DROP TABLE IF EXISTS `logs`;
+CREATE TABLE `logs`  (
+  `log_id` int AUTO_INCREMENT PRIMARY KEY  		NOT NULL	COMMENT '日志ID',
+  `user_id` int									NOT NULL	COMMENT '操作者ID',
+  `act` text									NOT NULL	COMMENT '行为',
+  `importance` int								NOT NULL	COMMENT '重要性',
+  `log_time` datetime				 			NOT NULL	COMMENT '时间',
+  FOREIGN KEY (`user_id`) REFERENCES user(`user_id`)
+);
+
+

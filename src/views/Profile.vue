@@ -22,7 +22,6 @@
                             </div>
                             <div class="logo-element">DW+</div>
                         </li>
-
                         <li>
                             <a href="UserHome"><i class="fa fa-laptop"></i> <span
                                     class="nav-label">主页</span></a>
@@ -61,29 +60,7 @@
                 </div>
             </nav>
             <div id="page-wrapper" class="gray-bg">
-                <div class="row border-bottom">
-                    <nav class="navbar navbar-static-top  " role="navigation" style="margin-bottom: 0">
-                        <div class="navbar-header">
-                            <a style="height:30px" class="navbar-minimalize minimalize-styl-2 btn btn-primary "
-                                ><i style="margin-top:2px" class="fa fa-bars"></i> </a>
-                            <form role="search" class="navbar-form-custom" action="search_results.html">
-                                <div class="form-group">
-                                    <input type="text" placeholder="输入要查找的文件......" class="form-control" name="top-search" id="top-search">
-                                </div>
-                            </form>
-                        </div>
-                        <ul class="nav navbar-top-links navbar-right">
-                            <li>
-                                <span class="m-r-sm text-muted welcome-message">欢迎来到文档之翼</span>
-                            </li>
-                            <li>
-                                <a href="login">
-                                    <i class="fa fa-sign-out"></i>登出
-                                </a>
-                            </li>
-                        </ul>
-                    </nav>
-                </div>
+                <TopBar/>
                 <div class="row wrapper border-bottom white-bg page-heading">
                     <div class="col-sm-4">
                         <h2>个人资料</h2>
@@ -102,7 +79,7 @@
                                     </div>
                                     <div class="ibox-content profile-content">
                                         <h4><strong>
-                                                <jsp:getProperty property="name" name="student" />
+                                                NAME
                                             </strong></h4>
                                         <h5>兴趣</h5>
                                         <p>
@@ -112,7 +89,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="col-md-8">
+                        <div class="col-md-4">
                             <div class="ibox float-e-margins">
                                 <div class="ibox-title">
                                     <h5>更改个人资料</h5>
@@ -133,7 +110,7 @@
                                                     <input type="password" name="twicePassword" class="form-control"
                                                         placeholder="请再次输入密码">
                                                 </div>
-                                                <div class="form-group">
+                                                <!-- <div class="form-group">
                                                     <label class="checkbox-inline">
                                                         <input type="checkbox" name="interests" value="学习数据结构">学习数据结构
                                                     </label>
@@ -149,7 +126,7 @@
                                                     <label class="checkbox-inline">
                                                         <input type="checkbox" name="interests" value="学习深度学习">学习深度学习
                                                     </label>
-                                                </div>
+                                                </div> -->
                                                 <button type="submit"
                                                     class="btn btn-primary block full-width m-b">提交</button>
                                             </form>
@@ -182,8 +159,13 @@
     import "../assets/js/plugins/slimscroll/jquery.slimscroll.min.js"
     import "../assets/js/inspinia.js"
     import "../assets/js/plugins/pace/pace.min.js"
+
+    import TopBar from '@/components/TopBar.vue'
     export default {
 		name: 'Profile',
+        components: {
+            TopBar
+        },
 		methods: {
 		}
 	}
