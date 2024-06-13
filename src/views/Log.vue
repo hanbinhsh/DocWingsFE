@@ -9,7 +9,7 @@
                                 <span>
                                     <img alt="image" class="img-circle" src="../assets/img/profile_small.jpg" />
                                 </span>
-                                <a data-toggle="dropdown" class="dropdown-toggle" href="profile">
+                                <a data-toggle="dropdown" class="dropdown-toggle" href="log">
                                     <span class="clear">
                                         <span class="block m-t-xs">
                                             <strong class="font-bold">
@@ -24,12 +24,11 @@
                         </li>
 
                         <li>
-                            <a href="userhome"><i class="fa fa-laptop"></i> <span
-                                    class="nav-label">主页</span></a>
+                            <a href="userhome"><i class="fa fa-laptop"></i> <span class="nav-label">主页</span></a>
                         </li>
                         <li>
-                            <a><i class="fa fa-folder-o"></i> <span
-                                    class="nav-label">文件管理</span><span class="fa arrow"></span></a>
+                            <a><i class="fa fa-folder-o"></i> <span class="nav-label">文件管理</span><span
+                                    class="fa arrow"></span></a>
                             <ul class="nav nav-second-level collapse">
                                 <li><a href="allFiles">所有文件</a></li>
                                 <li><a href="table_basic.html">图片</a></li>
@@ -40,8 +39,7 @@
                             </ul>
                         </li>
                         <li>
-                            <a href="share"><i class="fa fa-share-square-o"></i> <span
-                                    class="nav-label">分享</span></a>
+                            <a href="share"><i class="fa fa-share-square-o"></i> <span class="nav-label">分享</span></a>
                         </li>
                         <li>
                             <a href="searchAllServlet"><i class="fa fa-trash-o"></i> <span
@@ -65,8 +63,8 @@
                 <div class="row border-bottom">
                     <nav class="navbar navbar-static-top  " role="navigation" style="margin-bottom: 0">
                         <div class="navbar-header">
-                            <a style="height:30px" class="navbar-minimalize minimalize-styl-2 btn btn-primary "
-                                href="file_manager#"><i style="margin-top:2px" class="fa fa-bars"></i> </a>
+                            <a style="height:30px" class="navbar-minimalize minimalize-styl-2 btn btn-primary "><i
+                                    style="margin-top:2px" class="fa fa-bars"></i> </a>
                             <form role="search" class="navbar-form-custom" action="search_results.html">
                                 <div class="form-group">
                                     <input type="text" placeholder="输入要查找的文件......" class="form-control"

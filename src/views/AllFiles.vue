@@ -9,7 +9,7 @@
                                 <span>
                                     <img alt="image" class="img-circle" src="../assets/img/profile_small.jpg" />
                                 </span>
-                                <a data-toggle="dropdown" class="dropdown-toggle" href="profile">
+                                <a data-toggle="dropdown" class="dropdown-toggle" href="allfiles">
                                     <span class="clear">
                                         <span class="block m-t-xs">
                                             <strong class="font-bold">
@@ -66,7 +66,7 @@
                     <nav class="navbar navbar-static-top white-bg" role="navigation" style="margin-bottom: 0">
                         <div class="navbar-header">
                             <a style="height:30px" class="navbar-minimalize minimalize-styl-2 btn btn-primary "
-                                href="mailbox.html#"><i style="margin-top:2px" class="fa fa-bars"></i> </a>
+                                ><i style="margin-top:2px" class="fa fa-bars"></i> </a>
                             <form role="search" class="navbar-form-custom" action="search_results.html">
                                 <div class="form-group">
                                     <input type="text" placeholder="输入要查找的文件......" class="form-control"

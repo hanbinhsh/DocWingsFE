@@ -6,7 +6,7 @@
 				<img style="width: 300px;height: 300px;" src="../assets/logo-trans.png" alt="" class="img-responsive">
 			</div>
 			<h2>欢迎来到文档之翼</h2>
-			<h3>企业及文件管理系统</h3>
+			<h3>企业级文件管理系统</h3>
 			<p>登陆账号以查看内容</p>
 			<form class="m-t">
 				<div class="form-group">
