@@ -111,7 +111,7 @@
                                     </div>
                                 </form>
                                 <h2>
-                                    Inbox (16)
+                                    {{currentFolder.folderName}} ({{ this.currentFFsCount }})
                                 </h2>
                                 <div class="mail-tools tooltip-demo m-t-md">
                                     <div class="btn-group pull-right">
@@ -129,8 +129,19 @@
 
                                 </div>
                             </div>
-                            <div class="mail-box">
-                                <table class="table table-hover table-mail">
+                            <div class="mail-box ibox">
+                                <table class="table table-hover table-mail ibox-content" :class="{ 'sk-loading': loading }">
+                                    <div class="sk-spinner sk-spinner-cube-grid">
+                                        <div class="sk-cube"></div>
+                                        <div class="sk-cube"></div>
+                                        <div class="sk-cube"></div>
+                                        <div class="sk-cube"></div>
+                                        <div class="sk-cube"></div>
+                                        <div class="sk-cube"></div>
+                                        <div class="sk-cube"></div>
+                                        <div class="sk-cube"></div>
+                                        <div class="sk-cube"></div>
+                                    </div>
                                     <thead>
                                         <tr>
                                         <th></th>
@@ -216,13 +227,20 @@
                 folders: [],
                 files: [],
                 currentFolder: JSON.parse(sessionStorage.getItem("currentFolder")) || {},
-                currentParentFolderId:sessionStorage.getItem("currentParentFolderId") || {},
+                currentFFsCount:sessionStorage.getItem("currentFFsCount") || {},
+                loading: false,
             };
         },
         created() {
             this.enterPath(0);
         },
         methods: {
+            showLoading() {
+                this.loading = true;
+            },
+            hideLoading() {
+                this.loading = false;
+            },
             async findFodersByParentId(parentId){
                 try{
                     const responseFolders = await axios.get('/api/findFoldersByParentId?parentId='+parentId);
@@ -247,14 +265,26 @@
                     console.error('Error findFolderById:', error);
                 }
             },
+            async countFFsByParentId(id){
+                try{
+                    const currentFFsCount = await axios.get('/api/countFFsByParentId?parentId='+id);
+                    sessionStorage.setItem("currentFFsCount",currentFFsCount.data);
+                }catch (error) {
+                    console.error('Error countFFsByParentId:', error);
+                }
+            },
             async findFFsByParentId(id){  // 寻找文件和文件夹
                 await this.findFodersByParentId(id);
                 await this.findFilesByParentId(id);
             },
             async enterPath(id){  // 按下文件夹->改变路径
+                this.showLoading();  // 显示加载页面
                 await this.findFFsByParentId(id);
                 await this.findFolderById(id);
+                await this.countFFsByParentId(id);
                 this.currentFolder = JSON.parse(sessionStorage.getItem("currentFolder"));  // 更新 currentFolder
+                this.currentFFsCount = sessionStorage.getItem("currentFFsCount");  // 更新 currentFFsCount
+                this.hideLoading();  // 隐藏加载页面
             },
             async backPath(){  //返回上一级
                 await this.enterPath(this.currentFolder.parentId);
