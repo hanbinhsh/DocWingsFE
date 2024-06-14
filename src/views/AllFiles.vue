@@ -115,9 +115,8 @@
                                 </h2>
                                 <div class="mail-tools tooltip-demo m-t-md">
                                     <div class="btn-group pull-right">
-                                        <button class="btn btn-white btn-sm"><i class="fa fa-arrow-left"></i></button>
-                                        <button class="btn btn-white btn-sm"><i class="fa fa-arrow-right"></i></button>
-
+                                        <button class="btn btn-white btn-sm" @click="backPath()"><i class="fa fa-arrow-left"></i></button>
+                                        <!-- <button class="btn btn-white btn-sm"><i class="fa fa-arrow-right"></i></button> -->
                                     </div>
                                     <button class="btn btn-white btn-sm" data-toggle="tooltip" data-placement="left"
                                         title="Refresh inbox"><i class="fa fa-refresh"></i> Refresh</button>
@@ -147,7 +146,7 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr v-for="(folder, index) in folders" :key="index" class="read">
+                                        <tr v-for="(folder, index) in folders" :key="index" class="read" @dblclick="enterPath(folder.folderId, folder.parentId)">
                                             <td><i class="fa fa-folder-o"></i></td>
                                             <td>{{ folder.folderName }}</td>
                                             <td>{{ folder.tag }}</td>
@@ -215,19 +214,21 @@
         data() {
             return {
                 folders: [],
-                files: []
+                files: [],
+                currentFolder: JSON.parse(sessionStorage.getItem("currentFolder")) || {},
+                currentParentFolderId:sessionStorage.getItem("currentParentFolderId") || {},
             };
         },
         created() {
-            this.fetchs();
+            this.enterPath(0);
         },
         methods: {
             async findFodersByParentId(parentId){
                 try{
-                    const responseFolders = await axios.get('/api/findFodersByParentId?parentId='+parentId);
+                    const responseFolders = await axios.get('/api/findFoldersByParentId?parentId='+parentId);
                     this.folders = responseFolders.data;
                 }catch (error) {
-                    console.error('Error findFodersByParentId:', error);
+                    console.error('Error findFoldersByParentId:', error);
                 }
             },
             async findFilesByParentId(parentId){
@@ -238,10 +239,26 @@
                     console.error('Error findFilesByParentId:', error);
                 }
             },
-            fetchs() {
-                this.findFodersByParentId(0);
-                this.findFilesByParentId(0);
-            }
+            async findFolderById(id){
+                try{
+                    const responseFiles = await axios.get('/api/findFolderById?id='+id);
+                    sessionStorage.setItem("currentFolder",JSON.stringify(responseFiles.data));
+                }catch (error) {
+                    console.error('Error findFolderById:', error);
+                }
+            },
+            async findFFsByParentId(id){  // 寻找文件和文件夹
+                await this.findFodersByParentId(id);
+                await this.findFilesByParentId(id);
+            },
+            async enterPath(id){  // 按下文件夹->改变路径
+                await this.findFFsByParentId(id);
+                await this.findFolderById(id);
+                this.currentFolder = JSON.parse(sessionStorage.getItem("currentFolder"));  // 更新 currentFolder
+            },
+            async backPath(){  //返回上一级
+                await this.enterPath(this.currentFolder.parentId);
+            },
         },
         components: {
             TopBar,
