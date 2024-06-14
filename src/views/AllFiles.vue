@@ -68,8 +68,8 @@
                             <div class="ibox float-e-margins">
                                 <div class="ibox-content mailbox-content">
                                     <div class="file-manager">
-                                        <a class="btn btn-block btn-primary compose-mail"
-                                            href="mail_compose.html">上传新文件</a>
+                                        <FileDropzone paramName="thefile"/>
+                                        <br>
                                         <a class="btn btn-block btn-primary compose-mail"
                                             href="mail_compose.html">创建文件夹</a>
                                         <div class="space-25"></div>
@@ -227,6 +227,7 @@
     import axios from "axios";
 
     import TopBar from '@/components/TopBar.vue'
+    import FileDropzone from '../components/FileDropzone.vue'
     export default {
 		name: 'Profile',
         data() {
@@ -236,7 +237,7 @@
             };
         },
         created() {
-            this.fetchFolders();;
+            this.fetchFolders();
         },
         methods: {
             async fetchFolders() {
@@ -251,9 +252,11 @@
             }
         },
         components: {
-            TopBar
+            TopBar,
+            FileDropzone
         },
 		mounted() {
+            
 		}
 	}
 </script>
