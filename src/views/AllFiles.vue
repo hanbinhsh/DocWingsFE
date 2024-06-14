@@ -4,25 +4,7 @@
             <nav class="navbar-default navbar-static-side" role="navigation">
                 <div class="sidebar-collapse">
                     <ul class="nav metismenu" id="side-menu">
-                        <li class="nav-header">
-                            <div class="dropdown profile-element">
-                                <span>
-                                    <img alt="image" class="img-circle" src="../assets/img/profile_small.jpg" />
-                                </span>
-                                <a data-toggle="dropdown" class="dropdown-toggle" href="allfiles">
-                                    <span class="clear">
-                                        <span class="block m-t-xs">
-                                            <strong class="font-bold">
-                                                NAME
-                                                <span class="text-muted text-xs block">Art Director</span>
-                                            </strong>
-                                        </span>
-                                    </span>
-                                </a>
-                            </div>
-                            <div class="logo-element">DW+</div>
-                        </li>
-
+                        <UserItem/>
                         <li>
                             <a href="userhome"><i class="fa fa-laptop"></i> <span
                                     class="nav-label">主页</span></a>
@@ -117,7 +99,6 @@
                         </div>
                         <div class="col-lg-10 animated fadeInRight">
                             <div class="mail-box-header">
-
                                 <form method="get" action="index.html" class="pull-right mail-search">
                                     <div class="input-group">
                                         <input type="text" class="form-control input-sm" name="search"
@@ -153,10 +134,10 @@
                                 <table class="table table-hover table-mail">
                                     <thead>
                                         <tr>
-                                        <th>#</th>
+                                        <th></th>
                                         <th>名称</th>
                                         <th>标签</th>
-                                        <th>文件大小 (KB)</th>
+                                        <th>文件大小 (MB)</th>
                                         <th>文件类型</th>
                                         <th>上次修改者</th>
                                         <th>上次修改时间</th>
@@ -166,8 +147,8 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr v-for="(folder, index) in folders" :key="index" class="unread">
-                                            <td>{{ index + 1 }}</td>
+                                        <tr v-for="(folder, index) in folders" :key="index" class="read">
+                                            <td><i class="fa fa-folder-o"></i></td>
                                             <td>{{ folder.folderName }}</td>
                                             <td>{{ folder.tag }}</td>
                                             <td></td>
@@ -181,7 +162,7 @@
                                             </td>
                                         </tr>
                                         <tr v-for="(file, index) in files" :key="index" class="read">
-                                            <td>{{ index + 1 }}</td>
+                                            <td><i class="fa fa-file-o"></i></td>
                                             <td>{{ file.fileName }}</td>
                                             <td>{{ file.tag }}</td>
                                             <td>{{ file.fileSize }}</td>
@@ -228,6 +209,7 @@
 
     import TopBar from '@/components/TopBar.vue'
     import FileDropzone from '../components/FileDropzone.vue'
+    import UserItem from '@/components/UserItem.vue'
     export default {
 		name: 'Profile',
         data() {
@@ -237,23 +219,34 @@
             };
         },
         created() {
-            this.fetchFolders();
+            this.fetchs();
         },
         methods: {
-            async fetchFolders() {
-                try {
-                    const responseFolder = await axios.get('/api/findFodersByParentId?parentId=0');
-                    const responseFile = await axios.get('/api/findFilesByParentId?parentId=0');
-                    this.folders = responseFolder.data;
-                    this.files = responseFile.data;
-                } catch (error) {
-                    console.error('Error fetching folders:', error);
+            async findFodersByParentId(parentId){
+                try{
+                    const responseFolders = await axios.get('/api/findFodersByParentId?parentId='+parentId);
+                    this.folders = responseFolders.data;
+                }catch (error) {
+                    console.error('Error findFodersByParentId:', error);
                 }
+            },
+            async findFilesByParentId(parentId){
+                try{
+                    const responseFiles = await axios.get('/api/findFilesByParentId?parentId='+parentId);
+                    this.files = responseFiles.data;
+                }catch (error) {
+                    console.error('Error findFilesByParentId:', error);
+                }
+            },
+            fetchs() {
+                this.findFodersByParentId(0);
+                this.findFilesByParentId(0);
             }
         },
         components: {
             TopBar,
-            FileDropzone
+            FileDropzone,
+            UserItem
         },
 		mounted() {
             

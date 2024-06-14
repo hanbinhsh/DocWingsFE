@@ -4,24 +4,7 @@
             <nav class="navbar-default navbar-static-side" role="navigation">
                 <div class="sidebar-collapse">
                     <ul class="nav metismenu" id="side-menu">
-                        <li class="nav-header">
-                            <div class="dropdown profile-element">
-                                <span>
-                                    <img alt="image" class="img-circle" src="../assets/img/profile_small.jpg" />
-                                </span>
-                                <a data-toggle="dropdown" class="dropdown-toggle" href="log">
-                                    <span class="clear">
-                                        <span class="block m-t-xs">
-                                            <strong class="font-bold">
-                                                NAME
-                                                <span class="text-muted text-xs block">Art Director</span>
-                                            </strong>
-                                        </span>
-                                    </span>
-                                </a>
-                            </div>
-                            <div class="logo-element">DW+</div>
-                        </li>
+                        <UserItem/>
                         <li>
                             <a href="userhome"><i class="fa fa-laptop"></i> <span class="nav-label">主页</span></a>
                         </li>
@@ -268,10 +251,12 @@ import "../assets/js/plugins/pace/pace.min.js"
 import axios from "axios";
 
 import TopBar from '@/components/TopBar.vue'
+import UserItem from '@/components/UserItem.vue'
 export default {
     name: 'Log',
     components: {
-        TopBar
+        TopBar,
+        UserItem
     },
     data() {
         return {

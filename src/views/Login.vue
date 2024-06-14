@@ -79,16 +79,17 @@ async function login() {
 			toastr.error("用户名或密码为空，请检查输入信息！", "错误");
 		} else {
 			const response = await axios.post('/api/login', { userName: username.value, password: password.value });
-			console.log(response.data)
-			if (response.data === 2 || response.data === 1) {  // 登陆成功
-				// 2：管理员 1：普通用户
-				toastr.clear();  // 清空错误信息
-				router.replace('/userhome');  // 使用后端返回的路径
-			} else if (response.data === 0) {
+			console.log(response.data);
+			if (response.data == null||response.data=="") {  // 登陆失败
 				toastr.error("用户名或密码错误！请重新登录！", "错误");
 				username.value = '';
 				password.value = '';
 				document.getElementById('username').focus();  // 光标移至用户名输入
+			} else {
+				sessionStorage.setItem('userData', JSON.stringify(response.data));
+				console.log(sessionStorage.getItem('userData'));
+				toastr.clear();  // 清空错误信息
+				router.replace('/userhome');  // 使用后端返回的路径
 			}
 		}
 	} catch (error) {
