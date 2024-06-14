@@ -155,208 +155,28 @@
                                 <table class="table table-hover table-mail">
                                     <thead>
                                         <tr>
-                                            <th>#</th>
-                                            <th>文件名</th>
-                                            <th>11</th>
-                                            <th>22</th>
-                                            <th>33</th>
+                                        <th>#</th>
+                                        <th>文件夹名</th>
+                                        <th>标签</th>
+                                        <th>上次修改者</th>
+                                        <th>上次修改时间</th>
+                                        <th>创建者</th>
+                                        <th>创建日期</th>
+                                        <th>选择</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr class="unread">
+                                        <tr v-for="(folder, index) in folders" :key="index" class="read">
+                                            <td>{{ index + 1 }}</td>
+                                            <td>{{ folder.folderName }}</td>
+                                            <td>{{ folder.tag }}</td>
+                                            <td>{{ folder.lastModifierName }}</td>
+                                            <td>{{ new Date(folder.lastModifyTime).toLocaleString() }}</td>
+                                            <td>{{ folder.creatorName }}</td>
+                                            <td>{{ new Date(folder.createTime).toLocaleString() }}</td>
                                             <td class="check-mail">
                                                 <input type="checkbox">
                                             </td>
-                                            <td class="mail-ontact"><a href="mail_detail.html">Anna Smith</a></td>
-                                            <td class="mail-subject"><a href="mail_detail.html">Lorem ipsum dolor
-                                                    noretek imit set.</a></td>
-                                            <td class=""><i class="fa fa-paperclip"></i></td>
-                                            <td class="text-right mail-date">6.10 AM</td>
-                                        </tr>
-                                        <tr class="unread">
-                                            <td class="check-mail">
-                                                <input type="checkbox" checked>
-                                            </td>
-                                            <td class="mail-ontact"><a href="mail_detail.html">Jack Nowak</a></td>
-                                            <td class="mail-subject"><a href="mail_detail.html">Aldus PageMaker
-                                                    including versions of Lorem Ipsum.</a></td>
-                                            <td class=""></td>
-                                            <td class="text-right mail-date">8.22 PM</td>
-                                        </tr>
-                                        <tr class="read">
-                                            <td class="check-mail">
-                                                <input type="checkbox">
-                                            </td>
-                                            <td class="mail-ontact"><a href="mail_detail.html">Facebook</a> <span
-                                                    class="label label-warning pull-right">Clients</span> </td>
-                                            <td class="mail-subject"><a href="mail_detail.html">Many desktop publishing
-                                                    packages and web page editors.</a></td>
-                                            <td class=""></td>
-                                            <td class="text-right mail-date">Jan 16</td>
-                                        </tr>
-                                        <tr class="read">
-                                            <td class="check-mail">
-                                                <input type="checkbox">
-                                            </td>
-                                            <td class="mail-ontact"><a href="mail_detail.html">Mailchip</a></td>
-                                            <td class="mail-subject"><a href="mail_detail.html">There are many
-                                                    variations of passages of Lorem Ipsum.</a></td>
-                                            <td class=""></td>
-                                            <td class="text-right mail-date">Mar 22</td>
-                                        </tr>
-                                        <tr class="read">
-                                            <td class="check-mail">
-                                                <input type="checkbox">
-                                            </td>
-                                            <td class="mail-ontact"><a href="mail_detail.html">Alex T.</a> <span
-                                                    class="label label-danger pull-right">Documents</span></td>
-                                            <td class="mail-subject"><a href="mail_detail.html">Lorem ipsum dolor
-                                                    noretek imit set.</a></td>
-                                            <td class=""><i class="fa fa-paperclip"></i></td>
-                                            <td class="text-right mail-date">December 22</td>
-                                        </tr>
-                                        <tr class="read">
-                                            <td class="check-mail">
-                                                <input type="checkbox">
-                                            </td>
-                                            <td class="mail-ontact"><a href="mail_detail.html">Monica Ryther</a></td>
-                                            <td class="mail-subject"><a href="mail_detail.html">The standard chunk of
-                                                    Lorem Ipsum used.</a></td>
-                                            <td class=""></td>
-                                            <td class="text-right mail-date">Jun 12</td>
-                                        </tr>
-                                        <tr class="read">
-                                            <td class="check-mail">
-                                                <input type="checkbox">
-                                            </td>
-                                            <td class="mail-ontact"><a href="mail_detail.html">Sandra Derick</a></td>
-                                            <td class="mail-subject"><a href="mail_detail.html">Contrary to popular
-                                                    belief.</a></td>
-                                            <td class=""></td>
-                                            <td class="text-right mail-date">May 28</td>
-                                        </tr>
-                                        <tr class="read">
-                                            <td class="check-mail">
-                                                <input type="checkbox">
-                                            </td>
-                                            <td class="mail-ontact"><a href="mail_detail.html">Patrick Pertners</a>
-                                                <span class="label label-info pull-right">Adv</span></td>
-                                            <td class="mail-subject"><a href="mail_detail.html">If you are going to use
-                                                    a passage of Lorem </a></td>
-                                            <td class=""></td>
-                                            <td class="text-right mail-date">May 28</td>
-                                        </tr>
-                                        <tr class="read">
-                                            <td class="check-mail">
-                                                <input type="checkbox">
-                                            </td>
-                                            <td class="mail-ontact"><a href="mail_detail.html">Michael Fox</a></td>
-                                            <td class="mail-subject"><a href="mail_detail.html">Humour, or
-                                                    non-characteristic words etc.</a></td>
-                                            <td class=""></td>
-                                            <td class="text-right mail-date">Dec 9</td>
-                                        </tr>
-                                        <tr class="read">
-                                            <td class="check-mail">
-                                                <input type="checkbox">
-                                            </td>
-                                            <td class="mail-ontact"><a href="mail_detail.html">Damien Ritz</a></td>
-                                            <td class="mail-subject"><a href="mail_detail.html">Oor Lorem Ipsum is that
-                                                    it has a more-or-less normal.</a></td>
-                                            <td class=""></td>
-                                            <td class="text-right mail-date">Jun 11</td>
-                                        </tr>
-                                        <tr class="read">
-                                            <td class="check-mail">
-                                                <input type="checkbox">
-                                            </td>
-                                            <td class="mail-ontact"><a href="mail_detail.html">Anna Smith</a></td>
-                                            <td class="mail-subject"><a href="mail_detail.html">Lorem ipsum dolor
-                                                    noretek imit set.</a></td>
-                                            <td class=""><i class="fa fa-paperclip"></i></td>
-                                            <td class="text-right mail-date">6.10 AM</td>
-                                        </tr>
-                                        <tr class="read">
-                                            <td class="check-mail">
-                                                <input type="checkbox">
-                                            </td>
-                                            <td class="mail-ontact"><a href="mail_detail.html">Jack Nowak</a></td>
-                                            <td class="mail-subject"><a href="mail_detail.html">Aldus PageMaker
-                                                    including versions of Lorem Ipsum.</a></td>
-                                            <td class=""></td>
-                                            <td class="text-right mail-date">8.22 PM</td>
-                                        </tr>
-                                        <tr class="read">
-                                            <td class="check-mail">
-                                                <input type="checkbox">
-                                            </td>
-                                            <td class="mail-ontact"><a href="mail_detail.html">Mailchip</a></td>
-                                            <td class="mail-subject"><a href="mail_detail.html">There are many
-                                                    variations of passages of Lorem Ipsum.</a></td>
-                                            <td class=""></td>
-                                            <td class="text-right mail-date">Mar 22</td>
-                                        </tr>
-                                        <tr class="read">
-                                            <td class="check-mail">
-                                                <input type="checkbox">
-                                            </td>
-                                            <td class="mail-ontact"><a href="mail_detail.html">Alex T.</a> <span
-                                                    class="label label-warning pull-right">Clients</span></td>
-                                            <td class="mail-subject"><a href="mail_detail.html">Lorem ipsum dolor
-                                                    noretek imit set.</a></td>
-                                            <td class=""><i class="fa fa-paperclip"></i></td>
-                                            <td class="text-right mail-date">December 22</td>
-                                        </tr>
-                                        <tr class="read">
-                                            <td class="check-mail">
-                                                <input type="checkbox">
-                                            </td>
-                                            <td class="mail-ontact"><a href="mail_detail.html">Monica Ryther</a></td>
-                                            <td class="mail-subject"><a href="mail_detail.html">The standard chunk of
-                                                    Lorem Ipsum used.</a></td>
-                                            <td class=""></td>
-                                            <td class="text-right mail-date">Jun 12</td>
-                                        </tr>
-                                        <tr class="read">
-                                            <td class="check-mail">
-                                                <input type="checkbox">
-                                            </td>
-                                            <td class="mail-ontact"><a href="mail_detail.html">Sandra Derick</a></td>
-                                            <td class="mail-subject"><a href="mail_detail.html">Contrary to popular
-                                                    belief.</a></td>
-                                            <td class=""></td>
-                                            <td class="text-right mail-date">May 28</td>
-                                        </tr>
-                                        <tr class="read">
-                                            <td class="check-mail">
-                                                <input type="checkbox">
-                                            </td>
-                                            <td class="mail-ontact"><a href="mail_detail.html">Patrick Pertners</a>
-                                            </td>
-                                            <td class="mail-subject"><a href="mail_detail.html">If you are going to use
-                                                    a passage of Lorem </a></td>
-                                            <td class=""></td>
-                                            <td class="text-right mail-date">May 28</td>
-                                        </tr>
-                                        <tr class="read">
-                                            <td class="check-mail">
-                                                <input type="checkbox">
-                                            </td>
-                                            <td class="mail-ontact"><a href="mail_detail.html">Michael Fox</a></td>
-                                            <td class="mail-subject"><a href="mail_detail.html">Humour, or
-                                                    non-characteristic words etc.</a></td>
-                                            <td class=""></td>
-                                            <td class="text-right mail-date">Dec 9</td>
-                                        </tr>
-                                        <tr class="read">
-                                            <td class="check-mail">
-                                                <input type="checkbox">
-                                            </td>
-                                            <td class="mail-ontact"><a href="mail_detail.html">Damien Ritz</a></td>
-                                            <td class="mail-subject"><a href="mail_detail.html">Oor Lorem Ipsum is that
-                                                    it has a more-or-less normal.</a></td>
-                                            <td class=""></td>
-                                            <td class="text-right mail-date">Jun 11</td>
                                         </tr>
                                     </tbody>
                                 </table>
@@ -388,10 +208,29 @@
     import "../assets/js/plugins/slimscroll/jquery.slimscroll.min.js"
     import "../assets/js/inspinia.js"
     import "../assets/js/plugins/pace/pace.min.js"
+    import axios from "axios";
 
     import TopBar from '@/components/TopBar.vue'
     export default {
 		name: 'Profile',
+        data() {
+            return {
+                folders: []
+            };
+        },
+        created() {
+            this.fetchFolders();;
+        },
+        methods: {
+            async fetchFolders() {
+                try {
+                    const response = await axios.get('/api/findFodersByParentId?parentId=0');
+                    this.folders = response.data;
+                } catch (error) {
+                    console.error('Error fetching folders:', error);
+                }
+            }
+        },
         components: {
             TopBar
         },

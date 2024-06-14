@@ -29,4 +29,21 @@ CREATE TABLE `logs`  (
   FOREIGN KEY (`user_id`) REFERENCES user(`user_id`)
 );
 
+现有文件夹数据表，请通过user_id连接user和folders表，查询出folders表中的所有用户的文件夹名,创建日期,创建者名,标记,上次修改者,上次修改时间信息
+DROP TABLE IF EXISTS `folders`;
+CREATE TABLE `folders`  (
+  `folder_id` int AUTO_INCREMENT PRIMARY KEY 	NOT NULL	COMMENT '文件夹ID',
+  `folder_name` varchar(100) 					NOT NULL	COMMENT '文件夹名',
+  `parent_id` int 								NOT NULL	COMMENT '父文件夹ID',
+  `create_time` datetime 						NOT NULL	COMMENT '创建日期',
+  `creater_id` int								NOT NULL	COMMENT '创建者ID',
+  `tag` varchar(100)										COMMENT '标记',
+  `is_deleted` boolean DEFAULT false 			NOT NULL	COMMENT '已删除',
+  `last_modifier_id` int						NOT NULL	COMMENT '上次修改者ID',
+  `last_modify_time` datetime					NOT NULL	COMMENT '上次修改时间',
+  FOREIGN KEY (`parent_id`) REFERENCES folders(`folder_id`),
+  FOREIGN KEY (`creater_id`) REFERENCES user(`user_id`),
+  FOREIGN KEY (`last_modifier_id`) REFERENCES user(`user_id`)
+);
+
 
