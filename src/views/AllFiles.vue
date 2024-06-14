@@ -102,10 +102,10 @@
                                 <form method="get" action="index.html" class="pull-right mail-search">
                                     <div class="input-group">
                                         <input type="text" class="form-control input-sm" name="search"
-                                            placeholder="Search email">
+                                            placeholder="搜索内容">
                                         <div class="input-group-btn">
                                             <button type="submit" class="btn btn-sm btn-primary">
-                                                Search
+                                                搜索
                                             </button>
                                         </div>
                                     </div>
@@ -119,7 +119,7 @@
                                         <!-- <button class="btn btn-white btn-sm"><i class="fa fa-arrow-right"></i></button> -->
                                     </div>
                                     <button class="btn btn-white btn-sm" data-toggle="tooltip" data-placement="left"
-                                        title="Refresh inbox"><i class="fa fa-refresh"></i> Refresh</button>
+                                        title="刷新页面" @click="this.enterPath(currentFolder.folderId)"><i class="fa fa-refresh"></i> 刷新</button>
                                     <button class="btn btn-white btn-sm" data-toggle="tooltip" data-placement="top"
                                         title="Mark as read"><i class="fa fa-eye"></i> </button>
                                     <button class="btn btn-white btn-sm" data-toggle="tooltip" data-placement="top"

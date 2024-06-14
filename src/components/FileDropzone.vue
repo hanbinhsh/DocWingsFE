@@ -54,12 +54,12 @@
                 toggleDisplay(); // 文件添加时显示预览区域
               });
             },
-            url: 'https://backendUrl/uploadFile/',//backend url 
+            url: '/api/',//backend url 
             method: 'POST',
             headers:{Authorization: 'Bearer ' + store.state.token,}, // getting API access token form vuex store to be sent with request
             paramName:props.paramName, // input name 
             acceptedFiles:"", // accepted files 
-            previewTemplate: customPreview,
+            // previewTemplate: customPreview,
             previewsContainer: dropRef.value.parentElement.querySelector('.preview-container'), 
           })
           // customizing the input field of dropzone
@@ -68,7 +68,7 @@
               <div style="display: flex; justify-content: center;">
                 <i class="bi bi-cloud-arrow-up-fill" style="font-size: 5rem;"></i>
               </div>
-              <p style="text-align: center; margin: 0;"><strong>拖拽或选择文件到此处上传</strong></p>
+              <p style="text-align: center; margin: 0;"><strong>拖拽文件到此处上传</strong></p>
             `
           }
         }
@@ -82,6 +82,8 @@
   </script>
   
   <style scoped>
+  @import '../assets/css/plugins/dropzone/basic.css';
+  @import '../assets/css/plugins/dropzone/dropzone.css';
   .custom-dropzone {
     border-style: dashed;
     border-width: 3px;
