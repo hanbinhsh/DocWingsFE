@@ -60,7 +60,6 @@
                     </ul>
                 </div>
             </nav>
-
             <div id="page-wrapper" class="gray-bg">
                 <TopBar/>
                 <div class="wrapper wrapper-content">
@@ -151,13 +150,14 @@
                                 </div>
                             </div>
                             <div class="mail-box">
-
                                 <table class="table table-hover table-mail">
                                     <thead>
                                         <tr>
                                         <th>#</th>
-                                        <th>文件夹名</th>
+                                        <th>名称</th>
                                         <th>标签</th>
+                                        <th>文件大小 (KB)</th>
+                                        <th>文件类型</th>
                                         <th>上次修改者</th>
                                         <th>上次修改时间</th>
                                         <th>创建者</th>
@@ -166,14 +166,30 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr v-for="(folder, index) in folders" :key="index" class="read">
+                                        <tr v-for="(folder, index) in folders" :key="index" class="unread">
                                             <td>{{ index + 1 }}</td>
                                             <td>{{ folder.folderName }}</td>
                                             <td>{{ folder.tag }}</td>
+                                            <td></td>
+                                            <td></td>
                                             <td>{{ folder.lastModifierName }}</td>
                                             <td>{{ new Date(folder.lastModifyTime).toLocaleString() }}</td>
                                             <td>{{ folder.creatorName }}</td>
                                             <td>{{ new Date(folder.createTime).toLocaleString() }}</td>
+                                            <td class="check-mail">
+                                                <input type="checkbox">
+                                            </td>
+                                        </tr>
+                                        <tr v-for="(file, index) in files" :key="index" class="read">
+                                            <td>{{ index + 1 }}</td>
+                                            <td>{{ file.fileName }}</td>
+                                            <td>{{ file.tag }}</td>
+                                            <td>{{ file.fileSize }}</td>
+                                            <td>{{ file.fileType }}</td>
+                                            <td>{{ file.lastModifierName }}</td>
+                                            <td>{{ new Date(file.lastModifyTime).toLocaleString() }}</td>
+                                            <td>{{ file.uploaderName }}</td>
+                                            <td>{{ new Date(file.uploadTime).toLocaleString() }}</td>
                                             <td class="check-mail">
                                                 <input type="checkbox">
                                             </td>
@@ -215,7 +231,8 @@
 		name: 'Profile',
         data() {
             return {
-                folders: []
+                folders: [],
+                files: []
             };
         },
         created() {
@@ -224,8 +241,10 @@
         methods: {
             async fetchFolders() {
                 try {
-                    const response = await axios.get('/api/findFodersByParentId?parentId=0');
-                    this.folders = response.data;
+                    const responseFolder = await axios.get('/api/findFodersByParentId?parentId=0');
+                    const responseFile = await axios.get('/api/findFilesByParentId?parentId=0');
+                    this.folders = responseFolder.data;
+                    this.files = responseFile.data;
                 } catch (error) {
                     console.error('Error fetching folders:', error);
                 }

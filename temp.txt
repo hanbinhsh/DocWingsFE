@@ -29,7 +29,7 @@ CREATE TABLE `logs`  (
   FOREIGN KEY (`user_id`) REFERENCES user(`user_id`)
 );
 
-现有文件夹数据表，请通过user_id连接user和folders表，查询出folders表中的所有用户的文件夹名,创建日期,创建者名,标记,上次修改者,上次修改时间信息
+现有文件夹数据表，请通过user_id连接user和folders表，给出父文件夹的ID查询出folders表中的所有父文件夹ID等于给出的父文件夹ID的用户的文件夹名,创建日期,创建者,标记,上次修改者,上次修改时间信息
 DROP TABLE IF EXISTS `folders`;
 CREATE TABLE `folders`  (
   `folder_id` int AUTO_INCREMENT PRIMARY KEY 	NOT NULL	COMMENT '文件夹ID',
@@ -47,3 +47,22 @@ CREATE TABLE `folders`  (
 );
 
 
+现有文件数据表，请通过user_id连接user和files表，给出父文件夹的ID查询出files表中的所有父文件夹ID等于给出的父文件夹ID的文件名,标记,文件大小,文件类型,上次修改者名,上次修改时间,上传者名,上传时间信息
+DROP TABLE IF EXISTS `files`;
+CREATE TABLE `files`  (
+  `file_id` int AUTO_INCREMENT PRIMARY KEY  	NOT NULL	COMMENT '文件ID',
+  `file_name` varchar(100) 						NOT NULL	COMMENT '文件名',
+  `parent_id` int 								NOT NULL	COMMENT '父文件夹ID',
+  `upload_time` datetime 						NOT NULL	COMMENT '上传时间',
+  `file_size` double		 					NOT NULL	COMMENT '文件大小',
+  `file_type` varchar(100) 						NOT NULL	COMMENT '文件类型',
+  `uploader_id` int								NOT NULL	COMMENT '上传者ID',
+  `last_modifier_id` int						NOT NULL	COMMENT '上次修改者ID',
+  `tag` varchar(100)										COMMENT '标记',
+  `last_modify_time` datetime					NOT NULL	COMMENT '上次修改时间',
+  `is_deleted` boolean DEFAULT false 			NOT NULL	COMMENT '已删除',
+  `path` text									NOT NULL	COMMENT '文件路径（Windows）',
+  FOREIGN KEY (`uploader_id`) REFERENCES user(`user_id`),
+  FOREIGN KEY (`parent_id`) REFERENCES folders(`folder_id`),
+  FOREIGN KEY (`last_modifier_id`) REFERENCES user(`user_id`)
+);
