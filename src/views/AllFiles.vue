@@ -153,6 +153,7 @@
                                         <th>上次修改时间</th>
                                         <th>创建者</th>
                                         <th>创建日期</th>
+                                        <th></th>
                                         <th>选择</th>
                                         </tr>
                                     </thead>
@@ -167,6 +168,9 @@
                                             <td>{{ new Date(folder.lastModifyTime).toLocaleString() }}</td>
                                             <td>{{ folder.creatorName }}</td>
                                             <td>{{ new Date(folder.createTime).toLocaleString() }}</td>
+                                            <td>
+                                                <button class="btn btn-primary btn-sm demo1" @click="renameFolder(folder.folderId)">重命名</button>
+                                            </td>
                                             <td class="check-mail">
                                                 <input type="checkbox">
                                             </td>
@@ -181,6 +185,9 @@
                                             <td>{{ new Date(file.lastModifyTime).toLocaleString() }}</td>
                                             <td>{{ file.uploaderName }}</td>
                                             <td>{{ new Date(file.uploadTime).toLocaleString() }}</td>
+                                            <td>
+                                                <button class="btn btn-primary btn-sm demo1" @click="renameFile(file.fileId)">重命名</button>
+                                            </td>
                                             <td class="check-mail">
                                                 <input type="checkbox">
                                             </td>
@@ -300,6 +307,53 @@
             async backPath(){  //返回上一级
                 await this.enterPath(this.currentFolder.parentId);
             },
+            async renameFile(fileId) {
+                const { value: newName } = await this.$swal.fire({
+                    title: '重命名文件',
+                    input: 'text',
+                    inputLabel: '请输入新的文件名',
+                    inputValue: this.currentFileName, // 当前文件名，可以作为默认值显示在输入框中
+                    showCancelButton: true,
+                    confirmButtonText: '确定',  
+                    cancelButtonText: '取消',
+                    inputValidator: (value) => {
+                        if (!value) {
+                        return '文件名不能为空！'
+                        }
+                    }
+                });
+                // 如果用户点击了确定按钮，并且提供了新的文件名
+                if (newName) {
+                // 调用 API 来更新文件名
+                await axios.post('/api/renameFile', { "fileId": fileId, "fileName": newName });
+                this.$swal.fire('文件名已更新', `文件名已更新为:${newName}`, 'success');
+                this.enterPath(this.currentFolder.parentId);
+                }
+             },
+             async renameFolder(folderId) {
+                const { value: newName } = await this.$swal.fire({
+                    title: '重命名文件夹',
+                    input: 'text',
+                    inputLabel: '请输入新的文件夹名',
+                    inputValue: this.currentFolderName, // 当前文件夹名，可以作为默认值显示在输入框中
+                    showCancelButton: true,
+                    confirmButtonText: '确定',  
+                    cancelButtonText: '取消',
+                    inputValidator: (value) => {
+                        if (!value) {
+                        return '文件名夹不能为空！'
+                        }
+                    }
+                });
+                // 如果用户点击了确定按钮，并且提供了新的文件名
+                if (newName) {
+                // 调用 API 来更新文件名
+                await axios.post('/api/renameFolder', { "folderId": folderId, "folderName": newName });
+                this.$swal.fire('文件夹名已更新', `文件夹名已更新为:${newName}`, 'success');
+                this.enterPath(this.currentFolder.parentId);
+                }
+             }
+            
         },
         components: {
             TopBar,
@@ -308,6 +362,6 @@
         },
 		mounted() {
             
-		}
+		},
 	}
 </script>

@@ -18,6 +18,8 @@
     "metismenu": "^3.0.7",
     "pace": "^0.0.4",
     "pace-js": "^1.2.4",
+    "sweetalert": "^2.1.2",
+    "sweetalert2": "^11.11.1",
     "vue": "^3.2.13",
     "vue-router": "^4.0.3",
     "vuex": "^4.0.0"
