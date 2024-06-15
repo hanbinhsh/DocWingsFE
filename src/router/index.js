@@ -71,8 +71,17 @@ const routes = [
     path: '/allfiles',
     name: 'allfiles',
     component: AllFiles,
-    meta: { 
+    meta: {
       title: '所有文件',
+      requiresAuth: true,
+    }
+  },
+  {
+    path: '/trash',
+    name: 'trash',
+    component: AllFiles,
+    meta: {
+      title: '回收站',
       requiresAuth: true,
     }
   }

@@ -264,8 +264,18 @@ div:where(.swal2-container) div:where(.swal2-popup) {
         },
         created() {
             this.enterPath(0);
+            this.checkRoute();
         },
         methods: {
+            checkRoute() {
+                if (this.$route.name === 'allfiles') {
+                    this.title = '所有文件';
+                    console.log('进入所有文件');
+                } else if (this.$route.name === 'trash') {
+                    this.title = '回收站';
+                    console.log('进入回收站');
+                }
+            },
             handleFileUploadSuccess() {
                 // 成功弹窗
                 toastr.success("上传文件成功！", "成功");
