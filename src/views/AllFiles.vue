@@ -9,11 +9,11 @@
                             <a href="userhome"><i class="fa fa-laptop"></i> <span
                                     class="nav-label">主页</span></a>
                         </li>
-                        <li class="active">
+                        <li :class="{ active: !this.isTrash }">
                             <a><i class="fa fa-folder-o"></i> <span
                                     class="nav-label">文件管理</span><span class="fa arrow"></span></a>
                             <ul class="nav nav-second-level collapse">
-                                <li class="active"><a href="allfiles">所有文件</a></li>
+                                <li :class="{ active: !this.isTrash }"><a href="allfiles">所有文件</a></li>
                                 <li><a href="table_basic.html">图片</a></li>
                                 <li><a href="table_data_tables.html">文档</a></li>
                                 <li><a href="table_foo_table.html">视频</a></li>
@@ -25,8 +25,8 @@
                             <a href="share"><i class="fa fa-share-square-o"></i> <span
                                     class="nav-label">分享</span></a>
                         </li>
-                        <li>
-                            <a href="searchAllServlet"><i class="fa fa-trash-o"></i> <span
+                        <li :class="{ active: this.isTrash }">
+                            <a href="trash"><i class="fa fa-trash-o"></i> <span
                                     class="nav-label">回收站</span></a>
                         </li>
                         <li>
@@ -260,6 +260,7 @@ div:where(.swal2-container) div:where(.swal2-popup) {
                 currentFolder: JSON.parse(sessionStorage.getItem("currentFolder")) || {},
                 currentFFsCount:sessionStorage.getItem("currentFFsCount") || {},
                 loading: false,
+                isTrash: false,
             };
         },
         created() {
@@ -269,11 +270,9 @@ div:where(.swal2-container) div:where(.swal2-popup) {
         methods: {
             checkRoute() {
                 if (this.$route.name === 'allfiles') {
-                    this.title = '所有文件';
-                    console.log('进入所有文件');
+                    this.isTrash = false;
                 } else if (this.$route.name === 'trash') {
-                    this.title = '回收站';
-                    console.log('进入回收站');
+                    this.isTrash = true;
                 }
             },
             handleFileUploadSuccess() {
