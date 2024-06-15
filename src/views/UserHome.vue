@@ -483,12 +483,7 @@ import Raphael from "../assets/js/plugins/morris/raphael-2.1.0.min.js"
             TopBar,
             UserItem
         },
-		mounted() {
-            $(document).ready(function(){
-                $('.file-box').each(function() {
-                    animationHover(this, 'pulse');
-                });
-            });
+        created(){
             // 图表使用
             $(function() {
                 Morris.Donut({
@@ -501,6 +496,14 @@ import Raphael from "../assets/js/plugins/morris/raphael-2.1.0.min.js"
                     formatter: function (y, data) { return y + '%' },
                 });
             });
+            $(document).ready(function(){
+                $('.file-box').each(function() {
+                    animationHover(this, 'pulse');
+                });
+            });
+        },
+		mounted() {
+            
 		}
 	}
 </script>

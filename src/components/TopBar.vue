@@ -16,7 +16,7 @@
                     <span class="m-r-sm text-muted welcome-message">欢迎来到文档之翼</span>
                 </li>
                 <li>
-                    <a href="logoutServlet">
+                    <a @click="logout()">
                         <i class="fa fa-sign-out"></i>登出
                     </a>
                 </li>
@@ -27,7 +27,13 @@
 
 <script>
 export default {
-    name: 'TopBar'
+    name: 'TopBar',
+    methods: {
+        logout() {
+            window.sessionStorage.clear();
+            this.$router.push('/login');
+        }
+    }
 }
 </script>
 

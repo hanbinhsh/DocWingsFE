@@ -56,7 +56,7 @@ toastr.options = {
 	"closeButton": true,
 	"debug": false,
 	"progressBar": true,
-	"preventDuplicates": false,
+	"preventDuplicates": true,
 	"positionClass": "toast-bottom-center",
 	"onclick": null,
 	"showDuration": "400",
@@ -89,7 +89,9 @@ async function login() {
 				sessionStorage.setItem('userData', JSON.stringify(response.data));
 				console.log(sessionStorage.getItem('userData'));
 				toastr.clear();  // 清空错误信息
-				router.replace('/userhome');  // 使用后端返回的路径
+				router.replace('/userhome').then(() => {  // 跳转后强制刷新
+					window.location.reload();
+				});
 			}
 		}
 	} catch (error) {

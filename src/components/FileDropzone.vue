@@ -11,56 +11,56 @@
   export default defineComponent({
     name: 'Dropzone',
     props:['paramName'],
-    setup(props) {
-      const isDisplayed = ref(false); // 初始状态隐藏
+    methods: {
+    },
+    setup(props, { emit }) {
+      let user = JSON.parse(sessionStorage.getItem('userData'));
+      let currentFolderId = 0
+      let isDisplayed = ref(false); // 初始状态隐藏
 
       const toggleDisplay = () => {
         isDisplayed.value = true;
       };
-      //using vuex 
+      const uploadSuccess = () => {
+        emit('file-upload-success');
+      };
+      const updateDropzone = (newFolderId) => {
+        currentFolderId = newFolderId.detail.newFolderId;
+      };
+      const getUrl = () => {
+        const url = `http://localhost:8848/uploadOneFile?userId=${user.userId}&parentId=${currentFolderId}`
+        return url;
+      };
       const store = useStore()
-    
-      //getting the div container
       const dropRef = ref(null)
-  
-      //creating html custom preview for uploading files
-      const customPreview = `
-        <div class="d-flex flex-wrap dz-preview dz-processing dz-image-preview dz-complete">
-          <div class="dz-image">
-            <img data-dz-thumbnail>
-          </div>
-          <div class="dz-details">
-            <div class="dz-size"><span data-dz-size></span></div>
-              <div class="dz-filename"><span data-dz-name></span></div>
-            </div>
-            <div class="dz-progress">
-              <span class="dz-upload" data-dz-uploadprogress></span>
-            </div>
-            <div class="dz-error-message"><span data-dz-errormessage></span></div>
-            <div class="dz-success-mark">
-                <i class="bi bi-check-circle-fill" style="font-size: 2rem; color: green;"></i>
-            </div>  
-            <div class="dz-error-mark">
-                <i class="bi bi-exclamation-circle-fill" style="font-size: 2rem; color: red;"></i> 
-          </div>
-        </div>
-      `
       onMounted(() => {
-        // Configuring Dropzone and Adding to div element
+        document.addEventListener('update-dropzone', updateDropzone);
         if(dropRef.value !== null) {
           new Dropzone(dropRef.value, {
             init: function () {
               this.on("addedfile", function () {
                 toggleDisplay(); // 文件添加时显示预览区域
+                this.options.url = getUrl() //  url在初始化后固定，需要显式修改
+              });
+              this.on("success", function () {
+                uploadSuccess();
+              });
+              this.on("error", function () {
+                console.log('File upload failed');
+              });
+              this.on("complete", function () {
+                console.log('All files uploaded successfully.');
               });
             },
-            url: '/api/',//backend url 
+            // uploadMultiple:true,  // 多文件为列表的形式传向服务器
+            url: getUrl(),
             method: 'POST',
-            headers:{Authorization: 'Bearer ' + store.state.token,}, // getting API access token form vuex store to be sent with request
-            paramName:props.paramName, // input name 
-            acceptedFiles:"", // accepted files 
+            // headers:{}, // 请求附加头
+            // paramName:props.paramName, // 文件名
+            acceptedFiles:"", // 允许的类型
             // previewTemplate: customPreview,
             previewsContainer: dropRef.value.parentElement.querySelector('.preview-container'), 
+            maxFilesize: 256,
           })
           // customizing the input field of dropzone
           if(dropRef.value.querySelector('.dz-default')) {

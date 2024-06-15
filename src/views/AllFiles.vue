@@ -50,7 +50,7 @@
                             <div class="ibox float-e-margins">
                                 <div class="ibox-content mailbox-content">
                                     <div class="file-manager">
-                                        <FileDropzone paramName="thefile"/>
+                                        <FileDropzone paramName="thefile" @file-upload-success="handleFileUploadSuccess"/>
                                         <br>
                                         <a class="btn btn-block btn-primary compose-mail"
                                             href="mail_compose.html">创建文件夹</a>
@@ -235,6 +235,9 @@
             this.enterPath(0);
         },
         methods: {
+            handleFileUploadSuccess() {
+                this.enterPath(this.currentFolder.folderId);
+            },
             showLoading() {
                 this.loading = true;
             },
@@ -284,6 +287,14 @@
                 await this.countFFsByParentId(id);
                 this.currentFolder = JSON.parse(sessionStorage.getItem("currentFolder"));  // 更新 currentFolder
                 this.currentFFsCount = sessionStorage.getItem("currentFFsCount");  // 更新 currentFFsCount
+                // 发送文件夹更新信号
+                const event = new CustomEvent('update-dropzone', {
+                    detail: {
+                        newFolderId: this.currentFolder.folderId
+                    }
+                });
+                document.dispatchEvent(event);
+
                 this.hideLoading();  // 隐藏加载页面
             },
             async backPath(){  //返回上一级
