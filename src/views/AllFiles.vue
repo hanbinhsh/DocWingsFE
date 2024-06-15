@@ -189,7 +189,7 @@
                                             <td>
                                                 <div class="btn-group">
                                                     <a class="" @click="renameFile(file.fileId)"><i class="fa fa-edit"></i></a>&nbsp;
-                                                    <a @click="downloadFile(file.fileId)"><i class="fa fa-download"></i></a>&nbsp;
+                                                    <a @click="downloadFile(file)"><i class="fa fa-download"></i></a>&nbsp;
                                                     <a @click=""><i class="fa fa-trash-o"></i></a>&nbsp;
                                                     <input type="checkbox">
                                                 </div>
@@ -215,11 +215,11 @@
     </div>
 </template>
 
-<style scoped>
+<style>
 @import '../assets/css/plugins/iCheck/custom.css';
 @import '../assets/css/plugins/toastr/toastr.min.css';
 div:where(.swal2-container) div:where(.swal2-popup) {
-    font-size: 5rem;
+    font-size: 1.5rem;
 }
 </style>
 
@@ -378,17 +378,18 @@ div:where(.swal2-container) div:where(.swal2-popup) {
                 this.enterPath(this.currentFolder.parentId);
                 }
             },
-            downloadFile(fileId){
-                axios.get('/api/downloadFile?fileID='+fileId, {responseType: 'blob'}).then(res => {
+            downloadFile(file){
+                axios.post('/api/downloadFile?fileID='+file.fileId, {responseType: 'blob'}).then(res => {
                     let blob = new Blob([res.data])
-                    let fileName = diskfile.pathName
+                    let fileName = file.fileName
+                    console.log(fileName)
                     if (blob.size > 0) {
                         const elink = document.createElement('a');
                         elink.style.display = 'none';
                         elink.href = URL.createObjectURL(blob);
                         // 类似a标签下载
                         // 自定义文件名称和导出类型。最好和后台保持一致
-                        elink.download = `${fileName}`; //模版字符串  `ddddddd`
+                        elink.download = `${fileName}`; //模版字符串
                         document.body.appendChild(elink);
                         elink.click();//触发click事件 下载
                         // 释放URL 对象
