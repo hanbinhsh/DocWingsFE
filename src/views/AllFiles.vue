@@ -147,14 +147,13 @@
                                         <th></th>
                                         <th>名称</th>
                                         <th>标签</th>
-                                        <th>文件大小 (MB)</th>
+                                        <th>文件大小</th>
                                         <th>文件类型</th>
                                         <th>上次修改者</th>
                                         <th>上次修改时间</th>
                                         <th>创建者</th>
                                         <th>创建日期</th>
-                                        <th></th>
-                                        <th>选择</th>
+                                        <th>操作</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -169,27 +168,30 @@
                                             <td>{{ folder.creatorName }}</td>
                                             <td>{{ new Date(folder.createTime).toLocaleString() }}</td>
                                             <td>
-                                                <button class="btn btn-primary btn-sm demo1" @click="renameFolder(folder.folderId)">重命名</button>
-                                            </td>
-                                            <td class="check-mail">
-                                                <input type="checkbox">
+                                                <div class="btn-group">
+                                                    <a @click="renameFolder(folder.folderId)"><i class="fa fa-edit"></i></a>
+                                                    &nbsp;
+                                                    <input type="checkbox">
+                                                </div>
                                             </td>
                                         </tr>
                                         <tr v-for="(file, index) in files" :key="index" class="read">
                                             <td><i class="fa fa-file-o"></i></td>
                                             <td>{{ file.fileName }}</td>
                                             <td>{{ file.tag }}</td>
-                                            <td>{{ file.fileSize }}</td>
+                                            <td>{{ file.fileSize }}MB</td>
                                             <td>{{ file.fileType }}</td>
                                             <td>{{ file.lastModifierName }}</td>
                                             <td>{{ new Date(file.lastModifyTime).toLocaleString() }}</td>
                                             <td>{{ file.uploaderName }}</td>
                                             <td>{{ new Date(file.uploadTime).toLocaleString() }}</td>
                                             <td>
-                                                <button class="btn btn-primary btn-sm demo1" @click="renameFile(file.fileId)">重命名</button>
-                                            </td>
-                                            <td class="check-mail">
-                                                <input type="checkbox">
+                                                <div class="btn-group">
+                                                    <a class="" @click="renameFile(file.fileId)"><i class="fa fa-edit"></i></a>
+                                                    &nbsp;
+                                                    <input type="checkbox">
+                                                </div>
+                                                
                                             </td>
                                         </tr>
                                     </tbody>
