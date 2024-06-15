@@ -169,8 +169,9 @@
                                             <td>{{ new Date(folder.createTime).toLocaleString() }}</td>
                                             <td>
                                                 <div class="btn-group">
-                                                    <a @click="renameFolder(folder.folderId)"><i class="fa fa-edit"></i></a>
-                                                    &nbsp;
+                                                    <a @click="renameFolder(folder.folderId)"><i class="fa fa-edit"></i></a>&nbsp;
+                                                    <a @click=""><i class="fa fa-download"></i></a>&nbsp;
+                                                    <a @click=""><i class="fa fa-trash-o"></i></a>&nbsp;
                                                     <input type="checkbox">
                                                 </div>
                                             </td>
@@ -187,11 +188,11 @@
                                             <td>{{ new Date(file.uploadTime).toLocaleString() }}</td>
                                             <td>
                                                 <div class="btn-group">
-                                                    <a class="" @click="renameFile(file.fileId)"><i class="fa fa-edit"></i></a>
-                                                    &nbsp;
+                                                    <a class="" @click="renameFile(file.fileId)"><i class="fa fa-edit"></i></a>&nbsp;
+                                                    <a @click="downloadFile(file.fileId)"><i class="fa fa-download"></i></a>&nbsp;
+                                                    <a @click=""><i class="fa fa-trash-o"></i></a>&nbsp;
                                                     <input type="checkbox">
                                                 </div>
-                                                
                                             </td>
                                         </tr>
                                     </tbody>
@@ -216,6 +217,10 @@
 
 <style scoped>
 @import '../assets/css/plugins/iCheck/custom.css';
+@import '../assets/css/plugins/toastr/toastr.min.css';
+div:where(.swal2-container) div:where(.swal2-popup) {
+    font-size: 5rem;
+}
 </style>
 
 <script>
@@ -229,6 +234,23 @@
     import TopBar from '@/components/TopBar.vue'
     import FileDropzone from '../components/FileDropzone.vue'
     import UserItem from '@/components/UserItem.vue'
+    import toastr from "../assets/js/plugins/toastr/toastr.min.js"
+    toastr.options = {
+        "closeButton": true,
+        "debug": false,
+        "progressBar": true,
+        "preventDuplicates": true,
+        "positionClass": "toast-bottom-center",
+        "onclick": null,
+        "showDuration": "400",
+        "hideDuration": "1000",
+        "timeOut": "3000",
+        "extendedTimeOut": "1000",
+        "showEasing": "swing",
+        "hideEasing": "linear",
+        "showMethod": "fadeIn",
+        "hideMethod": "fadeOut"
+    }
     export default {
 		name: 'Profile',
         data() {
@@ -245,6 +267,8 @@
         },
         methods: {
             handleFileUploadSuccess() {
+                // 成功弹窗
+                toastr.success("上传文件成功！", "成功");
                 this.enterPath(this.currentFolder.folderId);
             },
             showLoading() {
@@ -303,7 +327,6 @@
                     }
                 });
                 document.dispatchEvent(event);
-
                 this.hideLoading();  // 隐藏加载页面
             },
             async backPath(){  //返回上一级
@@ -331,8 +354,8 @@
                 this.$swal.fire('文件名已更新', `文件名已更新为:${newName}`, 'success');
                 this.enterPath(this.currentFolder.parentId);
                 }
-             },
-             async renameFolder(folderId) {
+            },
+            async renameFolder(folderId) {
                 const { value: newName } = await this.$swal.fire({
                     title: '重命名文件夹',
                     input: 'text',
@@ -354,16 +377,33 @@
                 this.$swal.fire('文件夹名已更新', `文件夹名已更新为:${newName}`, 'success');
                 this.enterPath(this.currentFolder.parentId);
                 }
-             }
-            
+            },
+            downloadFile(fileId){
+                axios.get('/api/downloadFile?fileID='+fileId, {responseType: 'blob'}).then(res => {
+                    let blob = new Blob([res.data])
+                    let fileName = diskfile.pathName
+                    if (blob.size > 0) {
+                        const elink = document.createElement('a');
+                        elink.style.display = 'none';
+                        elink.href = URL.createObjectURL(blob);
+                        // 类似a标签下载
+                        // 自定义文件名称和导出类型。最好和后台保持一致
+                        elink.download = `${fileName}`; //模版字符串  `ddddddd`
+                        document.body.appendChild(elink);
+                        elink.click();//触发click事件 下载
+                        // 释放URL 对象
+                        URL.revokeObjectURL(elink.href);
+                        // 删除创建的 a 标签      
+                        document.body.removeChild(elink);
+                    }
+                })
+            }
         },
         components: {
             TopBar,
             FileDropzone,
             UserItem
         },
-		mounted() {
-            
-		},
+		mounted() {},
 	}
 </script>

@@ -49,7 +49,7 @@
                 console.log('File upload failed');
               });
               this.on("complete", function () {
-                console.log('All files uploaded successfully.');
+                console.log('All files progressed successfully.');
               });
             },
             // uploadMultiple:true,  // 多文件为列表的形式传向服务器
