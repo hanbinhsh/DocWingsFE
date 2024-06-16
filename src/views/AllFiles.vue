@@ -52,8 +52,7 @@
                                     <div class="file-manager">
                                         <FileDropzone paramName="thefile" @file-upload-success="handleFileUploadSuccess"/>
                                         <br>
-                                        <a class="btn btn-block btn-primary compose-mail"
-                                            href="mail_compose.html">创建文件夹</a>
+                                        <a class="btn btn-block btn-primary compose-mail" @click="createFolder">创建文件夹</a>
                                         <div class="space-25"></div>
                                         <h5>Folders</h5>
                                         <ul class="folder-list m-b-md" style="padding: 0">
@@ -260,7 +259,7 @@ div:where(.swal2-container) div:where(.swal2-popup) {
                 folders: [],
                 files: [],
                 currentFolder: JSON.parse(sessionStorage.getItem("currentFolder")) || {},
-                currentFFsCount:sessionStorage.getItem("currentFFsCount") || {},
+                currentFFsCount: sessionStorage.getItem("currentFFsCount") || {},
                 loading: false,
                 isTrash: false,
             };
@@ -275,6 +274,35 @@ div:where(.swal2-container) div:where(.swal2-popup) {
                     this.isTrash = false;
                 } else if (this.$route.name === 'trash') {
                     this.isTrash = true;
+                }
+            },
+            async createFolder(){
+                const { value: newName } = await this.$swal.fire({
+                    title: '新文件夹',
+                    input: 'text',
+                    inputLabel: '请输入新的文件夹名',
+                    inputValue: this.currentFolderName, // 当前文件夹名，可以作为默认值显示在输入框中
+                    showCancelButton: true,
+                    confirmButtonText: '确定',  
+                    cancelButtonText: '取消',
+                    inputValidator: (value) => {
+                        if (!value) {
+                            return '文件名夹不能为空！'
+                        }
+                    }
+                });
+                // 如果用户点击了确定按钮，并且提供了新的文件名
+                if (newName) {
+                    // 调用 API 来更新文件名
+                    let userId = JSON.parse(sessionStorage.getItem('userData')).userId;
+                    await axios.post('/api/insertOneFolder', { 
+                        "folderName": newName,
+                        "parentId": this.currentFolder.folderId,
+                        "createrId": userId,
+                        "lastModifierId": userId,
+                    });
+                    this.$swal.fire('文件夹创建成功', `已创建文件夹:${newName}`, 'success');
+                    this.enterPath(this.currentFolder.folderId);
                 }
             },
             handleFileUploadSuccess() {
@@ -363,7 +391,7 @@ div:where(.swal2-container) div:where(.swal2-popup) {
                 // 调用 API 来更新文件名
                 await axios.post('/api/renameFile', { "fileId": fileId, "fileName": newName });
                 this.$swal.fire('文件名已更新', `文件名已更新为:${newName}`, 'success');
-                this.enterPath(this.currentFolder.parentId);
+                this.enterPath(this.currentFolder.folderId);
                 }
             },
             async renameFolder(folderId) {
@@ -386,7 +414,7 @@ div:where(.swal2-container) div:where(.swal2-popup) {
                 // 调用 API 来更新文件名
                 await axios.post('/api/renameFolder', { "folderId": folderId, "folderName": newName });
                 this.$swal.fire('文件夹名已更新', `文件夹名已更新为:${newName}`, 'success');
-                this.enterPath(this.currentFolder.parentId);
+                this.enterPath(this.currentFolder.folderId);
                 }
             },
             downloadFile(file){
