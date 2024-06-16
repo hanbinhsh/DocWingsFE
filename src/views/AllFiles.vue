@@ -118,14 +118,17 @@
                                         <!-- <button class="btn btn-white btn-sm"><i class="fa fa-arrow-right"></i></button> -->
                                     </div>
                                     <button class="btn btn-white btn-sm" data-toggle="tooltip" data-placement="left"
-                                        title="刷新页面" @click="this.enterPath(currentFolder.folderId)"><i class="fa fa-refresh"></i> 刷新</button>
+                                        title="刷新页面" @click="this.enterPath(currentFolder.folderId)"><i class="fa fa-refresh"></i> 刷新</button>&nbsp;
                                     <button class="btn btn-white btn-sm" data-toggle="tooltip" data-placement="top"
-                                        title="Mark as read"><i class="fa fa-eye"></i> </button>
+                                        title="Mark as read"><i class="fa fa-eye"></i> </button>&nbsp;
                                     <button class="btn btn-white btn-sm" data-toggle="tooltip" data-placement="top"
-                                        title="Mark as important"><i class="fa fa-exclamation"></i> </button>
+                                        title="Mark as important"><i class="fa fa-exclamation"></i> </button>&nbsp;
                                     <button class="btn btn-white btn-sm" data-toggle="tooltip" data-placement="top"
-                                        title="Move to trash"><i class="fa fa-trash-o"></i> </button>
-
+                                        title="粘贴文件" @click="this.pasteFile()"><i class="fa fa-paste"></i>粘贴
+                                        <span v-if="this.isFileCut" class="">
+                                            文件: {{ this.currentCutFile?.fileName ?? "" }}
+                                        </span> 
+                                    </button>
                                 </div>
                             </div>
                             <div class="mail-box ibox table-responsive">
@@ -148,7 +151,7 @@
                                         <th></th>  <!--重命名-->
                                         <th>标签</th>
                                         <th>文件大小</th>
-                                        <th>文件类型</th>
+                                        <!-- <th>文件类型</th> -->
                                         <th>上次修改者</th>
                                         <th>上次修改时间</th>
                                         <th>创建者</th>
@@ -163,16 +166,17 @@
                                             <td><a @click="renameFolder(folder.folderId)"><i class="fa fa-edit"></i></a></td>
                                             <td>{{ folder.tag }}</td>
                                             <td></td>
-                                            <td></td>
+                                            <!-- <td></td> -->
                                             <td>{{ folder.lastModifierName }}</td>
                                             <td>{{ new Date(folder.lastModifyTime).toLocaleString() }}</td>
                                             <td>{{ folder.creatorName }}</td>
                                             <td>{{ new Date(folder.createTime).toLocaleString() }}</td>
                                             <td>
                                                 <div class="btn-group">
-                                                    <a @click=""><i class="fa fa-download"></i></a>&nbsp;
+                                                    <!-- <a @click=""><i class="fa fa-download"></i></a>&nbsp; -->
                                                     <a @click=""><i class="fa fa-trash-o"></i></a>&nbsp;
-                                                    <input type="checkbox">
+                                                    <a @click=""><i class="fa fa-scissors"></i></a>&nbsp;
+                                                    <!-- <input type="checkbox"> -->
                                                 </div>
                                             </td>
                                         </tr>
@@ -182,17 +186,17 @@
                                             <td><a class="" @click="renameFile(file.fileId)"><i class="fa fa-edit"></i></a></td>
                                             <td>{{ file.tag }}</td>
                                             <td>{{ file.fileSize }}MB</td>
-                                            <td>{{ file.fileType }}</td>
+                                            <!-- <td>{{ file.fileType }}</td> -->
                                             <td>{{ file.lastModifierName }}</td>
                                             <td>{{ new Date(file.lastModifyTime).toLocaleString() }}</td>
                                             <td>{{ file.uploaderName }}</td>
                                             <td>{{ new Date(file.uploadTime).toLocaleString() }}</td>
                                             <td>
                                                 <div class="btn-group">
-                                                    
                                                     <a @click="downloadFile(file)"><i class="fa fa-download"></i></a>&nbsp;
                                                     <a @click=""><i class="fa fa-trash-o"></i></a>&nbsp;
-                                                    <input type="checkbox">
+                                                    <a @click="cutFile(file)"><i class="fa fa-scissors"></i></a>&nbsp;
+                                                    <!-- <input type="checkbox"> -->
                                                 </div>
                                             </td>
                                         </tr>
@@ -262,6 +266,8 @@ div:where(.swal2-container) div:where(.swal2-popup) {
                 currentFFsCount: sessionStorage.getItem("currentFFsCount") || {},
                 loading: false,
                 isTrash: false,
+                isFileCut: false,
+                currentCutFile: null,
             };
         },
         created() {
@@ -303,6 +309,21 @@ div:where(.swal2-container) div:where(.swal2-popup) {
                     });
                     this.$swal.fire('文件夹创建成功', `已创建文件夹:${newName}`, 'success');
                     this.enterPath(this.currentFolder.folderId);
+                }
+            },
+            cutFile(file){
+                this.currentCutFile = file;
+                this.isFileCut = true;
+                toastr.success(`成功剪切文件:${file.fileName}`, "成功");
+            },
+            async pasteFile(){
+                if(this.currentCutFile != null){
+                    let fileName = this.currentCutFile.fileName;
+                    await axios.post(`/api/changeFileRoteById?id=${this.currentCutFile.fileId}&parentId=${this.currentFolder.folderId}`);
+                    this.enterPath(this.currentFolder.folderId);
+                    this.currentCutFile = null;
+                    this.isFileCut = false;
+                    toastr.success(`成功粘贴文件:${fileName}`, "成功");
                 }
             },
             handleFileUploadSuccess() {

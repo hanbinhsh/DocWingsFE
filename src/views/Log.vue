@@ -270,7 +270,7 @@ export default {
         async fetchLogs() {
             try {
                 const response = await axios.get('/api/allLog');
-                this.logs = response.data;
+                this.logs = response.data.data.logPage;
             } catch (error) {
                 console.error('Error fetching logs:', error);
             }
