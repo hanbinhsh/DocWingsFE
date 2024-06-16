@@ -130,9 +130,9 @@
                                     <button class="btn btn-white btn-sm" data-toggle="tooltip" data-placement="top"
                                         title="Mark as important"><i class="fa fa-exclamation"></i> </button>&nbsp;
                                     <button class="btn btn-white btn-sm" data-toggle="tooltip" data-placement="top"
-                                        title="粘贴文件" @click="this.pasteFile()"><i class="fa fa-paste"></i>粘贴
-                                        <span v-if="this.isFileCut" class="">
-                                            文件: {{ this.currentCutFile?.fileName ?? "" }}
+                                        title="粘贴文件" @click="this.pasteFile()"><i class="fa fa-paste"></i>&nbsp粘贴
+                                        <span v-if="this.isCutting" class="">
+                                            {{ this.currentCutFF.fileName ? this.currentCutFF.fileName : this.currentCutFF.folderName ?? "" }}
                                         </span> 
                                     </button>
                                 </div>
@@ -181,7 +181,7 @@
                                                 <div class="btn-group">
                                                     <!-- <a @click=""><i class="fa fa-download"></i></a>&nbsp; -->
                                                     <a @click=""><i class="fa fa-trash-o"></i></a>&nbsp;
-                                                    <a @click=""><i class="fa fa-scissors"></i></a>&nbsp;
+                                                    <a @click="cutFF(folder)"><i class="fa fa-scissors"></i></a>&nbsp;
                                                     <!-- <input type="checkbox"> -->
                                                 </div>
                                             </td>
@@ -201,7 +201,7 @@
                                                 <div class="btn-group">
                                                     <a @click="downloadFile(file)"><i class="fa fa-download"></i></a>&nbsp;
                                                     <a @click=""><i class="fa fa-trash-o"></i></a>&nbsp;
-                                                    <a @click="cutFile(file)"><i class="fa fa-scissors"></i></a>&nbsp;
+                                                    <a @click="cutFF(file)"><i class="fa fa-scissors"></i></a>&nbsp;
                                                     <!-- <input type="checkbox"> -->
                                                 </div>
                                             </td>
@@ -276,8 +276,8 @@ div:where(.swal2-container) div:where(.swal2-popup) {
                 currentFFsCount: sessionStorage.getItem("currentFFsCount") || {},
                 loading: false,
                 isTrash: false,
-                isFileCut: false,
-                currentCutFile: null,
+                isCutting: false,
+                currentCutFF: null,
             };
         },
         created() {
@@ -303,7 +303,7 @@ div:where(.swal2-container) div:where(.swal2-popup) {
                     cancelButtonText: '取消',
                     inputValidator: (value) => {
                         if (!value) {
-                            return '文件名夹不能为空！'
+                            return '文件夹名不能为空！'
                         }
                     }
                 });
@@ -321,25 +321,31 @@ div:where(.swal2-container) div:where(.swal2-popup) {
                     this.enterPath(this.currentFolder.folderId);
                 }
             },
-            cutFile(file){
-                this.currentCutFile = file;
-                this.isFileCut = true;
-                toastr.success(`成功剪切文件:${file.fileName}`, "成功");
+            cutFF(file){
+                this.currentCutFF = file;
+                this.isCutting = true;
+                toastr.success(`成功剪切文件:${file.fileName ? file.fileName : file.folderName}`, "成功");
             },
             async pasteFile(){
-                if(this.currentCutFile != null){
-                    let fileName = this.currentCutFile.fileName;
-                    await axios.post(`/api/changeFileRoteById?id=${this.currentCutFile.fileId}&parentId=${this.currentFolder.folderId}`);
+                if(this.currentCutFF != null && this.currentCutFF != undefined){
+                    let FFName = this.currentCutFF.fileName ? this.currentCutFF.fileName : this.currentCutFF.folderName;
+                    if(this.currentCutFF.fileName != null && this.currentCutFF.fileName != undefined){
+                        // 文件
+                        await axios.post(`/api/changeFileRouteById?id=${this.currentCutFF.fileId}&parentId=${this.currentFolder.folderId}`);
+                    }else{
+                        // 文件夹
+                        await axios.post(`/api/changeFolderRouteById?id=${this.currentCutFF.folderId}&parentId=${this.currentFolder.folderId}`);
+                    }
                     this.enterPath(this.currentFolder.folderId);
-                    this.currentCutFile = null;
-                    this.isFileCut = false;
-                    toastr.success(`成功粘贴文件:${fileName}`, "成功");
+                    this.currentCutFF = null;
+                    this.isCutting = false;
+                    toastr.success(`成功粘贴:${FFName}`, "成功");
                 }
             },
             async filePreview(file){
                 if(file.fileType.startsWith('image/')){
-                    const responseFiles = await axios.post(`/api/findImagesByParentId?parentId=${this.currentFolder.folderId}`);
-                    this.images = responseFiles.data  // 更新图片列表
+                    const responseFiles = await axios.get(`/api/findImagesByParentId?parentId=${this.currentFolder.folderId}`);
+                    this.images = responseFiles.data.data.imageList  // 更新图片列表
                     const imageDivs = this.$el.querySelector('.images')
                     const viewer = imageDivs.$viewer
                     let key = 0
@@ -352,8 +358,7 @@ div:where(.swal2-container) div:where(.swal2-popup) {
                     viewer.show()
                 }
             },
-            handleFileUploadSuccess() {
-                // 成功弹窗
+            handleFileUploadSuccess() {  // 成功弹窗
                 toastr.success("上传文件成功！", "成功");
                 this.enterPath(this.currentFolder.folderId);
             },
@@ -396,6 +401,10 @@ div:where(.swal2-container) div:where(.swal2-popup) {
                 await this.findFilesByParentId(id);
             },
             async enterPath(id){  // 按下文件夹->改变路径
+                if(id === this.currentCutFF?.folderId){
+                    toastr.error(`无法进入正在剪切板的文件夹！`, "警告");
+                    return
+                }
                 this.showLoading();  // 显示加载页面
                 await this.findFFsByParentId(id);
                 await this.findFolderById(id);
@@ -448,7 +457,7 @@ div:where(.swal2-container) div:where(.swal2-popup) {
                     cancelButtonText: '取消',
                     inputValidator: (value) => {
                         if (!value) {
-                        return '文件名夹不能为空！'
+                        return '文件夹名不能为空！'
                         }
                     }
                 });
