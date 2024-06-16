@@ -1,5 +1,11 @@
 <template>
     <div class="mainpage">
+        <div v-show="false">
+            <div v-viewer="viewerOptions" class="images clearfix">
+                <img v-for="(src,index) in images" class="images" :key="index" :src="src">
+            </div>
+        </div>
+        
         <div id="wrapper">
             <nav class="navbar-default navbar-static-side" role="navigation">
                 <div class="sidebar-collapse">
@@ -180,7 +186,7 @@
                                                 </div>
                                             </td>
                                         </tr>
-                                        <tr v-for="(file, index) in files" :key="index" class="read">
+                                        <tr v-for="(file, index) in files" :key="index" class="read" @dblclick="filePreview(file)">
                                             <td><i class="fa fa-file-o"></i></td>
                                             <td>{{ file.fileName }}</td>
                                             <td><a class="" @click="renameFile(file.fileId)"><i class="fa fa-edit"></i></a></td>
@@ -235,6 +241,8 @@ div:where(.swal2-container) div:where(.swal2-popup) {
     import "../assets/js/inspinia.js"
     import "../assets/js/plugins/pace/pace.min.js"
     import axios from "axios";
+    import 'viewerjs/dist/viewer.css'
+    import VueViewer from 'v-viewer'
 
     import TopBar from '@/components/TopBar.vue'
     import FileDropzone from '../components/FileDropzone.vue'
@@ -262,6 +270,8 @@ div:where(.swal2-container) div:where(.swal2-popup) {
             return {
                 folders: [],
                 files: [],
+                viewerOptions: {},
+                images: [],
                 currentFolder: JSON.parse(sessionStorage.getItem("currentFolder")) || {},
                 currentFFsCount: sessionStorage.getItem("currentFFsCount") || {},
                 loading: false,
@@ -326,17 +336,29 @@ div:where(.swal2-container) div:where(.swal2-popup) {
                     toastr.success(`成功粘贴文件:${fileName}`, "成功");
                 }
             },
+            async filePreview(file){
+                if(file.fileType.startsWith('image/')){
+                    const responseFiles = await axios.post(`/api/findImagesByParentId?parentId=${this.currentFolder.folderId}`);
+                    this.images = responseFiles.data  // 更新图片列表
+                    const imageDivs = this.$el.querySelector('.images')
+                    const viewer = imageDivs.$viewer
+                    let key = 0
+                    this.images.forEach((src, index) => {  // 匹配选中图片
+                        if (src.split('=')[1] == file.fileId) {
+                            key = index;
+                        }
+                    })
+                    viewer.index = key
+                    viewer.show()
+                }
+            },
             handleFileUploadSuccess() {
                 // 成功弹窗
                 toastr.success("上传文件成功！", "成功");
                 this.enterPath(this.currentFolder.folderId);
             },
-            showLoading() {
-                this.loading = true;
-            },
-            hideLoading() {
-                this.loading = false;
-            },
+            showLoading() {this.loading = true;},
+            hideLoading() {this.loading = false;},
             async findFodersByParentId(parentId){
                 try{
                     const responseFolders = await axios.get('/api/findFoldersByParentId?parentId='+parentId);
@@ -442,7 +464,6 @@ div:where(.swal2-container) div:where(.swal2-popup) {
                 axios.post('/api/downloadFile?fileID='+file.fileId, {responseType: 'blob'}).then(res => {
                     let blob = new Blob([res.data])
                     let fileName = file.fileName
-                    console.log(fileName)
                     if (blob.size > 0) {
                         const elink = document.createElement('a');
                         elink.style.display = 'none';
