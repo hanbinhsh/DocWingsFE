@@ -58,7 +58,7 @@
                                     <div class="file-manager">
                                         <FileDropzone paramName="thefile" @file-upload-success="handleFileUploadSuccess"/>
                                         <br>
-                                        <a class="btn btn-block btn-primary compose-mail" 
+                                        <a class="btn btn-block btn-primary compose-mail"
                                         :class="{ 'disabled': isTrash }"
                                         @click="this.isTrash ? null : createFolder" >创建文件夹</a>
                                         <div class="space-25"></div>
@@ -118,7 +118,8 @@
                                     </div>
                                 </form>
                                 <h2>
-                                    {{currentFolder.folderName}} ({{ this.currentFFsCount }})
+                                    <!-- {{currentFolder.folderName}} ({{ this.currentFFsCount }}) -->
+                                    {{ isTrash ? '回收站' : currentFolder.folderName + ' (' + this.currentFFsCount + ')' }}
                                 </h2>
                                 <div class="mail-tools tooltip-demo m-t-md">
                                     <div class="btn-group pull-right">
@@ -182,8 +183,11 @@
                                             <td>
                                                 <div class="btn-group">
                                                     <!-- <a @click=""><i class="fa fa-download"></i></a>&nbsp; -->
-                                                    <a @click="recycleBinFolder(folder.folderId)"><i class="fa fa-trash-o"></i></a>&nbsp;
-                                                    <a @click="cutFF(folder)"><i class="fa fa-scissors"></i></a>&nbsp;
+                                                    <a v-if="!this.isTrash" @click="recycleBinFolder(folder.folderId)">
+                                                        <i class="fa fa-trash-o"></i>&nbsp;</a>
+                                                    <a v-if="!this.isTrash" @click="cutFF(folder)"><i class="fa fa-scissors"></i>&nbsp;</a>
+                                                    <a v-if="this.isTrash" @click="deleteFolder(folder)"><i class="fa fa-trash-o"></i>&nbsp;</a>
+                                                    <a v-if="this.isTrash" @click="replyTrashFolder(folder)"><i class="fa fa-reply"></i>&nbsp;</a>
                                                     <!-- <input type="checkbox"> -->
                                                 </div>
                                             </td>
@@ -201,9 +205,11 @@
                                             <td>{{ new Date(file.uploadTime).toLocaleString() }}</td>
                                             <td>
                                                 <div class="btn-group">
-                                                    <a @click="downloadFile(file)"><i class="fa fa-download"></i></a>&nbsp;
-                                                    <a @click="recycleBinFile(file.fileId)"><i class="fa fa-trash-o"></i></a>&nbsp;
-                                                    <a @click="cutFF(file)"><i class="fa fa-scissors"></i></a>&nbsp;
+                                                    <a v-if="!this.isTrash" @click="downloadFile(file)"><i class="fa fa-download"></i>&nbsp;</a>
+                                                    <a v-if="!this.isTrash" @click="recycleBinFile(file.fileId)"><i class="fa fa-trash-o"></i>&nbsp;</a>
+                                                    <a v-if="!this.isTrash" @click="cutFF(file)"><i class="fa fa-scissors"></i>&nbsp;</a>
+                                                    <a v-if="this.isTrash" @click="deleteFile(file)"><i class="fa fa-trash-o"></i>&nbsp;</a>
+                                                    <a v-if="this.isTrash" @click="replyTrashFile(file)"><i class="fa fa-reply"></i>&nbsp;</a>
                                                     <!-- <input type="checkbox"> -->
                                                 </div>
                                             </td>
@@ -436,6 +442,12 @@ div:where(.swal2-container) div:where(.swal2-popup) {
                 this.showLoading();  // 显示加载页面
                 await this.findFileByDelete();
                 await this.findFolderByDelete();
+                const event = new CustomEvent('isTrash', {
+                    detail: {
+                        status: true
+                    }
+                });
+                document.dispatchEvent(event);
                 this.hideLoading();  // 隐藏加载页面
             },
             async backPath(){  //返回上一级
@@ -561,6 +573,40 @@ div:where(.swal2-container) div:where(.swal2-popup) {
                     this.folders = responseFolders.data;
                 }catch (error) {
                     console.error('Error findFolderByDelete:', error);
+                }
+            },
+            async replyTrashFile(){
+                const result = await this.$swal.fire({
+                    title: '是否将文件还原',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: '确定',  
+                    cancelButtonText: '取消',
+                });
+                if (result.isConfirmed) {
+                    await axios.post('/api/replyTrashFile', { "fileId": fileId, "status": 0 });
+                    this.$swal.fire('文件已还原', 'success');
+                    this.enterPath(this.currentFolder.folderId);
+                }
+                else{
+                    this.$swal.fire('操作取消', '文件未还原', 'info');
+                }
+            },
+            async replyTrashFolder(){
+                const result = await this.$swal.fire({
+                    title: '是否将文件夹还原',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: '确定',  
+                    cancelButtonText: '取消',
+                });
+                if (result.isConfirmed) {
+                    await axios.post('/api/replyTrashFolder', { "folderId": fileId, "status": 0 });
+                    this.$swal.fire('文件已还原', 'success');
+                    this.enterPath(this.currentFolder.folderId);
+                }
+                else{
+                    this.$swal.fire('操作取消', '文件夹未还原', 'info');
                 }
             },
         },
