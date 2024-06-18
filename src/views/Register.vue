@@ -21,12 +21,12 @@
                                 <div class="col-lg-7">
                                     <div class="form-group">
                                         <label>用户名 *</label>
-                                        <input id="userName" v-model="userInfo.userName" type="text"
+                                        <input id="userName" name="userName" type="text"
                                             class="form-control required">
                                     </div>
                                     <div class="form-group">
                                         <label>密码 *</label>
-                                        <input id="password" v-model="userInfo.password" type="password"
+                                        <input id="password" name="password" type="password"
                                             class="form-control required">
                                     </div>
                                     <div class="form-group">
@@ -56,13 +56,14 @@
                                     </div>
                                     <div class="form-group">
                                         <label>phone *</label>
-                                        <input id="phone" v-model="userInfo.phone" type="text" class="form-control required">
+                                        <input id="phone" name="phone" type="text"
+                                            class="form-control required">
                                     </div>
                                 </div>
                                 <div class="col-lg-6">
                                     <div class="form-group">
                                         <label>Email *</label>
-                                        <input id="email" v-model="userInfo.email" type="text"
+                                        <input id="email" name="email" type="text"
                                             class="form-control required email">
                                     </div>
                                     <div class="form-group">
@@ -115,21 +116,6 @@ import '../assets/js/plugins/steps/jquery.steps.min.js'
 import "../assets/js/plugins/validate/jquery.validate.min.js"
 import axios from 'axios';
 export default {
-    data() {
-        return {
-            userInfo: {
-                userId: 9,
-                userName: '小明',
-                pwd: '1231122',
-                email: '3241507626@qq.com',
-                groupId: 1,
-                isAdmin: 0,
-                phone: '13378301573',
-                
-                
-            }
-        };
-    },
     mounted() {
         $(document).ready(function () {
             $("#wizard").steps();
@@ -183,20 +169,26 @@ export default {
                     return form.valid();
                 },
                 onFinished: function (event, currentIndex) {
-                    // var form = $(this);
+                    var form = $(this);
 
-                    // Submit form input
-                    axios.post('/api/registerUser', this.userInfo)
-                        .then(response => {
-                            // 处理请求成功的情况，这里可以根据实际情况进行逻辑处理
-                            console.log('Registration successful:', response.data);
-                            // 可以根据需要执行其他操作，比如跳转页面或显示成功消息
-                        })
-                        .catch(error => {
-                            // 处理请求失败的情况，比如网络错误或后端返回错误状态码
-                            console.error('Registration failed:', error);
-                            // 可以根据实际情况提示用户注册失败的原因
-                        });
+                    $.ajax({
+                        type: "POST",
+                        url: "/api/registerUser",
+                        contentType: "application/json; charset=utf-8",  
+                        dataType: "json",
+                        data: JSON.stringify({
+                            userName: form[0][1].value,
+                            psw: form[0][2].value,
+                            phone: form[0][6].value,
+                            email: form[0][7].value,
+                            groupId: 1,
+                            isAdmin: 0
+                        }),
+                        success: function (response) {              
+                        },
+                        error: function (xhr, status, error) {
+                        }
+                    });
                 }
             }).validate({
                 errorPlacement: function (error, element) {
