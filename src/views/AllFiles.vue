@@ -206,6 +206,7 @@
                                             <td>{{ new Date(file.uploadTime).toLocaleString() }}</td>
                                             <td>
                                                 <div class="btn-group">
+                                                    <a @click="collectionFile(file.fileId)"><i class="fa" :class="fileCollectionStatus[file.fileId] ? 'fa-star' : 'fa-star-o'"></i></a>&nbsp;
                                                     <a @click="downloadFile(file)"><i class="fa fa-download"></i></a>&nbsp;
                                                     <a @click="recycleBinFile(file.fileId)"><i class="fa fa-trash-o"></i></a>&nbsp;
                                                     <a @click="cutFF(file)"><i class="fa fa-scissors"></i></a>&nbsp;
