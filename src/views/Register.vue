@@ -3,7 +3,7 @@
         <div class="middle-box text-center loginscreen   animated fadeInDown">
             <div>
                 <div>
-                    <img style="width: 300px;height: 300px;" src="../assets/logo-trans.png" alt=""
+                    <img style="width: 300px;height: 250px;object-fit: cover;" src="../assets/logo-trans.png" alt=""
                         class="img-responsive">
                 </div>
             </div>
@@ -21,8 +21,7 @@
                                 <div class="col-lg-7">
                                     <div class="form-group">
                                         <label>用户名 *</label>
-                                        <input id="userName" name="userName" type="text"
-                                            class="form-control required">
+                                        <input id="userName" name="userName" type="text" class="form-control required">
                                     </div>
                                     <div class="form-group">
                                         <label>密码 *</label>
@@ -43,7 +42,6 @@
                                     </div>
                                 </div>
                             </div>
-
                         </fieldset>
                         <h1>个人信息</h1>
                         <fieldset style="margin-left: 15px;">
@@ -56,15 +54,13 @@
                                     </div>
                                     <div class="form-group">
                                         <label>电话号码 *</label>
-                                        <input id="phone" name="phone" type="text"
-                                            class="form-control required">
+                                        <input id="phone" name="phone" type="text" class="form-control required">
                                     </div>
                                 </div>
                                 <div class="col-lg-6">
                                     <div class="form-group">
                                         <label>电子邮件 *</label>
-                                        <input id="email" name="email" type="text"
-                                            class="form-control required email">
+                                        <input id="email" name="email" type="text" class="form-control required email">
                                     </div>
                                     <!-- <div class="form-group">
                                         <label>Address *</label>
@@ -93,7 +89,7 @@
             <p class="text-muted text-center"><small>已有帐号?</small></p>
             <div class="row">
                 <div class="col-lg-6"><a class="col-lg-12 btn btn-sm btn-white btn-block" href="login">登录</a></div>
-                <div class="col-lg-6"><a class="col-lg-12 btn btn-sm btn-white btn-block" href="home">返回首页</a></div>
+                <div class="col-lg-6"><a class="col-lg-12 btn btn-sm btn-white btn-block" href="/">返回首页</a></div>
             </div>
         </div>
     </div>
@@ -175,7 +171,7 @@ export default {
                         // TODO 用户名冲突、跳转页面
                         type: "POST",
                         url: "/api/registerUser",
-                        contentType: "application/json; charset=utf-8",  
+                        contentType: "application/json; charset=utf-8",
                         dataType: "json",
                         data: JSON.stringify({
                             userName: form[0][1].value,
@@ -185,7 +181,7 @@ export default {
                             groupId: 1,
                             isAdmin: 0
                         }),
-                        success: function (response) {              
+                        success: function (response) {
                         },
                         error: function (xhr, status, error) {
                         }

@@ -3,7 +3,7 @@
 		<div class="middle-box text-center loginscreen animated fadeInDown">
 			<div>
 				<div>
-					<img style="width: 300px;height: 300px;" src="../assets/logo-trans.png" alt=""
+					<img style="width: 300px;height: 250px;object-fit: cover;" src="../assets/logo-trans.png" alt=""
 						class="img-responsive">
 				</div>
 				<h2>欢迎来到文档之翼</h2>
@@ -22,7 +22,7 @@
 						<small>没有账号?</small>
 					</p>
 					<a class="btn btn-sm btn-white btn-block" href="register">创建新账号</a>
-					<a class="btn btn-sm btn-white btn-block" href="home">返回首页</a>
+					<a class="btn btn-sm btn-white btn-block" href="/">返回首页</a>
 				</form>
 			</div>
 		</div>
