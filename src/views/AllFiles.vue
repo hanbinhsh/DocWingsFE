@@ -1,5 +1,5 @@
 <template>
-    <div class="mainpage">
+    <div class="mainpage skin-0">
         <div v-show="false">
             <div v-viewer="viewerOptions" class="images clearfix">
                 <img v-for="(src,index) in images" class="images" :key="index" :src="src">
