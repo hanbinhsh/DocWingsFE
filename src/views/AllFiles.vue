@@ -182,7 +182,7 @@
                                             <td>
                                                 <div class="btn-group">
                                                     <!-- <a @click=""><i class="fa fa-download"></i></a>&nbsp; -->
-                                                    <a @click=""><i class="fa fa-trash-o"></i></a>&nbsp;
+                                                    <a @click="recycleBinFolder(folder.folderId)"><i class="fa fa-trash-o"></i></a>&nbsp;
                                                     <a @click="cutFF(folder)"><i class="fa fa-scissors"></i></a>&nbsp;
                                                     <!-- <input type="checkbox"> -->
                                                 </div>
@@ -202,7 +202,7 @@
                                             <td>
                                                 <div class="btn-group">
                                                     <a @click="downloadFile(file)"><i class="fa fa-download"></i></a>&nbsp;
-                                                    <a @click=""><i class="fa fa-trash-o"></i></a>&nbsp;
+                                                    <a @click="recycleBinFile(file.fileId)"><i class="fa fa-trash-o"></i></a>&nbsp;
                                                     <a @click="cutFF(file)"><i class="fa fa-scissors"></i></a>&nbsp;
                                                     <!-- <input type="checkbox"> -->
                                                 </div>
@@ -460,8 +460,11 @@ div:where(.swal2-container) div:where(.swal2-popup) {
                 if (newName) {
                 // 调用 API 来更新文件名
                 await axios.post('/api/renameFile', { "fileId": fileId, "fileName": newName });
-                this.$swal.fire('文件名已更新', `文件名已更新为:${newName}`, 'success');
-                this.enterPath(this.currentFolder.folderId);
+                    this.$swal.fire('文件名已更新', `文件名已更新为:${newName}`, 'success');
+                    this.enterPath(this.currentFolder.folderId);
+                }
+                else{
+                    this.$swal.fire('操作取消', '文件名未更新', 'info');
                 }
             },
             async renameFolder(folderId) {
@@ -482,9 +485,46 @@ div:where(.swal2-container) div:where(.swal2-popup) {
                 // 如果用户点击了确定按钮，并且提供了新的文件名
                 if (newName) {
                 // 调用 API 来更新文件名
-                await axios.post('/api/renameFolder', { "folderId": folderId, "folderName": newName });
-                this.$swal.fire('文件夹名已更新', `文件夹名已更新为:${newName}`, 'success');
-                this.enterPath(this.currentFolder.folderId);
+                    await axios.post('/api/renameFolder', { "folderId": folderId, "folderName": newName });
+                    this.$swal.fire('文件夹名已更新', `文件夹名已更新为:${newName}`, 'success');
+                    this.enterPath(this.currentFolder.folderId);
+                }
+                else{
+                    this.$swal.fire('操作取消', '文件夹名未更新', 'info');
+                }
+            },
+            async recycleBinFile(fileId){
+                const result = await this.$swal.fire({
+                    title: '是否将文件放入回收站',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: '确定',  
+                    cancelButtonText: '取消',
+                });
+                if (result.isConfirmed) {
+                    await axios.post('/api/recycleBinFile', { "fileId": fileId, "status": 1 });
+                    this.$swal.fire('文件已放入回收站', 'success');
+                    this.enterPath(this.currentFolder.folderId);
+                }
+                else{
+                    this.$swal.fire('操作取消', '文件未放入回收站', 'info');
+                }
+            },
+            async recycleBinFolder(folderId){
+                const result = await this.$swal.fire({
+                    title: '是否将文件夹放入回收站',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: '确定',  
+                    cancelButtonText: '取消',
+                });
+                if (result.isConfirmed) {
+                    await axios.post('/api/recycleBinFolder', { "folderId": folderId, "status": 1 });
+                    this.$swal.fire('文件夹已放入回收站', 'success');
+                    this.enterPath(this.currentFolder.folderId);
+                }
+                else{
+                    this.$swal.fire('操作取消', '文件夹未放入回收站', 'info');
                 }
             },
             downloadFile(file){
