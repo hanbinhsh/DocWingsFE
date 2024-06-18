@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div ref="dropRef" class="dropzone custom-dropzone"></div>
+    <div ref="dropRef" class="dropzone custom-dropzone" :class="{'disabled':isTrashDisplayed}"></div>
     <div class="dropzone preview-container" v-show="isDisplayed"></div>
     <br v-show="isDisplayed">
     <a class="btn btn-block btn-primary compose-mail" v-show="isDisplayed" @click="clearDropzone()">清空上传列表</a>
@@ -18,6 +18,7 @@
       let user = JSON.parse(sessionStorage.getItem('userData'));
       let currentFolderId = 0
       let isDisplayed = ref(false); // 初始状态隐藏
+      let isTrashDisplayed =ref(false);
 
       const toggleDisplay = () => {
         isDisplayed.value = true;
@@ -28,7 +29,11 @@
       const updateDropzone = (newFolderId) => {
         currentFolderId = newFolderId.detail.newFolderId;
       };
-      const getUrl = () => {
+      const isTrash = (status) => {
+        console.log(status.detail.status)
+        isTrashDisplayed.value = status.detail.status;
+      };
+      const getUrl = () => {  
         const url = `http://localhost:8848/uploadOneFile?userId=${user.userId}&parentId=${currentFolderId}`
         return url;
       };
@@ -43,6 +48,7 @@
       }
       onMounted(() => {
         document.addEventListener('update-dropzone', updateDropzone);
+        document.addEventListener('isTrash', isTrash);
         if(dropRef.value !== null) {
           new Dropzone(dropRef.value, {
             init: function () {
@@ -84,7 +90,8 @@
       return {
         isDisplayed,
         clearDropzone,
-        dropRef
+        dropRef,
+        isTrashDisplayed,
       }
     }
   })
@@ -99,5 +106,9 @@
     padding: 20px;
     color:rgb(114, 114, 114);
     min-height: 20px;
+  }
+  .disabled{
+    opacity:0.5;
+    pointer-events: none;
   }
   </style>

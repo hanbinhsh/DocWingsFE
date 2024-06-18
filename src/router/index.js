@@ -26,7 +26,8 @@ const routes = [
   {
     path: '/',
     name: 'home',
-    component: HomeView
+    component: HomeView,
+    meta: { title: '文档之翼' }
   },
   {
     path: '/register',

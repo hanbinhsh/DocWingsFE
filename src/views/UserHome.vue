@@ -26,7 +26,7 @@
                                     class="nav-label">分享</span></a>
                         </li>
                         <li>
-                            <a href="log"><i class="fa fa-trash-o"></i> <span class="nav-label">回收站</span></a>
+                            <a href="trash"><i class="fa fa-trash-o"></i> <span class="nav-label">回收站</span></a>
                         </li>
                         <li>
                             <a href="searchAllServlet"><i class="fa fa-group"></i> <span
