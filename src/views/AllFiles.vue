@@ -374,7 +374,7 @@ div:where(.swal2-container) div:where(.swal2-popup) {
             },
             showLoading() {this.loading = true;},
             hideLoading() {this.loading = false;},
-            async findFodersByParentId(parentId){
+            async findFoldersByParentId(parentId){
                 try{
                     const responseFolders = await axios.get('/api/findFoldersByParentId?parentId='+parentId);
                     this.folders = responseFolders.data;
@@ -407,7 +407,7 @@ div:where(.swal2-container) div:where(.swal2-popup) {
                 }
             },
             async findFFsByParentId(id){  // 寻找文件和文件夹
-                await this.findFodersByParentId(id);
+                await this.findFoldersByParentId(id);
                 await this.findFilesByParentId(id);
             },
             async enterPath(id){  // 按下文件夹->改变路径
