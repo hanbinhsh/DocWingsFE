@@ -183,7 +183,7 @@
                                             <td>
                                                 <div class="btn-group">
                                                     <!-- <a @click=""><i class="fa fa-download"></i></a>&nbsp; -->
-                                                    <a @click="collectionFolder(folder.folderId)"><i class="fa" :class="folderCollectionStatus[folder.folderId] ? 'fa-star' : 'fa-star-o'"></i></a>&nbsp;
+                                                    <a v-if="!this.isTrash" @click="collectionFolder(folder.folderId)"><i class="fa" :class="folderCollectionStatus[folder.folderId] ? 'fa-star' : 'fa-star-o'"></i>&nbsp;</a>
                                                     <a v-if="!this.isTrash" @click="recycleBinFolder(folder.folderId)">
                                                         <i class="fa fa-trash-o"></i>&nbsp;</a>
                                                     <a v-if="!this.isTrash" @click="cutFF(folder)"><i class="fa fa-scissors"></i>&nbsp;</a>
@@ -206,10 +206,12 @@
                                             <td>{{ new Date(file.uploadTime).toLocaleString() }}</td>
                                             <td>
                                                 <div class="btn-group">
-                                                    <a @click="collectionFile(file.fileId)"><i class="fa" :class="fileCollectionStatus[file.fileId] ? 'fa-star' : 'fa-star-o'"></i></a>&nbsp;
-                                                    <a @click="downloadFile(file)"><i class="fa fa-download"></i></a>&nbsp;
-                                                    <a @click="recycleBinFile(file.fileId)"><i class="fa fa-trash-o"></i></a>&nbsp;
-                                                    <a @click="cutFF(file)"><i class="fa fa-scissors"></i></a>&nbsp;
+                                                    <a v-if="!this.isTrash" @click="collectionFile(file.fileId)"><i class="fa" :class="fileCollectionStatus[file.fileId] ? 'fa-star' : 'fa-star-o'"></i>&nbsp;</a>
+                                                    <a v-if="!this.isTrash" @click="downloadFile(file)"><i class="fa fa-download"></i>&nbsp;</a>
+                                                    <a v-if="!this.isTrash" @click="recycleBinFile(file.fileId)"><i class="fa fa-trash-o"></i>&nbsp;</a>
+                                                    <a v-if="!this.isTrash" @click="cutFF(file)"><i class="fa fa-scissors"></i>&nbsp;</a>
+                                                    <a v-if="this.isTrash" @click="deleteFolder(folder)"><i class="fa fa-trash-o"></i>&nbsp;</a>
+                                                    <a v-if="this.isTrash" @click="replyTrashFolder(folder)"><i class="fa fa-reply"></i>&nbsp;</a>
                                                     <!-- <input type="checkbox"> -->
                                                 </div>
                                             </td>
