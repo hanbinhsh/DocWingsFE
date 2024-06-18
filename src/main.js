@@ -5,6 +5,7 @@ import store from './store'
 import sweetAlertPlugin from './plugins/sweet-alert.js';
 import ElementPlus from 'element-plus';
 import Viewer from 'v-viewer'
+import axios from 'axios'
 Viewer.setDefaults({
     zIndexInline:9999
 })

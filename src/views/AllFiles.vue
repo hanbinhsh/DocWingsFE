@@ -58,7 +58,9 @@
                                     <div class="file-manager">
                                         <FileDropzone paramName="thefile" @file-upload-success="handleFileUploadSuccess"/>
                                         <br>
-                                        <a class="btn btn-block btn-primary compose-mail" @click="createFolder">创建文件夹</a>
+                                        <a class="btn btn-block btn-primary compose-mail" 
+                                        :class="{ 'disabled': isTrash }"
+                                        @click="this.isTrash ? null : createFolder" >创建文件夹</a>
                                         <div class="space-25"></div>
                                         <h5>Folders</h5>
                                         <ul class="folder-list m-b-md" style="padding: 0">
@@ -180,7 +182,7 @@
                                             <td>
                                                 <div class="btn-group">
                                                     <!-- <a @click=""><i class="fa fa-download"></i></a>&nbsp; -->
-                                                    <a @click=""><i class="fa fa-trash-o"></i></a>&nbsp;
+                                                    <a @click="recycleBinFolder(folder.folderId)"><i class="fa fa-trash-o"></i></a>&nbsp;
                                                     <a @click="cutFF(folder)"><i class="fa fa-scissors"></i></a>&nbsp;
                                                     <!-- <input type="checkbox"> -->
                                                 </div>
@@ -200,7 +202,7 @@
                                             <td>
                                                 <div class="btn-group">
                                                     <a @click="downloadFile(file)"><i class="fa fa-download"></i></a>&nbsp;
-                                                    <a @click=""><i class="fa fa-trash-o"></i></a>&nbsp;
+                                                    <a @click="recycleBinFile(file.fileId)"><i class="fa fa-trash-o"></i></a>&nbsp;
                                                     <a @click="cutFF(file)"><i class="fa fa-scissors"></i></a>&nbsp;
                                                     <!-- <input type="checkbox"> -->
                                                 </div>
@@ -281,8 +283,14 @@ div:where(.swal2-container) div:where(.swal2-popup) {
             };
         },
         created() {
-            this.enterPath(0);
             this.checkRoute();
+            if (this.isTrash){
+                this.enterPathTrash();
+            }
+            else{
+                this.enterPath(0);
+            }
+            
         },
         methods: {
             checkRoute() {
@@ -293,6 +301,7 @@ div:where(.swal2-container) div:where(.swal2-popup) {
                 }
             },
             async createFolder(){
+                if(this.isTrash) return;
                 const { value: newName } = await this.$swal.fire({
                     title: '新文件夹',
                     input: 'text',
@@ -343,6 +352,7 @@ div:where(.swal2-container) div:where(.swal2-popup) {
                 }
             },
             async filePreview(file){
+                if(this.isTrash) return;
                 if(file.fileType.startsWith('image/')){
                     const responseFiles = await axios.get(`/api/findImagesByParentId?parentId=${this.currentFolder.folderId}`);
                     this.images = responseFiles.data.data.imageList  // 更新图片列表
@@ -401,6 +411,7 @@ div:where(.swal2-container) div:where(.swal2-popup) {
                 await this.findFilesByParentId(id);
             },
             async enterPath(id){  // 按下文件夹->改变路径
+                if(this.isTrash) return;
                 if(id === this.currentCutFF?.folderId){
                     toastr.error(`无法进入正在剪切板的文件夹！`, "警告");
                     return
@@ -418,6 +429,13 @@ div:where(.swal2-container) div:where(.swal2-popup) {
                     }
                 });
                 document.dispatchEvent(event);
+                this.hideLoading();  // 隐藏加载页面
+            },
+            async enterPathTrash(){
+                // 隐藏或disable上传和创建文件夹按钮，阻止用户进入和点击文件，重命名下载剪切和删除
+                this.showLoading();  // 显示加载页面
+                await this.findFileByDelete();
+                await this.findFolderByDelete();
                 this.hideLoading();  // 隐藏加载页面
             },
             async backPath(){  //返回上一级
@@ -442,8 +460,11 @@ div:where(.swal2-container) div:where(.swal2-popup) {
                 if (newName) {
                 // 调用 API 来更新文件名
                 await axios.post('/api/renameFile', { "fileId": fileId, "fileName": newName });
-                this.$swal.fire('文件名已更新', `文件名已更新为:${newName}`, 'success');
-                this.enterPath(this.currentFolder.folderId);
+                    this.$swal.fire('文件名已更新', `文件名已更新为:${newName}`, 'success');
+                    this.enterPath(this.currentFolder.folderId);
+                }
+                else{
+                    this.$swal.fire('操作取消', '文件名未更新', 'info');
                 }
             },
             async renameFolder(folderId) {
@@ -464,9 +485,46 @@ div:where(.swal2-container) div:where(.swal2-popup) {
                 // 如果用户点击了确定按钮，并且提供了新的文件名
                 if (newName) {
                 // 调用 API 来更新文件名
-                await axios.post('/api/renameFolder', { "folderId": folderId, "folderName": newName });
-                this.$swal.fire('文件夹名已更新', `文件夹名已更新为:${newName}`, 'success');
-                this.enterPath(this.currentFolder.folderId);
+                    await axios.post('/api/renameFolder', { "folderId": folderId, "folderName": newName });
+                    this.$swal.fire('文件夹名已更新', `文件夹名已更新为:${newName}`, 'success');
+                    this.enterPath(this.currentFolder.folderId);
+                }
+                else{
+                    this.$swal.fire('操作取消', '文件夹名未更新', 'info');
+                }
+            },
+            async recycleBinFile(fileId){
+                const result = await this.$swal.fire({
+                    title: '是否将文件放入回收站',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: '确定',  
+                    cancelButtonText: '取消',
+                });
+                if (result.isConfirmed) {
+                    await axios.post('/api/recycleBinFile', { "fileId": fileId, "status": 1 });
+                    this.$swal.fire('文件已放入回收站', 'success');
+                    this.enterPath(this.currentFolder.folderId);
+                }
+                else{
+                    this.$swal.fire('操作取消', '文件未放入回收站', 'info');
+                }
+            },
+            async recycleBinFolder(folderId){
+                const result = await this.$swal.fire({
+                    title: '是否将文件夹放入回收站',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: '确定',  
+                    cancelButtonText: '取消',
+                });
+                if (result.isConfirmed) {
+                    await axios.post('/api/recycleBinFolder', { "folderId": folderId, "status": 1 });
+                    this.$swal.fire('文件夹已放入回收站', 'success');
+                    this.enterPath(this.currentFolder.folderId);
+                }
+                else{
+                    this.$swal.fire('操作取消', '文件夹未放入回收站', 'info');
                 }
             },
             downloadFile(file){
@@ -488,7 +546,23 @@ div:where(.swal2-container) div:where(.swal2-popup) {
                         document.body.removeChild(elink);
                     }
                 })
-            }
+            },
+            async findFileByDelete(){
+                try{
+                    const responseFiles = await axios.post('/api/findFileByDelete',{"status":1});
+                    this.files = responseFiles.data;
+                }catch (error) {
+                    console.error('Error findFileByDelete:', error);
+                }
+            },
+            async findFolderByDelete(){
+                try{
+                    const responseFolders = await axios.post('/api/findFolderByDelete',{"status":1});
+                    this.folders = responseFolders.data;
+                }catch (error) {
+                    console.error('Error findFolderByDelete:', error);
+                }
+            },
         },
         components: {
             TopBar,
