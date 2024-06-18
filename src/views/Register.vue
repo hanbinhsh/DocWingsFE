@@ -172,6 +172,7 @@ export default {
                     var form = $(this);
 
                     $.ajax({
+                        // TODO 用户名冲突、跳转页面
                         type: "POST",
                         url: "/api/registerUser",
                         contentType: "application/json; charset=utf-8",  
