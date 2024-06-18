@@ -1,7 +1,7 @@
 <template>
     <div class="row border-bottom">
         <nav class="navbar navbar-static-top  " role="navigation" style="margin-bottom: 0">
-            <div class="navbar-header">
+            <div class="navbar-header" @mouseleave="closeDropdown">
                 <a style="height:30px" class="navbar-minimalize minimalize-styl-2 btn btn-primary "><i
                         style="margin-top:4px" class="fa fa-bars"></i> </a>
                 <form role="search" class="navbar-form-custom" action="search_results.html">
@@ -61,6 +61,10 @@ export default {
             // ... 选择文件的逻辑 
             this.fileName = path; // 可能想要更新输入框的值为选择的文件路径  
             this.hideDropdown(); // 选择文件后隐藏下拉菜单  
+        },
+        closeDropdown() {
+            // 关闭下拉菜单的逻辑
+            this.filePaths = []; // 或者根据需求修改下拉菜单的显示状态
         }
     }
 }
