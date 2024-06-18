@@ -187,8 +187,8 @@
                                                     <a v-if="!this.isTrash" @click="recycleBinFolder(folder.folderId)">
                                                         <i class="fa fa-trash-o"></i>&nbsp;</a>
                                                     <a v-if="!this.isTrash" @click="cutFF(folder)"><i class="fa fa-scissors"></i>&nbsp;</a>
-                                                    <a v-if="this.isTrash" @click="deleteFolder(folder)"><i class="fa fa-trash-o"></i>&nbsp;</a>
-                                                    <a v-if="this.isTrash" @click="replyTrashFolder(folder)"><i class="fa fa-reply"></i>&nbsp;</a>
+                                                    <a v-if="this.isTrash" @click="deleteFolder(folder.folderId)"><i class="fa fa-trash-o"></i>&nbsp;</a>
+                                                    <a v-if="this.isTrash" @click="replyTrashFolder(folder.folderId)"><i class="fa fa-reply"></i>&nbsp;</a>
                                                     <!-- <input type="checkbox"> -->
                                                 </div>
                                             </td>
@@ -210,8 +210,8 @@
                                                     <a v-if="!this.isTrash" @click="downloadFile(file)"><i class="fa fa-download"></i>&nbsp;</a>
                                                     <a v-if="!this.isTrash" @click="recycleBinFile(file.fileId)"><i class="fa fa-trash-o"></i>&nbsp;</a>
                                                     <a v-if="!this.isTrash" @click="cutFF(file)"><i class="fa fa-scissors"></i>&nbsp;</a>
-                                                    <a v-if="this.isTrash" @click="deleteFolder(folder)"><i class="fa fa-trash-o"></i>&nbsp;</a>
-                                                    <a v-if="this.isTrash" @click="replyTrashFolder(folder)"><i class="fa fa-reply"></i>&nbsp;</a>
+                                                    <a v-if="this.isTrash" @click="deleteFile(file.fileId)"><i class="fa fa-trash-o"></i>&nbsp;</a>
+                                                    <a v-if="this.isTrash" @click="replyTrashFile(file.fileId)"><i class="fa fa-reply"></i>&nbsp;</a>
                                                     <!-- <input type="checkbox"> -->
                                                 </div>
                                             </td>
@@ -521,7 +521,7 @@ div:where(.swal2-container) div:where(.swal2-popup) {
                 });
                 if (result.isConfirmed) {
                     await axios.post('/api/recycleBinFile', { "fileId": fileId, "status": 1 });
-                    this.$swal.fire('文件已放入回收站', 'success');
+                    this.$swal.fire('操作成功', '文件已放入回收站', 'success');
                     this.enterPath(this.currentFolder.folderId);
                 }
                 else{
@@ -538,7 +538,7 @@ div:where(.swal2-container) div:where(.swal2-popup) {
                 });
                 if (result.isConfirmed) {
                     await axios.post('/api/recycleBinFolder', { "folderId": folderId, "status": 1 });
-                    this.$swal.fire('文件夹已放入回收站', 'success');
+                    this.$swal.fire('操作成功', '文件夹已放入回收站', 'success');
                     this.enterPath(this.currentFolder.folderId);
                 }
                 else{
@@ -581,7 +581,7 @@ div:where(.swal2-container) div:where(.swal2-popup) {
                     console.error('Error findFolderByDelete:', error);
                 }
             },
-            async replyTrashFile(){
+            async replyTrashFile(fileId){
                 const result = await this.$swal.fire({
                     title: '是否将文件还原',
                     icon: 'warning',
@@ -590,15 +590,15 @@ div:where(.swal2-container) div:where(.swal2-popup) {
                     cancelButtonText: '取消',
                 });
                 if (result.isConfirmed) {
-                    await axios.post('/api/replyTrashFile', { "fileId": fileId, "status": 0 });
-                    this.$swal.fire('文件已还原', 'success');
+                    await axios.post('/api/recycleBinFile', { "fileId": fileId, "status": 0 });
+                    this.$swal.fire('操作成功', '文件已还原', 'success');
                     this.enterPath(this.currentFolder.folderId);
                 }
                 else{
                     this.$swal.fire('操作取消', '文件未还原', 'info');
                 }
             },
-            async replyTrashFolder(){
+            async replyTrashFolder(folderId){
                 const result = await this.$swal.fire({
                     title: '是否将文件夹还原',
                     icon: 'warning',
@@ -607,8 +607,8 @@ div:where(.swal2-container) div:where(.swal2-popup) {
                     cancelButtonText: '取消',
                 });
                 if (result.isConfirmed) {
-                    await axios.post('/api/replyTrashFolder', { "folderId": fileId, "status": 0 });
-                    this.$swal.fire('文件已还原', 'success');
+                    await axios.post('/api/recycleBinFolder', { "folderId": folderId, "status": 0 });
+                    this.$swal.fire('操作成功', '文件夹已还原', 'success');
                     this.enterPath(this.currentFolder.folderId);
                 }
                 else{
