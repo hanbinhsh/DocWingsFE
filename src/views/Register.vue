@@ -114,7 +114,6 @@ import "../assets/js/plugins/slimscroll/jquery.slimscroll.min.js"
 import "../assets/js/inspinia.js"
 import '../assets/js/plugins/steps/jquery.steps.min.js'
 import "../assets/js/plugins/validate/jquery.validate.min.js"
-import axios from 'axios';
 export default {
     mounted() {
         $(document).ready(function () {
