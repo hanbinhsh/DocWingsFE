@@ -1,5 +1,5 @@
 <template>
-    <div class="mainpage">
+    <div class="mainpage skin-0">
         <div v-show="false">
             <div v-viewer="viewerOptions" class="images clearfix">
                 <img v-for="(src,index) in images" class="images" :key="index" :src="src">
@@ -183,6 +183,7 @@
                                             <td>
                                                 <div class="btn-group">
                                                     <!-- <a @click=""><i class="fa fa-download"></i></a>&nbsp; -->
+                                                    <a @click="collectionFolder(folder.folderId)"><i class="fa" :class="folderCollectionStatus[folder.folderId] ? 'fa-star' : 'fa-star-o'"></i></a>&nbsp;
                                                     <a v-if="!this.isTrash" @click="recycleBinFolder(folder.folderId)">
                                                         <i class="fa fa-trash-o"></i>&nbsp;</a>
                                                     <a v-if="!this.isTrash" @click="cutFF(folder)"><i class="fa fa-scissors"></i>&nbsp;</a>
@@ -205,11 +206,9 @@
                                             <td>{{ new Date(file.uploadTime).toLocaleString() }}</td>
                                             <td>
                                                 <div class="btn-group">
-                                                    <a v-if="!this.isTrash" @click="downloadFile(file)"><i class="fa fa-download"></i>&nbsp;</a>
-                                                    <a v-if="!this.isTrash" @click="recycleBinFile(file.fileId)"><i class="fa fa-trash-o"></i>&nbsp;</a>
-                                                    <a v-if="!this.isTrash" @click="cutFF(file)"><i class="fa fa-scissors"></i>&nbsp;</a>
-                                                    <a v-if="this.isTrash" @click="deleteFile(file)"><i class="fa fa-trash-o"></i>&nbsp;</a>
-                                                    <a v-if="this.isTrash" @click="replyTrashFile(file)"><i class="fa fa-reply"></i>&nbsp;</a>
+                                                    <a @click="downloadFile(file)"><i class="fa fa-download"></i></a>&nbsp;
+                                                    <a @click="recycleBinFile(file.fileId)"><i class="fa fa-trash-o"></i></a>&nbsp;
+                                                    <a @click="cutFF(file)"><i class="fa fa-scissors"></i></a>&nbsp;
                                                     <!-- <input type="checkbox"> -->
                                                 </div>
                                             </td>
@@ -286,6 +285,9 @@ div:where(.swal2-container) div:where(.swal2-popup) {
                 isTrash: false,
                 isCutting: false,
                 currentCutFF: null,
+                userData: JSON.parse(sessionStorage.getItem('userData')) || {},
+                folderCollectionStatus: {},
+                fileCollectionStatus: {},
             };
         },
         created() {
@@ -380,7 +382,7 @@ div:where(.swal2-container) div:where(.swal2-popup) {
             },
             showLoading() {this.loading = true;},
             hideLoading() {this.loading = false;},
-            async findFodersByParentId(parentId){
+            async findFoldersByParentId(parentId){
                 try{
                     const responseFolders = await axios.get('/api/findFoldersByParentId?parentId='+parentId);
                     this.folders = responseFolders.data;
@@ -413,7 +415,7 @@ div:where(.swal2-container) div:where(.swal2-popup) {
                 }
             },
             async findFFsByParentId(id){  // 寻找文件和文件夹
-                await this.findFodersByParentId(id);
+                await this.findFoldersByParentId(id);
                 await this.findFilesByParentId(id);
             },
             async enterPath(id){  // 按下文件夹->改变路径
@@ -426,6 +428,7 @@ div:where(.swal2-container) div:where(.swal2-popup) {
                 await this.findFFsByParentId(id);
                 await this.findFolderById(id);
                 await this.countFFsByParentId(id);
+                await this.checkAllFFsCollectionStatus();
                 this.currentFolder = JSON.parse(sessionStorage.getItem("currentFolder"));  // 更新 currentFolder
                 this.currentFFsCount = sessionStorage.getItem("currentFFsCount");  // 更新 currentFFsCount
                 // 发送文件夹更新信号
@@ -609,6 +612,38 @@ div:where(.swal2-container) div:where(.swal2-popup) {
                     this.$swal.fire('操作取消', '文件夹未还原', 'info');
                 }
             },
+            async collectionFile(fileId){
+                const response=await axios.post('/api/IsCollectionFile',{"fileId":fileId,"userId":this.userData.userId});
+                const exist=response.data;//判断是否被收藏
+                if(exist){//被收藏删除
+                    await axios.post('api/CollectionsDeleteFile',{"fileId":fileId,"userId":this.userData.userId});
+                }
+                else{//没被收藏插入
+                    await axios.post('api/CollectionsInsertFile',{"fileId":fileId,"userId":this.userData.userId});
+                }
+                this.enterPath(this.currentFolder.folderId)
+            },
+            async collectionFolder(folderId){
+                const response=await axios.post('/api/IsCollectionFolder',{"folderId":folderId,"userId":this.userData.userId});
+                const exist=response.data;//判断是否被收藏
+                if(exist){//被收藏删除
+                    await axios.post('api/CollectionsDeleteFolder',{"folderId":folderId,"userId":this.userData.userId});
+                }
+                else{//没被收藏插入
+                    await axios.post('api/CollectionsInsertFolder',{"folderId":folderId,"userId":this.userData.userId});
+                }
+                this.enterPath(this.currentFolder.folderId)
+            },
+            async checkAllFFsCollectionStatus() {
+                for (const folder of this.folders) {
+                    const response=await axios.post('/api/IsCollectionFolder',{"folderId":folder.folderId,"userId":this.userData.userId});
+                    this.folderCollectionStatus[folder.folderId] = response.data;
+                }
+                for (const file of this.files) {
+                    const response=await axios.post('/api/IsCollectionFile',{"fileId":file.fileId,"userId":this.userData.userId});
+                    this.fileCollectionStatus[file.fileId] = response.data;
+                }
+            }
         },
         components: {
             TopBar,
