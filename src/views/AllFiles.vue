@@ -60,7 +60,7 @@
                                         <br>
                                         <a class="btn btn-block btn-primary compose-mail"
                                         :class="{ 'disabled': isTrash }"
-                                        @click="this.isTrash ? null : createFolder" >创建文件夹</a>
+                                        @click="createFolder">创建文件夹</a>
                                         <div class="space-25"></div>
                                         <h5>Folders</h5>
                                         <ul class="folder-list m-b-md" style="padding: 0">
