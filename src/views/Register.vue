@@ -51,25 +51,25 @@
                             <div class="row">
                                 <div class="col-lg-6">
                                     <div class="form-group">
-                                        <label>name *</label>
+                                        <label>姓名 *</label>
                                         <input id="name" name="name" type="text" class="form-control required">
                                     </div>
                                     <div class="form-group">
-                                        <label>phone *</label>
+                                        <label>电话号码 *</label>
                                         <input id="phone" name="phone" type="text"
                                             class="form-control required">
                                     </div>
                                 </div>
                                 <div class="col-lg-6">
                                     <div class="form-group">
-                                        <label>Email *</label>
+                                        <label>电子邮件 *</label>
                                         <input id="email" name="email" type="text"
                                             class="form-control required email">
                                     </div>
-                                    <div class="form-group">
+                                    <!-- <div class="form-group">
                                         <label>Address *</label>
                                         <input id="address" name="address" type="text" class="form-control">
-                                    </div>
+                                    </div> -->
                                 </div>
                             </div>
                         </fieldset>
