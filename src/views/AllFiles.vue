@@ -592,7 +592,7 @@ div:where(.swal2-container) div:where(.swal2-popup) {
                 if (result.isConfirmed) {
                     await axios.post('/api/recycleBinFile', { "fileId": fileId, "status": 0 });
                     this.$swal.fire('操作成功', '文件已还原', 'success');
-                    this.enterPath(this.currentFolder.folderId);
+                    this.enterPathTrash();
                 }
                 else{
                     this.$swal.fire('操作取消', '文件未还原', 'info');
@@ -609,10 +609,44 @@ div:where(.swal2-container) div:where(.swal2-popup) {
                 if (result.isConfirmed) {
                     await axios.post('/api/recycleBinFolder', { "folderId": folderId, "status": 0 });
                     this.$swal.fire('操作成功', '文件夹已还原', 'success');
-                    this.enterPath(this.currentFolder.folderId);
+                    this.enterPathTrash();
                 }
                 else{
                     this.$swal.fire('操作取消', '文件夹未还原', 'info');
+                }
+            },
+            async deleteFile (fileId){
+                const result = await this.$swal.fire({
+                    title: '是否将文件删除',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: '确定',  
+                    cancelButtonText: '取消',
+                });
+                if (result.isConfirmed) {
+                    await axios.post('/api/deleteFile', { "fileId": fileId });
+                    this.$swal.fire('操作成功', '文件已删除', 'success');
+                    this.enterPathTrash();
+                }
+                else{
+                    this.$swal.fire('操作取消', '文件未删除', 'info');
+                }
+            },
+            async deleteFolder (folderId){
+                const result = await this.$swal.fire({
+                    title: '是否将文件夹删除',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: '确定',  
+                    cancelButtonText: '取消',
+                });
+                if (result.isConfirmed) {
+                    await axios.post('/api/deleteFolder', { "folderId": folderId });
+                    this.$swal.fire('操作成功', '文件夹已删除', 'success');
+                    this.enterPathTrash();
+                }
+                else{
+                    this.$swal.fire('操作取消', '文件夹未删除', 'info');
                 }
             },
             async collectionFile(fileId){
