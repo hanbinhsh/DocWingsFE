@@ -616,8 +616,7 @@ div:where(.swal2-container) div:where(.swal2-popup) {
                 }
             },
             async collectionFile(fileId){
-                const response=await axios.post('/api/IsCollectionFile',{"fileId":fileId,"userId":this.userData.userId});
-                const exist=response.data;//判断是否被收藏
+                const exist = this.fileCollectionStatus[fileId]//判断是否被收藏
                 if(exist){//被收藏删除
                     await axios.post('api/CollectionsDeleteFile',{"fileId":fileId,"userId":this.userData.userId});
                 }
@@ -627,8 +626,7 @@ div:where(.swal2-container) div:where(.swal2-popup) {
                 this.enterPath(this.currentFolder.folderId)
             },
             async collectionFolder(folderId){
-                const response=await axios.post('/api/IsCollectionFolder',{"folderId":folderId,"userId":this.userData.userId});
-                const exist=response.data;//判断是否被收藏
+                const exist = this.folderCollectionStatus[folderId]//判断是否被收藏
                 if(exist){//被收藏删除
                     await axios.post('api/CollectionsDeleteFolder',{"folderId":folderId,"userId":this.userData.userId});
                 }
@@ -638,14 +636,17 @@ div:where(.swal2-container) div:where(.swal2-popup) {
                 this.enterPath(this.currentFolder.folderId)
             },
             async checkAllFFsCollectionStatus() {
-                for (const folder of this.folders) {
-                    const response=await axios.post('/api/IsCollectionFolder',{"folderId":folder.folderId,"userId":this.userData.userId});
-                    this.folderCollectionStatus[folder.folderId] = response.data;
-                }
-                for (const file of this.files) {
-                    const response=await axios.post('/api/IsCollectionFile',{"fileId":file.fileId,"userId":this.userData.userId});
-                    this.fileCollectionStatus[file.fileId] = response.data;
-                }
+                const response=await axios.post('/api/findCollectionFFs?userId='+this.userData.userId);
+                const data = response.data
+                this.folderCollectionStatus = {}
+                this.fileCollectionStatus = {}
+                data.forEach(item => {
+                    if (item.isFolder) {
+                        this.folderCollectionStatus[item.folderId] = true;
+                    } else {
+                        this.fileCollectionStatus[item.fileId] = true;
+                    }
+                });
             }
         },
         components: {
