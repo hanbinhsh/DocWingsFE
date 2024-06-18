@@ -615,7 +615,7 @@ div:where(.swal2-container) div:where(.swal2-popup) {
                     this.$swal.fire('操作取消', '文件夹未还原', 'info');
                 }
             },
-            async deleteFile (fileId){
+            async deleteFile(fileId){
                 const result = await this.$swal.fire({
                     title: '是否将文件删除',
                     icon: 'warning',
@@ -632,7 +632,7 @@ div:where(.swal2-container) div:where(.swal2-popup) {
                     this.$swal.fire('操作取消', '文件未删除', 'info');
                 }
             },
-            async deleteFolder (folderId){
+            async deleteFolder(folderId){
                 const result = await this.$swal.fire({
                     title: '是否将文件夹删除',
                     icon: 'warning',
