@@ -1,5 +1,11 @@
 <template>
     <div class="mainpage">
+        <div v-show="false">
+            <div v-viewer="viewerOptions" class="images clearfix">
+                <img v-for="(src,index) in images" class="images" :key="index" :src="src">
+            </div>
+        </div>
+        
         <div id="wrapper">
             <nav class="navbar-default navbar-static-side" role="navigation">
                 <div class="sidebar-collapse">
@@ -52,7 +58,9 @@
                                     <div class="file-manager">
                                         <FileDropzone paramName="thefile" @file-upload-success="handleFileUploadSuccess"/>
                                         <br>
-                                        <a class="btn btn-block btn-primary compose-mail" @click="createFolder">创建文件夹</a>
+                                        <a class="btn btn-block btn-primary compose-mail" 
+                                        :class="{ 'disabled': isTrash }"
+                                        @click="this.isTrash ? null : createFolder" >创建文件夹</a>
                                         <div class="space-25"></div>
                                         <h5>Folders</h5>
                                         <ul class="folder-list m-b-md" style="padding: 0">
@@ -118,14 +126,17 @@
                                         <!-- <button class="btn btn-white btn-sm"><i class="fa fa-arrow-right"></i></button> -->
                                     </div>
                                     <button class="btn btn-white btn-sm" data-toggle="tooltip" data-placement="left"
-                                        title="刷新页面" @click="this.enterPath(currentFolder.folderId)"><i class="fa fa-refresh"></i> 刷新</button>
+                                        title="刷新页面" @click="this.enterPath(currentFolder.folderId)"><i class="fa fa-refresh"></i> 刷新</button>&nbsp;
                                     <button class="btn btn-white btn-sm" data-toggle="tooltip" data-placement="top"
-                                        title="Mark as read"><i class="fa fa-eye"></i> </button>
+                                        title="Mark as read"><i class="fa fa-eye"></i> </button>&nbsp;
                                     <button class="btn btn-white btn-sm" data-toggle="tooltip" data-placement="top"
-                                        title="Mark as important"><i class="fa fa-exclamation"></i> </button>
+                                        title="Mark as important"><i class="fa fa-exclamation"></i> </button>&nbsp;
                                     <button class="btn btn-white btn-sm" data-toggle="tooltip" data-placement="top"
-                                        title="Move to trash"><i class="fa fa-trash-o"></i> </button>
-
+                                        title="粘贴文件" @click="this.pasteFile()"><i class="fa fa-paste"></i>&nbsp粘贴
+                                        <span v-if="this.isCutting" class="">
+                                            {{ this.currentCutFF.fileName ? this.currentCutFF.fileName : this.currentCutFF.folderName ?? "" }}
+                                        </span> 
+                                    </button>
                                 </div>
                             </div>
                             <div class="mail-box ibox table-responsive">
@@ -148,7 +159,7 @@
                                         <th></th>  <!--重命名-->
                                         <th>标签</th>
                                         <th>文件大小</th>
-                                        <th>文件类型</th>
+                                        <!-- <th>文件类型</th> -->
                                         <th>上次修改者</th>
                                         <th>上次修改时间</th>
                                         <th>创建者</th>
@@ -163,36 +174,37 @@
                                             <td><a @click="renameFolder(folder.folderId)"><i class="fa fa-edit"></i></a></td>
                                             <td>{{ folder.tag }}</td>
                                             <td></td>
-                                            <td></td>
+                                            <!-- <td></td> -->
                                             <td>{{ folder.lastModifierName }}</td>
                                             <td>{{ new Date(folder.lastModifyTime).toLocaleString() }}</td>
                                             <td>{{ folder.creatorName }}</td>
                                             <td>{{ new Date(folder.createTime).toLocaleString() }}</td>
                                             <td>
                                                 <div class="btn-group">
-                                                    <a @click=""><i class="fa fa-download"></i></a>&nbsp;
+                                                    <!-- <a @click=""><i class="fa fa-download"></i></a>&nbsp; -->
                                                     <a @click=""><i class="fa fa-trash-o"></i></a>&nbsp;
-                                                    <input type="checkbox">
+                                                    <a @click="cutFF(folder)"><i class="fa fa-scissors"></i></a>&nbsp;
+                                                    <!-- <input type="checkbox"> -->
                                                 </div>
                                             </td>
                                         </tr>
-                                        <tr v-for="(file, index) in files" :key="index" class="read">
+                                        <tr v-for="(file, index) in files" :key="index" class="read" @dblclick="filePreview(file)">
                                             <td><i class="fa fa-file-o"></i></td>
                                             <td>{{ file.fileName }}</td>
                                             <td><a class="" @click="renameFile(file.fileId)"><i class="fa fa-edit"></i></a></td>
                                             <td>{{ file.tag }}</td>
                                             <td>{{ file.fileSize }}MB</td>
-                                            <td>{{ file.fileType }}</td>
+                                            <!-- <td>{{ file.fileType }}</td> -->
                                             <td>{{ file.lastModifierName }}</td>
                                             <td>{{ new Date(file.lastModifyTime).toLocaleString() }}</td>
                                             <td>{{ file.uploaderName }}</td>
                                             <td>{{ new Date(file.uploadTime).toLocaleString() }}</td>
                                             <td>
                                                 <div class="btn-group">
-                                                    
                                                     <a @click="downloadFile(file)"><i class="fa fa-download"></i></a>&nbsp;
                                                     <a @click=""><i class="fa fa-trash-o"></i></a>&nbsp;
-                                                    <input type="checkbox">
+                                                    <a @click="cutFF(file)"><i class="fa fa-scissors"></i></a>&nbsp;
+                                                    <!-- <input type="checkbox"> -->
                                                 </div>
                                             </td>
                                         </tr>
@@ -231,6 +243,8 @@ div:where(.swal2-container) div:where(.swal2-popup) {
     import "../assets/js/inspinia.js"
     import "../assets/js/plugins/pace/pace.min.js"
     import axios from "axios";
+    import 'viewerjs/dist/viewer.css'
+    import VueViewer from 'v-viewer'
 
     import TopBar from '@/components/TopBar.vue'
     import FileDropzone from '../components/FileDropzone.vue'
@@ -258,15 +272,25 @@ div:where(.swal2-container) div:where(.swal2-popup) {
             return {
                 folders: [],
                 files: [],
+                viewerOptions: {},
+                images: [],
                 currentFolder: JSON.parse(sessionStorage.getItem("currentFolder")) || {},
                 currentFFsCount: sessionStorage.getItem("currentFFsCount") || {},
                 loading: false,
                 isTrash: false,
+                isCutting: false,
+                currentCutFF: null,
             };
         },
         created() {
-            this.enterPath(0);
             this.checkRoute();
+            if (this.isTrash){
+                this.enterPathTrash();
+            }
+            else{
+                this.enterPath(0);
+            }
+            
         },
         methods: {
             checkRoute() {
@@ -277,6 +301,7 @@ div:where(.swal2-container) div:where(.swal2-popup) {
                 }
             },
             async createFolder(){
+                if(this.isTrash) return;
                 const { value: newName } = await this.$swal.fire({
                     title: '新文件夹',
                     input: 'text',
@@ -287,7 +312,7 @@ div:where(.swal2-container) div:where(.swal2-popup) {
                     cancelButtonText: '取消',
                     inputValidator: (value) => {
                         if (!value) {
-                            return '文件名夹不能为空！'
+                            return '文件夹名不能为空！'
                         }
                     }
                 });
@@ -305,17 +330,61 @@ div:where(.swal2-container) div:where(.swal2-popup) {
                     this.enterPath(this.currentFolder.folderId);
                 }
             },
+            cutFF(file){
+                this.currentCutFF = file;
+                this.isCutting = true;
+                toastr.success(`成功剪切文件:${file.fileName ? file.fileName : file.folderName}`, "成功");
+            },
+            async pasteFile(){
+                if(this.currentCutFF != null && this.currentCutFF != undefined){
+                    let FFName = this.currentCutFF.fileName ? this.currentCutFF.fileName : this.currentCutFF.folderName;
+                    if(this.currentCutFF.fileName != null && this.currentCutFF.fileName != undefined){
+                        // 文件
+                        await axios.post(`/api/changeFileRouteById?id=${this.currentCutFF.fileId}&parentId=${this.currentFolder.folderId}`);
+                    }else{
+                        // 文件夹
+                        await axios.post(`/api/changeFolderRouteById?id=${this.currentCutFF.folderId}&parentId=${this.currentFolder.folderId}`);
+                    }
+                    this.enterPath(this.currentFolder.folderId);
+                    this.currentCutFF = null;
+                    this.isCutting = false;
+                    toastr.success(`成功粘贴:${FFName}`, "成功");
+                }
+            },
+            async filePreview(file){
+<<<<<<< HEAD
+                if(file.fileType.startsWith('image/')){
+                    const responseFiles = await axios.post(`/api/findImagesByParentId?parentId=${this.currentFolder.folderId}`);
+                    this.images = responseFiles.data  // 更新图片列表
+=======
+                if(this.isTrash) return;
+                if(file.fileType.startsWith('image/')){
+                    const responseFiles = await axios.get(`/api/findImagesByParentId?parentId=${this.currentFolder.folderId}`);
+                    this.images = responseFiles.data.data.imageList  // 更新图片列表
+>>>>>>> ed8f39c7986a3a460349d2afb0d53fc19b1b2e9f
+                    const imageDivs = this.$el.querySelector('.images')
+                    const viewer = imageDivs.$viewer
+                    let key = 0
+                    this.images.forEach((src, index) => {  // 匹配选中图片
+                        if (src.split('=')[1] == file.fileId) {
+                            key = index;
+                        }
+                    })
+                    viewer.index = key
+                    viewer.show()
+                }
+            },
+<<<<<<< HEAD
             handleFileUploadSuccess() {
                 // 成功弹窗
+=======
+            handleFileUploadSuccess() {  // 成功弹窗
+>>>>>>> ed8f39c7986a3a460349d2afb0d53fc19b1b2e9f
                 toastr.success("上传文件成功！", "成功");
                 this.enterPath(this.currentFolder.folderId);
             },
-            showLoading() {
-                this.loading = true;
-            },
-            hideLoading() {
-                this.loading = false;
-            },
+            showLoading() {this.loading = true;},
+            hideLoading() {this.loading = false;},
             async findFodersByParentId(parentId){
                 try{
                     const responseFolders = await axios.get('/api/findFoldersByParentId?parentId='+parentId);
@@ -353,6 +422,11 @@ div:where(.swal2-container) div:where(.swal2-popup) {
                 await this.findFilesByParentId(id);
             },
             async enterPath(id){  // 按下文件夹->改变路径
+                if(this.isTrash) return;
+                if(id === this.currentCutFF?.folderId){
+                    toastr.error(`无法进入正在剪切板的文件夹！`, "警告");
+                    return
+                }
                 this.showLoading();  // 显示加载页面
                 await this.findFFsByParentId(id);
                 await this.findFolderById(id);
@@ -366,6 +440,13 @@ div:where(.swal2-container) div:where(.swal2-popup) {
                     }
                 });
                 document.dispatchEvent(event);
+                this.hideLoading();  // 隐藏加载页面
+            },
+            async enterPathTrash(){
+                // 隐藏或disable上传和创建文件夹按钮，阻止用户进入和点击文件，重命名下载剪切和删除
+                this.showLoading();  // 显示加载页面
+                await this.findFileByDelete();
+                await this.findFolderByDelete();
                 this.hideLoading();  // 隐藏加载页面
             },
             async backPath(){  //返回上一级
@@ -405,7 +486,7 @@ div:where(.swal2-container) div:where(.swal2-popup) {
                     cancelButtonText: '取消',
                     inputValidator: (value) => {
                         if (!value) {
-                        return '文件名夹不能为空！'
+                        return '文件夹名不能为空！'
                         }
                     }
                 });
@@ -421,7 +502,6 @@ div:where(.swal2-container) div:where(.swal2-popup) {
                 axios.post('/api/downloadFile?fileID='+file.fileId, {responseType: 'blob'}).then(res => {
                     let blob = new Blob([res.data])
                     let fileName = file.fileName
-                    console.log(fileName)
                     if (blob.size > 0) {
                         const elink = document.createElement('a');
                         elink.style.display = 'none';
@@ -437,7 +517,23 @@ div:where(.swal2-container) div:where(.swal2-popup) {
                         document.body.removeChild(elink);
                     }
                 })
-            }
+            },
+            async findFileByDelete(){
+                try{
+                    const responseFiles = await axios.post('/api/findFileByDelete',{"status":1});
+                    this.files = responseFiles.data;
+                }catch (error) {
+                    console.error('Error findFileByDelete:', error);
+                }
+            },
+            async findFolderByDelete(){
+                try{
+                    const responseFolders = await axios.post('/api/findFolderByDelete',{"status":1});
+                    this.folders = responseFolders.data;
+                }catch (error) {
+                    console.error('Error findFolderByDelete:', error);
+                }
+            },
         },
         components: {
             TopBar,

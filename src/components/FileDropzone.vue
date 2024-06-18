@@ -2,6 +2,8 @@
   <div>
     <div ref="dropRef" class="dropzone custom-dropzone"></div>
     <div class="dropzone preview-container" v-show="isDisplayed"></div>
+    <br v-show="isDisplayed">
+    <a class="btn btn-block btn-primary compose-mail" v-show="isDisplayed" @click="clearDropzone()">清空上传列表</a>
   </div>
 </template>
   <script>
@@ -11,8 +13,7 @@
   export default defineComponent({
     name: 'Dropzone',
     props:['paramName'],
-    methods: {
-    },
+    methods:{},
     setup(props, { emit }) {
       let user = JSON.parse(sessionStorage.getItem('userData'));
       let currentFolderId = 0
@@ -33,6 +34,13 @@
       };
       const store = useStore()
       const dropRef = ref(null)
+      const clearDropzone = () => {
+        const container = document.querySelector('.dropzone.preview-container');
+        isDisplayed.value = false;
+        while (container.firstChild) {
+            container.removeChild(container.firstChild);
+        }
+      }
       onMounted(() => {
         document.addEventListener('update-dropzone', updateDropzone);
         if(dropRef.value !== null) {
@@ -75,6 +83,7 @@
       })
       return {
         isDisplayed,
+        clearDropzone,
         dropRef
       }
     }
