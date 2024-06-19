@@ -98,7 +98,7 @@
                         <div class="col-lg-9 animated fadeInRight">
                             <div class="row">
                                 <div class="col-lg-12">
-                                    <div class="file-box">
+                                   <div class="file-box" v-for="(folder, index) in folders" :key="index" @dblclick="enterPath(folder.folderId, folder.parentId)">
                                         <div class="file">
                                             <a href="file_manager#">
                                                 <span class="corner"></span>
@@ -106,341 +106,31 @@
                                                     <i class="fa fa-file"></i>
                                                 </div>
                                                 <div class="file-name">
-                                                    Document_2014.doc
+                                                    {{ folder.folderName }}
                                                     <br />
-                                                    <small>Added: Jan 11, 2014</small>
+                                                    <small>{{ new Date(folder.createTime).toLocaleString() }}</small>
                                                 </div>
                                             </a>
-                                        </div>
-
-                                    </div>
-                                    <div class="file-box">
+                                        </div>   
+                                   </div> 
+                                   <div class="file-box" v-for="(file, index) in files" :key="index"  @dblclick="filePreview(file)">
                                         <div class="file">
                                             <a href="file_manager#">
                                                 <span class="corner"></span>
-
-                                                <div class="image">
-                                                    <img alt="image" class="img-responsive" src="../assets/img/p1.jpg">
-                                                </div>
-                                                <div class="file-name">
-                                                    Italy street.jpg
-                                                    <br />
-                                                    <small>Added: Jan 6, 2014</small>
-                                                </div>
-                                            </a>
-
-                                        </div>
-                                    </div>
-                                    <div class="file-box">
-                                        <div class="file">
-                                            <a href="file_manager#">
-                                                <span class="corner"></span>
-
-                                                <div class="image">
-                                                    <img alt="image" class="img-responsive" src="../assets/img/p2.jpg">
-                                                </div>
-                                                <div class="file-name">
-                                                    My feel.png
-                                                    <br />
-                                                    <small>Added: Jan 7, 2014</small>
-                                                </div>
-                                            </a>
-                                        </div>
-                                    </div>
-                                    <div class="file-box">
-                                        <div class="file">
-                                            <a href="file_manager#">
-                                                <span class="corner"></span>
-
-                                                <div class="icon">
-                                                    <i class="fa fa-music"></i>
-                                                </div>
-                                                <div class="file-name">
-                                                    Michal Jackson.mp3
-                                                    <br />
-                                                    <small>Added: Jan 22, 2014</small>
-                                                </div>
-                                            </a>
-                                        </div>
-                                    </div>
-                                    <div class="file-box">
-                                        <div class="file">
-                                            <a href="file_manager#">
-                                                <span class="corner"></span>
-
-                                                <div class="image">
-                                                    <img alt="image" class="img-responsive" src="../assets/img/p3.jpg">
-                                                </div>
-                                                <div class="file-name">
-                                                    Document_2014.doc
-                                                    <br />
-                                                    <small>Added: Fab 11, 2014</small>
-                                                </div>
-                                            </a>
-                                        </div>
-                                    </div>
-                                    <div class="file-box">
-                                        <div class="file">
-                                            <a href="file_manager#">
-                                                <span class="corner"></span>
-
-                                                <div class="icon">
-                                                    <i class="img-responsive fa fa-film"></i>
-                                                </div>
-                                                <div class="file-name">
-                                                    Monica's birthday.mpg4
-                                                    <br />
-                                                    <small>Added: Fab 18, 2014</small>
-                                                </div>
-                                            </a>
-                                        </div>
-                                    </div>
-                                    <div class="file-box">
-                                        <a href="file_manager#">
-                                            <div class="file">
-                                                <span class="corner"></span>
-
-                                                <div class="icon">
-                                                    <i class="fa fa-bar-chart-o"></i>
-                                                </div>
-                                                <div class="file-name">
-                                                    Annual report 2014.xls
-                                                    <br />
-                                                    <small>Added: Fab 22, 2014</small>
-                                                </div>
-                                            </div>
-                                        </a>
-                                    </div>
-                                    <div class="file-box">
-                                        <div class="file">
-                                            <a href="file_manager#">
-                                                <span class="corner"></span>
-
                                                 <div class="icon">
                                                     <i class="fa fa-file"></i>
                                                 </div>
                                                 <div class="file-name">
-                                                    Document_2014.doc
+                                                    {{ file.fileName }}
                                                     <br />
-                                                    <small>Added: Jan 11, 2014</small>
+                                                    <small>{{ new Date(file.uploadTime).toLocaleString() }}</small>
                                                 </div>
                                             </a>
-                                        </div>
-
-                                    </div>
-                                    <div class="file-box">
-                                        <div class="file">
-                                            <a href="file_manager#">
-                                                <span class="corner"></span>
-
-                                                <div class="image">
-                                                    <img alt="image" class="img-responsive" src="../assets/img/p1.jpg">
-                                                </div>
-                                                <div class="file-name">
-                                                    Italy street.jpg
-                                                    <br />
-                                                    <small>Added: Jan 6, 2014</small>
-                                                </div>
-                                            </a>
-
-                                        </div>
-                                    </div>
-                                    <div class="file-box">
-                                        <div class="file">
-                                            <a href="file_manager#">
-                                                <span class="corner"></span>
-
-                                                <div class="image">
-                                                    <img alt="image" class="img-responsive" src="../assets/img/p2.jpg">
-                                                </div>
-                                                <div class="file-name">
-                                                    My feel.png
-                                                    <br />
-                                                    <small>Added: Jan 7, 2014</small>
-                                                </div>
-                                            </a>
-                                        </div>
-                                    </div>
-                                    <div class="file-box">
-                                        <div class="file">
-                                            <a href="file_manager#">
-                                                <span class="corner"></span>
-
-                                                <div class="icon">
-                                                    <i class="fa fa-music"></i>
-                                                </div>
-                                                <div class="file-name">
-                                                    Michal Jackson.mp3
-                                                    <br />
-                                                    <small>Added: Jan 22, 2014</small>
-                                                </div>
-                                            </a>
-                                        </div>
-                                    </div>
-                                    <div class="file-box">
-                                        <div class="file">
-                                            <a href="file_manager#">
-                                                <span class="corner"></span>
-
-                                                <div class="image">
-                                                    <img alt="image" class="img-responsive" src="../assets/img/p3.jpg">
-                                                </div>
-                                                <div class="file-name">
-                                                    Document_2014.doc
-                                                    <br />
-                                                    <small>Added: Fab 11, 2014</small>
-                                                </div>
-                                            </a>
-                                        </div>
-                                    </div>
-                                    <div class="file-box">
-                                        <div class="file">
-                                            <a href="file_manager#">
-                                                <span class="corner"></span>
-
-                                                <div class="icon">
-                                                    <i class="img-responsive fa fa-film"></i>
-                                                </div>
-                                                <div class="file-name">
-                                                    Monica's birthday.mpg4
-                                                    <br />
-                                                    <small>Added: Fab 18, 2014</small>
-                                                </div>
-                                            </a>
-                                        </div>
-                                    </div>
-                                    <div class="file-box">
-                                        <a href="file_manager#">
-                                            <div class="file">
-                                                <span class="corner"></span>
-
-                                                <div class="icon">
-                                                    <i class="fa fa-bar-chart-o"></i>
-                                                </div>
-                                                <div class="file-name">
-                                                    Annual report 2014.xls
-                                                    <br />
-                                                    <small>Added: Fab 22, 2014</small>
-                                                </div>
-                                            </div>
-                                        </a>
-                                    </div>
-                                    <div class="file-box">
-                                        <div class="file">
-                                            <a href="file_manager#">
-                                                <span class="corner"></span>
-
-                                                <div class="icon">
-                                                    <i class="fa fa-file"></i>
-                                                </div>
-                                                <div class="file-name">
-                                                    Document_2014.doc
-                                                    <br />
-                                                    <small>Added: Jan 11, 2014</small>
-                                                </div>
-                                            </a>
-                                        </div>
-
-                                    </div>
-                                    <div class="file-box">
-                                        <div class="file">
-                                            <a href="file_manager#">
-                                                <span class="corner"></span>
-
-                                                <div class="image">
-                                                    <img alt="image" class="img-responsive" src="../assets/img/p1.jpg">
-                                                </div>
-                                                <div class="file-name">
-                                                    Italy street.jpg
-                                                    <br />
-                                                    <small>Added: Jan 6, 2014</small>
-                                                </div>
-                                            </a>
-
-                                        </div>
-                                    </div>
-                                    <div class="file-box">
-                                        <div class="file">
-                                            <a href="file_manager#">
-                                                <span class="corner"></span>
-
-                                                <div class="image">
-                                                    <img alt="image" class="img-responsive" src="../assets/img/p2.jpg">
-                                                </div>
-                                                <div class="file-name">
-                                                    My feel.png
-                                                    <br />
-                                                    <small>Added: Jan 7, 2014</small>
-                                                </div>
-                                            </a>
-                                        </div>
-                                    </div>
-                                    <div class="file-box">
-                                        <div class="file">
-                                            <a href="file_manager#">
-                                                <span class="corner"></span>
-
-                                                <div class="icon">
-                                                    <i class="fa fa-music"></i>
-                                                </div>
-                                                <div class="file-name">
-                                                    Michal Jackson.mp3
-                                                    <br />
-                                                    <small>Added: Jan 22, 2014</small>
-                                                </div>
-                                            </a>
-                                        </div>
-                                    </div>
-                                    <div class="file-box">
-                                        <div class="file">
-                                            <a href="file_manager#">
-                                                <span class="corner"></span>
-
-                                                <div class="image">
-                                                    <img alt="image" class="img-responsive" src="../assets/img/p3.jpg">
-                                                </div>
-                                                <div class="file-name">
-                                                    Document_2014.doc
-                                                    <br />
-                                                    <small>Added: Fab 11, 2014</small>
-                                                </div>
-                                            </a>
-                                        </div>
-                                    </div>
-                                    <div class="file-box">
-                                        <div class="file">
-                                            <a href="file_manager#">
-                                                <span class="corner"></span>
-
-                                                <div class="icon">
-                                                    <i class="img-responsive fa fa-film"></i>
-                                                </div>
-                                                <div class="file-name">
-                                                    Monica's birthday.mpg4
-                                                    <br />
-                                                    <small>Added: Fab 18, 2014</small>
-                                                </div>
-                                            </a>
-                                        </div>
-                                    </div>
-                                    <div class="file-box">
-                                        <a href="file_manager#">
-                                            <div class="file">
-                                                <span class="corner"></span>
-
-                                                <div class="icon">
-                                                    <i class="fa fa-bar-chart-o"></i>
-                                                </div>
-                                                <div class="file-name">
-                                                    Annual report 2014.xls
-                                                    <br />
-                                                    <small>Added: Fab 22, 2014</small>
-                                                </div>
-                                            </div>
-                                        </a>
-                                    </div>
-
+                                        </div>   
+                                   </div> 
                                 </div>
+
+                                
                             </div>
                         </div>
                     </div>
@@ -473,7 +163,7 @@ import Raphael from "../assets/js/plugins/morris/raphael-2.1.0.min.js"
     import "../assets/js/plugins/slimscroll/jquery.slimscroll.min.js"
     import animationHover from "../assets/js/inspinia.js"
     import "../assets/js/plugins/pace/pace.min.js"
-
+    import axios from "axios";
     import TopBar from '@/components/TopBar.vue'
     import UserItem from '@/components/UserItem.vue'
 
@@ -483,8 +173,25 @@ import Raphael from "../assets/js/plugins/morris/raphael-2.1.0.min.js"
             TopBar,
             UserItem
         },
+        data() {
+            return {
+                folders: [],
+                files: [],
+                currentFolder: JSON.parse(sessionStorage.getItem("currentFolder")) || {},
+                currentFFsCount: sessionStorage.getItem("currentFFsCount") || {},
+                loading: false,
+                userData: JSON.parse(sessionStorage.getItem('userData')) || {},
+            };
+        },
         created(){
             // 图表使用
+            this.checkRoute();
+            if (this.isTrash){
+                this.enterPathTrash();
+            }
+            else{
+                this.enterPath(0);
+            }
             $(function() {
                 Morris.Donut({
                     element: 'morris-donut-chart',
@@ -501,6 +208,109 @@ import Raphael from "../assets/js/plugins/morris/raphael-2.1.0.min.js"
                     animationHover(this, 'pulse');
                 });
             });
+        },
+        methods: {
+            checkRoute() {
+                if (this.$route.name === 'allfiles') {
+                    this.isTrash = false;
+                } else if (this.$route.name === 'trash') {
+                    this.isTrash = true;
+                }
+            },
+            async findFoldersByParentIdUserId(parentId){
+                try{
+                    const responseFolders = await axios.post('api/findFoldersByParentIdUserId',{"parentId":parentId,"userId":this.userData.userId});
+                    this.folders = responseFolders.data;
+                }catch (error) {
+                    console.error('Error findFoldersByParentIdUserId:', error);
+                }
+            },
+            async findFilesByParentIdUserId(parentId){
+                try{
+                    const responseFiles = await axios.post('api/findFilesByParentIdUserId',{"parentId":parentId,"userId":this.userData.userId});
+                    this.files = responseFiles.data;
+                }catch (error) {
+                    console.error('Error findFilesByParentIdUserId:', error);
+                }
+            },
+            async findFFsByParentId(id){  // 寻找文件和文件夹
+                await this.findFoldersByParentId(id);
+                await this.findFilesByParentId(id);
+            },
+            async enterPath(id){  // 按下文件夹->改变路径
+                if(this.isTrash) return;
+                if(id === this.currentCutFF?.folderId){
+                    toastr.error(`无法进入正在剪切板的文件夹！`, "警告");
+                    return
+                }
+                this.showLoading();  // 显示加载页面
+                await this.findFFsByParentId(id);
+                await this.findFolderById(id);
+                await this.countFFsByParentId(id);
+                await this.checkAllFFsCollectionStatus();
+                this.currentFolder = JSON.parse(sessionStorage.getItem("currentFolder"));  // 更新 currentFolder
+                this.currentFFsCount = sessionStorage.getItem("currentFFsCount");  // 更新 currentFFsCount
+                // 发送文件夹更新信号
+                const event = new CustomEvent('update-dropzone', {
+                    detail: {
+                        newFolderId: this.currentFolder.folderId
+                    }
+                });
+                document.dispatchEvent(event);
+                this.hideLoading();  // 隐藏加载页面
+            },
+            showLoading() {this.loading = true;},
+            hideLoading() {this.loading = false;},
+            async findFFsByParentId(id){  // 寻找文件和文件夹
+                await this.findFoldersByParentIdUserId(id);
+                await this.findFilesByParentIdUserId(id);
+            },
+            async findFolderById(id){
+                try{
+                    const responseFiles = await axios.get('/api/findFolderById?id='+id);
+                    sessionStorage.setItem("currentFolder",JSON.stringify(responseFiles.data));
+                }catch (error) {
+                    console.error('Error findFolderById:', error);
+                }
+            },
+            async countFFsByParentId(id){
+                try{
+                    const currentFFsCount = await axios.get('/api/countFFsByParentId?parentId='+id);
+                    sessionStorage.setItem("currentFFsCount",currentFFsCount.data);
+                }catch (error) {
+                    console.error('Error countFFsByParentId:', error);
+                }
+            },
+            async checkAllFFsCollectionStatus() {
+                const response=await axios.post('/api/findCollectionFFs?userId='+this.userData.userId);
+                const data = response.data
+                this.folderCollectionStatus = {}
+                this.fileCollectionStatus = {}
+                data.forEach(item => {
+                    if (item.isFolder) {
+                        this.folderCollectionStatus[item.folderId] = true;
+                    } else {
+                        this.fileCollectionStatus[item.fileId] = true;
+                    }
+                });
+            },
+            async filePreview(file){
+                if(this.isTrash) return;
+                if(file.fileType.startsWith('image/')){
+                    const responseFiles = await axios.get(`/api/findImagesByParentId?parentId=${this.currentFolder.folderId}`);
+                    this.images = responseFiles.data.data.imageList  // 更新图片列表
+                    const imageDivs = this.$el.querySelector('.images')
+                    const viewer = imageDivs.$viewer
+                    let key = 0
+                    this.images.forEach((src, index) => {  // 匹配选中图片
+                        if (src.split('=')[1] == file.fileId) {
+                            key = index;
+                        }
+                    })
+                    viewer.index = key
+                    viewer.show()
+                }
+            },
         },
 		mounted() {
             
