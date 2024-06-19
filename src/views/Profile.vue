@@ -112,6 +112,7 @@
                                                 </div> -->
                                                 <button type="submit"
                                                     class="btn btn-primary block full-width m-b">提交</button>
+                                                <a @click="unsubscibe()" class="btn btn-danger block full-width m-b">注销</a>
                                             </form>
                                         </div>
                                     </div>
@@ -142,16 +143,51 @@
     import "../assets/js/plugins/slimscroll/jquery.slimscroll.min.js"
     import "../assets/js/inspinia.js"
     import "../assets/js/plugins/pace/pace.min.js"
-
+    import axios from "axios";
     import TopBar from '@/components/TopBar.vue'
     import UserItem from '@/components/UserItem.vue'
     export default {
 		name: 'Profile',
+        data(){
+            return {
+                userData: JSON.parse(sessionStorage.getItem('userData')) || {},
+            }
+        },
         components: {
             TopBar,
             UserItem
         },
 		methods: {
+            async unsubscibe(){
+                const { value: password } = await this.$swal.fire({
+                    title: '注销账户',
+                    input: 'password',
+                    inputLabel: '请输入密码',
+                    showCancelButton: true,
+                    confirmButtonText: '确定',  
+                    cancelButtonText: '取消',
+                    inputValidator: (value) => {
+                        if (!value) {
+                            return '未输入密码！'
+                        }
+                    }
+                });
+                if (!password) {
+                    return; // 用户取消了，不做任何操作
+                }
+                const response = await axios.post('/api/login', { "userName": this.userData.userName, "password": password });
+                // 如果用户点击了确定按钮，并且提供正确密码
+                if (response.data == null||response.data=="") {
+                    this.$swal.fire('密码错误','','error');
+                }
+                else{
+                    // 删除用户，并删除其收藏
+                    await axios.post('/api/UserCollectionDelete', { "userId":this.userData.userId });   
+                    await axios.post('/api/UserDelete', { "userId":this.userData.userId });
+                    window.sessionStorage.clear();
+                    this.$router.push('/login');
+                }
+            }
 		}
 	}
 </script>
