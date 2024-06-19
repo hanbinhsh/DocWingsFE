@@ -5,7 +5,6 @@
                 <img v-for="(src, index) in images" class="images" :key="index" :src="src">
             </div>
         </div>
-
         <div id="wrapper">
             <nav class="navbar-default navbar-static-side" role="navigation">
                 <div class="sidebar-collapse">
@@ -436,7 +435,7 @@ export default {
             this.currentFolder = JSON.parse(sessionStorage.getItem("currentFolder"));  // 更新 currentFolder
             this.currentFFsCount = sessionStorage.getItem("currentFFsCount");  // 更新 currentFFsCount
             // 发送文件夹更新信号
-            const event = new CustomEvent('update-dropzone', {
+            const event = new CustomEvent('update-path', {
                 detail: {
                     newFolderId: this.currentFolder.folderId
                 }

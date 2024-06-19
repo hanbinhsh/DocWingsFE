@@ -47,7 +47,7 @@
         }
       }
       onMounted(() => {
-        document.addEventListener('update-dropzone', updateDropzone);
+        document.addEventListener('update-path', updateDropzone);
         document.addEventListener('isTrash', isTrash);
         if(dropRef.value !== null) {
           new Dropzone(dropRef.value, {

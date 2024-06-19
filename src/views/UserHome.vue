@@ -1,5 +1,10 @@
 <template>
     <div class="mainpage">
+        <div v-show="false">
+            <div v-viewer="viewerOptions" class="images clearfix">
+                <img v-for="(src, index) in images" class="images" :key="index" :src="src">
+            </div>
+        </div>
         <div id="wrapper">
             <nav class="navbar-default navbar-static-side" role="navigation">
                 <div class="sidebar-collapse">
@@ -98,37 +103,61 @@
                         <div class="col-lg-9 animated fadeInRight">
                             <div class="row">
                                 <div class="col-lg-12">
-                                   <div class="file-box" v-for="(folder, index) in folders" :key="index" @dblclick="enterPath(folder.folderId, folder.parentId)">
+                                   <div class="file-box" v-for="(folder, index) in folders" :key="index" @click="">
                                         <div class="file">
-                                            <a href="file_manager#">
+                                            <a>
                                                 <span class="corner"></span>
                                                 <div class="icon">
-                                                    <i class="fa fa-file"></i>
+                                                    <i class="fa fa-folder"></i>
+                                                </div>
+                                                <div>
+                                                    &nbsp;<a @click="collectionFolder(folder.folderId)"><i class="fa"
+                                                            :class="folderCollectionStatus[folder.folderId] ? 'fa-star' : 'fa-star-o'"></i>&nbsp;</a>
                                                 </div>
                                                 <div class="file-name">
-                                                    {{ folder.folderName }}
+                                                    <a>{{ folder.folderName }}</a>
                                                     <br />
                                                     <small>{{ new Date(folder.createTime).toLocaleString() }}</small>
                                                 </div>
                                             </a>
                                         </div>   
                                    </div> 
-                                   <div class="file-box" v-for="(file, index) in files" :key="index"  @dblclick="filePreview(file)">
+                                   <div class="file-box" v-for="(file, index) in files" :key="index" @click="filePreview(file)">
                                         <div class="file">
-                                            <a href="file_manager#">
+                                            <a>
                                                 <span class="corner"></span>
-                                                <div class="icon">
+                                                <div v-if="!file.fileType.startsWith('image/')" class="icon">
                                                     <i class="fa fa-file"></i>
                                                 </div>
+                                                <div v-if="file.fileType.startsWith('image/')" class="image">
+                                                    <img alt="image" class="img-responsive" :src="getImageUrl(file.fileId)">
+                                                </div>
+                                                <div>
+                                                    &nbsp;<a @click="collectionFile(file.fileId)"><i class="fa"
+                                                            :class="fileCollectionStatus[file.fileId] ? 'fa-star' : 'fa-star-o'"></i></a>
+                                                    &nbsp;<a @click="downloadFile(file)"><i
+                                                                class="fa fa-download"></i>&nbsp;</a>
+                                                </div>
                                                 <div class="file-name">
-                                                    {{ file.fileName }}
-                                                    <br />
+                                                    <a>{{ file.fileName }}</a>
+                                                    <br/>
                                                     <small>{{ new Date(file.uploadTime).toLocaleString() }}</small>
                                                 </div>
                                             </a>
-                                        </div>   
-                                   </div> 
+                                        </div>
+                                   </div>
                                 </div>
+                            </div>
+                            <div class="sk-spinner sk-spinner-cube-grid" v-show="loading">
+                                <div class="sk-cube"></div>
+                                <div class="sk-cube"></div>
+                                <div class="sk-cube"></div>
+                                <div class="sk-cube"></div>
+                                <div class="sk-cube"></div>
+                                <div class="sk-cube"></div>
+                                <div class="sk-cube"></div>
+                                <div class="sk-cube"></div>
+                                <div class="sk-cube"></div>
                             </div>
                         </div>
                     </div>
@@ -157,7 +186,7 @@ import Raphael from "../assets/js/plugins/morris/raphael-2.1.0.min.js"
     import TopBar from '@/components/TopBar.vue'
     import UserItem from '@/components/UserItem.vue'
     import FootBar from '@/components/FootBar.vue'
-
+    import VueViewer from 'v-viewer'
     export default {
 		name: 'UserHome',
         components: {
@@ -169,22 +198,18 @@ import Raphael from "../assets/js/plugins/morris/raphael-2.1.0.min.js"
             return {
                 folders: [],
                 files: [],
+                images: [],
                 currentFolder: JSON.parse(sessionStorage.getItem("currentFolder")) || {},
-                currentFFsCount: sessionStorage.getItem("currentFFsCount") || {},
                 loading: false,
                 userData: JSON.parse(sessionStorage.getItem('userData')) || {},
+                folderCollectionStatus: {},
+                fileCollectionStatus: {},
             };
         },
         created(){
-            // 图表使用
-            this.checkRoute();
-            if (this.isTrash){
-                this.enterPathTrash();
-            }
-            else{
-                this.enterPath(0);
-            }
-            $(function() {
+            this.updateFilePreview();
+            this.enterPath(0);
+            $(function() {// 图表使用
                 Morris.Donut({
                     element: 'morris-donut-chart',
                     data: [{ label: "剩余空间", value: 12 },
@@ -195,18 +220,29 @@ import Raphael from "../assets/js/plugins/morris/raphael-2.1.0.min.js"
                     formatter: function (y, data) { return y + '%' },
                 });
             });
-            $(document).ready(function(){
-                $('.file-box').each(function() {
-                    animationHover(this, 'pulse');
-                });
-            });
         },
         methods: {
-            checkRoute() {
-                if (this.$route.name === 'allfiles') {
-                    this.isTrash = false;
-                } else if (this.$route.name === 'trash') {
-                    this.isTrash = true;
+            getImageUrl(fileId) {
+                const imageUrl = this.images.find(url => url.includes(`fileID=${fileId}`));
+                return imageUrl || '';
+            },
+            async updateFilePreview(){
+                const responseFiles = await axios.get(`/api/findImagesByCollection?userId=${this.userData.userId}`);
+                this.images = responseFiles.data.data.imageList  // 更新图片列表
+            },
+            async filePreview(file){
+                if (file.fileType.startsWith('image/')) {
+                    this.updateFilePreview()
+                    const imageDivs = this.$el.querySelector('.images')
+                    const viewer = imageDivs.$viewer
+                    let key = 0
+                    this.images.forEach((src, index) => {  // 匹配选中图片
+                        if (src.split('=')[1] == file.fileId) {
+                            key = index;
+                        }
+                    })
+                    viewer.index = key
+                    viewer.show()
                 }
             },
             async findFoldersByParentIdUserId(parentId){
@@ -225,10 +261,6 @@ import Raphael from "../assets/js/plugins/morris/raphael-2.1.0.min.js"
                     console.error('Error findFilesByParentIdUserId:', error);
                 }
             },
-            async findFFsByParentId(id){  // 寻找文件和文件夹
-                await this.findFoldersByParentId(id);
-                await this.findFilesByParentId(id);
-            },
             async enterPath(id){  // 按下文件夹->改变路径
                 if(this.isTrash) return;
                 if(id === this.currentCutFF?.folderId){
@@ -237,18 +269,7 @@ import Raphael from "../assets/js/plugins/morris/raphael-2.1.0.min.js"
                 }
                 this.showLoading();  // 显示加载页面
                 await this.findFFsByParentId(id);
-                await this.findFolderById(id);
-                await this.countFFsByParentId(id);
                 await this.checkAllFFsCollectionStatus();
-                this.currentFolder = JSON.parse(sessionStorage.getItem("currentFolder"));  // 更新 currentFolder
-                this.currentFFsCount = sessionStorage.getItem("currentFFsCount");  // 更新 currentFFsCount
-                // 发送文件夹更新信号
-                const event = new CustomEvent('update-dropzone', {
-                    detail: {
-                        newFolderId: this.currentFolder.folderId
-                    }
-                });
-                document.dispatchEvent(event);
                 this.hideLoading();  // 隐藏加载页面
             },
             showLoading() {this.loading = true;},
@@ -257,21 +278,25 @@ import Raphael from "../assets/js/plugins/morris/raphael-2.1.0.min.js"
                 await this.findFoldersByParentIdUserId(id);
                 await this.findFilesByParentIdUserId(id);
             },
-            async findFolderById(id){
-                try{
-                    const responseFiles = await axios.get('/api/findFolderById?id='+id);
-                    sessionStorage.setItem("currentFolder",JSON.stringify(responseFiles.data));
-                }catch (error) {
-                    console.error('Error findFolderById:', error);
+            async collectionFile(fileId) {
+                const exist = this.fileCollectionStatus[fileId]//判断是否被收藏
+                if (exist) {//被收藏删除
+                    await axios.post('api/CollectionsDeleteFile', { "fileId": fileId, "userId": this.userData.userId });
                 }
+                else {//没被收藏插入
+                    await axios.post('api/CollectionsInsertFile', { "fileId": fileId, "userId": this.userData.userId });
+                }
+                this.enterPath(this.currentFolder.folderId)
             },
-            async countFFsByParentId(id){
-                try{
-                    const currentFFsCount = await axios.get('/api/countFFsByParentId?parentId='+id);
-                    sessionStorage.setItem("currentFFsCount",currentFFsCount.data);
-                }catch (error) {
-                    console.error('Error countFFsByParentId:', error);
+            async collectionFolder(folderId) {
+                const exist = this.folderCollectionStatus[folderId]//判断是否被收藏
+                if (exist) {//被收藏删除
+                    await axios.post('api/CollectionsDeleteFolder', { "folderId": folderId, "userId": this.userData.userId });
                 }
+                else {//没被收藏插入
+                    await axios.post('api/CollectionsInsertFolder', { "folderId": folderId, "userId": this.userData.userId });
+                }
+                this.enterPath(this.currentFolder.folderId)
             },
             async checkAllFFsCollectionStatus() {
                 const response=await axios.post('/api/findCollectionFFs?userId='+this.userData.userId);
@@ -286,26 +311,28 @@ import Raphael from "../assets/js/plugins/morris/raphael-2.1.0.min.js"
                     }
                 });
             },
-            async filePreview(file){
-                if(this.isTrash) return;
-                if(file.fileType.startsWith('image/')){
-                    const responseFiles = await axios.get(`/api/findImagesByParentId?parentId=${this.currentFolder.folderId}`);
-                    this.images = responseFiles.data.data.imageList  // 更新图片列表
-                    const imageDivs = this.$el.querySelector('.images')
-                    const viewer = imageDivs.$viewer
-                    let key = 0
-                    this.images.forEach((src, index) => {  // 匹配选中图片
-                        if (src.split('=')[1] == file.fileId) {
-                            key = index;
-                        }
-                    })
-                    viewer.index = key
-                    viewer.show()
-                }
+            downloadFile(file) {
+                axios.post('/api/downloadFile?fileID=' + file.fileId, { responseType: 'blob' }).then(res => {
+                    let blob = new Blob([res.data])
+                    let fileName = file.fileName
+                    if (blob.size > 0) {
+                        const elink = document.createElement('a');
+                        elink.style.display = 'none';
+                        elink.href = URL.createObjectURL(blob);
+                        // 类似a标签下载
+                        // 自定义文件名称和导出类型。最好和后台保持一致
+                        elink.download = `${fileName}`; //模版字符串
+                        document.body.appendChild(elink);
+                        elink.click();//触发click事件 下载
+                        // 释放URL 对象
+                        URL.revokeObjectURL(elink.href);
+                        // 删除创建的 a 标签      
+                        document.body.removeChild(elink);
+                    }
+                })
             },
         },
-		mounted() {
-            
-		}
+		mounted() {}
 	}
 </script>
+
