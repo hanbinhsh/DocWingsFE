@@ -599,6 +599,7 @@ div:where(.swal2-container) div:where(.swal2-popup) {
                 }
             },
             async replyTrashFolder(folderId){
+                // BUG 将文件夹放入回收战后 只还原子文件夹 还原后无法显示
                 const result = await this.$swal.fire({
                     title: '是否将文件夹还原',
                     icon: 'warning',
