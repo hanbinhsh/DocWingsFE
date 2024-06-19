@@ -48,12 +48,6 @@
                     <div class="col-sm-4">
                         <h2>个人资料</h2>
                     </div>
-                    <div class="col-sm-8 text-right">
-                        <a @click="unsubscibe()" class="btn btn-lg" style="background-color: white; border: none;">
-                        <i class="fa fa-arrow-circle-o-left fa-2x" style="color: red;"></i>
-                        <span class="ml-2">注销</span>
-                        </a>
-                    </div>
                 </div>
                 <div class="wrapper wrapper-content">
                     <div class="row animated fadeInRight">
@@ -118,6 +112,7 @@
                                                 </div> -->
                                                 <button type="submit"
                                                     class="btn btn-primary block full-width m-b">提交</button>
+                                                <a @click="unsubscibe()" class="btn btn-danger block full-width m-b">注销</a>
                                             </form>
                                         </div>
                                     </div>
@@ -158,7 +153,6 @@
                 userData: JSON.parse(sessionStorage.getItem('userData')) || {},
             }
         },
-
         components: {
             TopBar,
             UserItem
@@ -174,7 +168,7 @@
                     cancelButtonText: '取消',
                     inputValidator: (value) => {
                         if (!value) {
-                        return '未输入密码！'
+                            return '未输入密码！'
                         }
                     }
                 });
@@ -184,14 +178,14 @@
                 const response = await axios.post('/api/login', { "userName": this.userData.userName, "password": password });
                 // 如果用户点击了确定按钮，并且提供正确密码
                 if (response.data == null||response.data=="") {
-                    this.$swal.fire('密码错误！');
+                    this.$swal.fire('密码错误','','error');
                 }
                 else{
                     // 删除用户，并删除其收藏
-                await axios.post('/api/UserCollectionDelete', { "userId":this.userData.userId });   
-                await axios.post('/api/UserDelete', { "userId":this.userData.userId });
-                window.sessionStorage.clear();
-                this.$router.push('/login');
+                    await axios.post('/api/UserCollectionDelete', { "userId":this.userData.userId });   
+                    await axios.post('/api/UserDelete', { "userId":this.userData.userId });
+                    window.sessionStorage.clear();
+                    this.$router.push('/login');
                 }
             }
 		}
