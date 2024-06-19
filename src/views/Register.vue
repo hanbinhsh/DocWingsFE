@@ -21,7 +21,7 @@
                                 <div class="col-lg-7">
                                     <div class="form-group">
                                         <label>用户名 *</label>
-                                        <input id="userName" name="userName" type="text" class="form-control required">
+                                        <input id="userName" name="userName" v-model="userName" type="text" class="form-control required">
                                     </div>
                                     <div class="form-group">
                                         <label>密码 *</label>
@@ -50,17 +50,17 @@
                                 <div class="col-lg-6">
                                     <div class="form-group">
                                         <label>姓名 *</label>
-                                        <input id="name" name="name" type="text" class="form-control required">
+                                        <input id="name" name="name" v-model="name" type="text" class="form-control required">
                                     </div>
                                     <div class="form-group">
                                         <label>电话号码 *</label>
-                                        <input id="phone" name="phone" type="text" class="form-control required">
+                                        <input id="phone" name="phone" v-model="phone" type="text" class="form-control required">
                                     </div>
                                 </div>
                                 <div class="col-lg-6">
                                     <div class="form-group">
                                         <label>电子邮件 *</label>
-                                        <input id="email" name="email" type="text" class="form-control required email">
+                                        <input id="email" name="email" v-model="email" type="text" class="form-control required email">
                                     </div>
                                     <!-- <div class="form-group">
                                         <label>Address *</label>
@@ -75,10 +75,10 @@
                             <input id="acceptTerms" name="acceptTerms" type="checkbox" class="required"> <label
                                 for="acceptTerms">我同意<a href="#">用户协议</a>和<a href="#">隐私政策</a></label>
                         </fieldset>
-                        <h1>注册成功</h1>
+                        <h1>提交注册</h1>
                         <fieldset>
                             <div class="text-center" style="margin-top: 120px;margin-left: 30px;">
-                                <h2>注册成功!</h2>
+                                <h2>提交注册</h2>
                             </div>
                         </fieldset>
                     </form>
@@ -110,7 +110,16 @@ import "../assets/js/plugins/slimscroll/jquery.slimscroll.min.js"
 import "../assets/js/inspinia.js"
 import '../assets/js/plugins/steps/jquery.steps.min.js'
 import "../assets/js/plugins/validate/jquery.validate.min.js"
+import toastr from "../assets/js/plugins/toastr/toastr.min.js"
 export default {
+    data(){
+        return {
+            userName: '',
+            name:'',
+            phone:'',
+            email:''
+        }
+    },
     mounted() {
         $(document).ready(function () {
             $("#wizard").steps();
@@ -171,7 +180,6 @@ export default {
                         type: "POST",
                         url: "/api/registerUser",
                         contentType: "application/json; charset=utf-8",
-                        dataType: "json",
                         data: JSON.stringify({
                             userName: form[0][1].value,
                             psw: form[0][2].value,
@@ -181,8 +189,18 @@ export default {
                             isAdmin: 0
                         }),
                         success: function (response) {
+                            if(response == '注册成功')
+                            {
+                                alert("注册成功"); // 或者其他成功提示方式
+                                window.location.href = "/login"; // 跳转到成功页面
+                            }
+                            else
+                            {
+                                toastr.error("注册失败，用户名已存在"); // 提示用户注册失败
+                            }
                         },
-                        error: function (xhr, status, error) {
+                        error: function (response) {
+                            console.error(response);
                         }
                     });
                 }
