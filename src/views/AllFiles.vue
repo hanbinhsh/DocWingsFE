@@ -461,6 +461,7 @@ export default {
         },
         async findFilesByCategory(category){
             this.showLoading();  // 显示加载页面
+            this.folders=[];
             const response = await axios.get('/api/findFilesByCategory?category=' + category);
             this.files = response.data.data.files;
             this.hideLoading();  // 隐藏加载页面
