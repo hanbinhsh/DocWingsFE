@@ -127,13 +127,13 @@
                                         <!-- <button class="btn btn-white btn-sm"><i class="fa fa-arrow-right"></i></button> -->
                                     </div>
                                     <button class="btn btn-white btn-sm" data-toggle="tooltip" data-placement="left"
-                                        title="刷新页面" @click="this.enterPath(currentFolder.folderId)"><i class="fa fa-refresh"></i> 刷新</button>&nbsp;
+                                        title="刷新页面" @click="isTrash ? this.enterPathTrash() : this.enterPath(currentFolder.folderId)"><i class="fa fa-refresh"></i> 刷新</button>&nbsp;
                                     <button class="btn btn-white btn-sm" data-toggle="tooltip" data-placement="top"
                                         title="Mark as read"><i class="fa fa-eye"></i> </button>&nbsp;
                                     <button class="btn btn-white btn-sm" data-toggle="tooltip" data-placement="top"
                                         title="Mark as important"><i class="fa fa-exclamation"></i> </button>&nbsp;
                                     <button class="btn btn-white btn-sm" data-toggle="tooltip" data-placement="top"
-                                        title="粘贴文件" @click="this.pasteFile()"><i class="fa fa-paste"></i>&nbsp粘贴
+                                        title="粘贴文件" @click="this.pasteFile()"><i class="fa fa-paste"></i> 粘贴
                                         <span v-if="this.isCutting" class="">
                                             {{ this.currentCutFF.fileName ? this.currentCutFF.fileName : this.currentCutFF.folderName ?? "" }}
                                         </span> 
@@ -616,7 +616,7 @@ div:where(.swal2-container) div:where(.swal2-popup) {
                     this.$swal.fire('操作取消', '文件夹未还原', 'info');
                 }
             },
-            async deleteFile (fileId){
+            async deleteFile(fileId){
                 const result = await this.$swal.fire({
                     title: '是否将文件删除',
                     icon: 'warning',
@@ -633,7 +633,7 @@ div:where(.swal2-container) div:where(.swal2-popup) {
                     this.$swal.fire('操作取消', '文件未删除', 'info');
                 }
             },
-            async deleteFolder (folderId){
+            async deleteFolder(folderId){
                 const result = await this.$swal.fire({
                     title: '是否将文件夹删除',
                     icon: 'warning',
