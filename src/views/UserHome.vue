@@ -129,21 +129,11 @@
                                         </div>   
                                    </div> 
                                 </div>
-
-                                
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="footer">
-                    <div class="pull-right">
-                        10GB of <strong>250GB</strong> Free.
-                    </div>
-                    <div>
-                        <strong>Copyright</strong> DocWings &copy; 2024
-                    </div>
-                </div>
-
+                <FootBar/>
             </div>
         </div>
     </div>
@@ -166,12 +156,14 @@ import Raphael from "../assets/js/plugins/morris/raphael-2.1.0.min.js"
     import axios from "axios";
     import TopBar from '@/components/TopBar.vue'
     import UserItem from '@/components/UserItem.vue'
+    import FootBar from '@/components/FootBar.vue'
 
     export default {
 		name: 'UserHome',
         components: {
             TopBar,
-            UserItem
+            UserItem,
+            FootBar
         },
         data() {
             return {

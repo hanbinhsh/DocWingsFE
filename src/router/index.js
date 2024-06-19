@@ -4,6 +4,7 @@ import UserHome from '../views/UserHome.vue';
 import Profile from '../views/Profile.vue';
 import AllFiles from '../views/AllFiles.vue';
 import Log from '../views/Log.vue';
+import Share from '../views/Share.vue';
 import toastr from "../assets/js/plugins/toastr/toastr.min.js";
 toastr.options = {
 	"closeButton": true,
@@ -83,6 +84,15 @@ const routes = [
     component: AllFiles,
     meta: {
       title: '回收站',
+      requiresAuth: true,
+    }
+  },
+  {
+    path: '/share',
+    name: 'share',
+    component: Share,
+    meta: {
+      title: '分享',
       requiresAuth: true,
     }
   }
