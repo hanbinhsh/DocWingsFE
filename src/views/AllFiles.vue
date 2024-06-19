@@ -157,7 +157,7 @@
                                         <tr>
                                         <th></th>
                                         <th>名称</th>
-                                        <th></th>  <!--重命名-->
+                                        <th v-if="!this.isTrash"></th>  <!--重命名-->
                                         <th>标签</th>
                                         <th>文件大小</th>
                                         <!-- <th>文件类型</th> -->
@@ -172,7 +172,7 @@
                                         <tr v-for="(folder, index) in folders" :key="index" class="read" @dblclick="enterPath(folder.folderId, folder.parentId)">
                                             <td><i class="fa fa-folder-o"></i></td>
                                             <td>{{ folder.folderName }}</td>
-                                            <td><a @click="renameFolder(folder.folderId)"><i class="fa fa-edit"></i></a></td>
+                                            <td v-if="!this.isTrash"><a @click="renameFolder(folder.folderId)"><i class="fa fa-edit"></i></a></td>
                                             <td>{{ folder.tag }}</td>
                                             <td></td>
                                             <!-- <td></td> -->
@@ -196,7 +196,7 @@
                                         <tr v-for="(file, index) in files" :key="index" class="read" @dblclick="filePreview(file)">
                                             <td><i class="fa fa-file-o"></i></td>
                                             <td>{{ file.fileName }}</td>
-                                            <td><a class="" @click="renameFile(file.fileId)"><i class="fa fa-edit"></i></a></td>
+                                            <td v-if="!this.isTrash"><a class="" @click="renameFile(file.fileId)"><i class="fa fa-edit"></i></a></td>
                                             <td>{{ file.tag }}</td>
                                             <td>{{ file.fileSize }}MB</td>
                                             <!-- <td>{{ file.fileType }}</td> -->
