@@ -182,6 +182,7 @@
                 }
                 else{
                     // 删除用户，并删除其收藏
+                    // BUG 文件夹/文件/日志等外键依赖
                     await axios.post('/api/UserCollectionDelete', { "userId":this.userData.userId });   
                     await axios.post('/api/UserDelete', { "userId":this.userData.userId });
                     window.sessionStorage.clear();
