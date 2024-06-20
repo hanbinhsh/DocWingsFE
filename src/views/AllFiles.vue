@@ -2,22 +2,28 @@
     <div class="mainpage skin-0">
         <div v-show="false">
             <div v-viewer="viewerOptions" class="images clearfix">
-                <img v-for="(src,index) in images" class="images" :key="index" :src="src">
+                <img v-for="(src, index) in images" class="images" :key="index" :src="src">
             </div>
         </div>
-        
+        <div v-show="true">
+            <div class="audio-preview">
+                <video-player v-for="(src, index) in audios" class="audios" :key="index" :src="src"
+                    :options="playerOptions"
+                    :volume="0.6"
+                />
+            </div>
+        </div>
         <div id="wrapper">
             <nav class="navbar-default navbar-static-side" role="navigation">
                 <div class="sidebar-collapse">
                     <ul class="nav metismenu" id="side-menu">
-                        <UserItem/>
+                        <UserItem />
                         <li>
-                            <a href="userhome"><i class="fa fa-laptop"></i> <span
-                                    class="nav-label">主页</span></a>
+                            <a href="userhome"><i class="fa fa-laptop"></i> <span class="nav-label">主页</span></a>
                         </li>
                         <li :class="{ active: !this.isTrash }">
-                            <a><i class="fa fa-folder-o"></i> <span
-                                    class="nav-label">文件管理</span><span class="fa arrow"></span></a>
+                            <a><i class="fa fa-folder-o"></i> <span class="nav-label">文件管理</span><span
+                                    class="fa arrow"></span></a>
                             <ul class="nav nav-second-level collapse">
                                 <li :class="{ active: !this.isTrash }"><a href="allfiles">所有文件</a></li>
                                 <li><a href="table_basic.html">图片</a></li>
@@ -28,12 +34,10 @@
                             </ul>
                         </li>
                         <li>
-                            <a href="share"><i class="fa fa-share-square-o"></i> <span
-                                    class="nav-label">分享</span></a>
+                            <a href="share"><i class="fa fa-share-square-o"></i> <span class="nav-label">分享</span></a>
                         </li>
                         <li :class="{ active: this.isTrash }">
-                            <a href="trash"><i class="fa fa-trash-o"></i> <span
-                                    class="nav-label">回收站</span></a>
+                            <a href="trash"><i class="fa fa-trash-o"></i> <span class="nav-label">回收站</span></a>
                         </li>
                         <li>
                             <a href="searchAllServlet"><i class="fa fa-group"></i> <span
@@ -49,18 +53,18 @@
                 </div>
             </nav>
             <div id="page-wrapper" class="gray-bg">
-                <TopBar/>
+                <TopBar />
                 <div class="wrapper wrapper-content">
                     <div class="row">
                         <div class="col-lg-2">
                             <div class="ibox float-e-margins">
                                 <div class="ibox-content mailbox-content">
                                     <div class="file-manager">
-                                        <FileDropzone paramName="thefile" @file-upload-success="handleFileUploadSuccess"/>
+                                        <FileDropzone paramName="thefile"
+                                            @file-upload-success="handleFileUploadSuccess" />
                                         <br>
                                         <a class="btn btn-block btn-primary compose-mail"
-                                        :class="{ 'disabled': isTrash }"
-                                        @click="createFolder">创建文件夹</a>
+                                            :class="{ 'disabled': isTrash }" @click="createFolder">创建文件夹</a>
                                         <div class="space-25"></div>
                                         <h5>Folders</h5>
                                         <ul class="folder-list m-b-md" style="padding: 0">
@@ -70,34 +74,23 @@
                                             </li>
                                             <li><a href="mailbox.html"> <i class="fa fa-certificate"></i> Important</a>
                                             </li>
-                                            <li><a href="mailbox.html"> <i class="fa fa-file-text-o"></i> Drafts <span
+                                            <li><a href="mailbox.html"> <i class="fa fa-file-text-o"></i> Drafts<span
                                                         class="label label-danger pull-right">2</span></a></li>
                                             <li><a href="mailbox.html"> <i class="fa fa-trash-o"></i> Trash</a></li>
                                         </ul>
-                                        <h5>Categories</h5>
+                                        <h5>类别</h5>
                                         <ul class="category-list" style="padding: 0">
-                                            <li><a href="mailbox.html#"> <i class="fa fa-circle text-navy"></i> Work
-                                                </a></li>
-                                            <li><a href="mailbox.html#"> <i class="fa fa-circle text-danger"></i>
-                                                    Documents</a></li>
-                                            <li><a href="mailbox.html#"> <i class="fa fa-circle text-primary"></i>
-                                                    Social</a></li>
-                                            <li><a href="mailbox.html#"> <i class="fa fa-circle text-info"></i>
-                                                    Advertising</a></li>
-                                            <li><a href="mailbox.html#"> <i class="fa fa-circle text-warning"></i>
-                                                    Clients</a></li>
+                                            <li><a @click="findFilesByCategory(0)"> <i class="fa fa-circle text-navy"></i> 图片</a></li>
+                                            <li><a @click="findFilesByCategory(1)"> <i class="fa fa-circle text-danger"></i> 文档</a></li>
+                                            <li><a @click="findFilesByCategory(3)"> <i class="fa fa-circle text-primary"></i> 视频</a></li>
+                                            <li><a @click="findFilesByCategory(2)"> <i class="fa fa-circle text-info"></i> 音乐</a></li>
+                                            <li><a @click="findFilesByCategory(4)"> <i class="fa fa-circle text-warning"></i> 其他</a></li>
                                         </ul>
-
-                                        <h5 class="tag-title">Labels</h5>
+                                        <h5 class="tag-title">标签</h5>
                                         <ul class="tag-list" style="padding: 0">
-                                            <li><a href="mailbox.html"><i class="fa fa-tag"></i> Family</a></li>
-                                            <li><a href="mailbox.html"><i class="fa fa-tag"></i> Work</a></li>
-                                            <li><a href="mailbox.html"><i class="fa fa-tag"></i> Home</a></li>
-                                            <li><a href="mailbox.html"><i class="fa fa-tag"></i> Children</a></li>
-                                            <li><a href="mailbox.html"><i class="fa fa-tag"></i> Holidays</a></li>
-                                            <li><a href="mailbox.html"><i class="fa fa-tag"></i> Music</a></li>
-                                            <li><a href="mailbox.html"><i class="fa fa-tag"></i> Photography</a></li>
-                                            <li><a href="mailbox.html"><i class="fa fa-tag"></i> Film</a></li>
+                                            <li v-for="(tag, index) in tags" :key="index"><a
+                                                    @click="findFFsByTag(tag)"><i class="fa fa-tag"></i> {{ tag }}</a>
+                                            </li>
                                         </ul>
                                         <div class="clearfix"></div>
                                     </div>
@@ -123,25 +116,30 @@
                                 </h2>
                                 <div class="mail-tools tooltip-demo m-t-md">
                                     <div class="btn-group pull-right">
-                                        <button class="btn btn-white btn-sm" @click="backPath()"><i class="fa fa-arrow-left"></i></button>
+                                        <button class="btn btn-white btn-sm" @click="backPath()"><i
+                                                class="fa fa-arrow-left"></i></button>
                                         <!-- <button class="btn btn-white btn-sm"><i class="fa fa-arrow-right"></i></button> -->
                                     </div>
                                     <button class="btn btn-white btn-sm" data-toggle="tooltip" data-placement="left"
-                                        title="刷新页面" @click="isTrash ? this.enterPathTrash() : this.enterPath(currentFolder.folderId)"><i class="fa fa-refresh"></i> 刷新</button>&nbsp;
-                                    <button class="btn btn-white btn-sm" data-toggle="tooltip" data-placement="top"
+                                        title="刷新页面"
+                                        @click="isTrash ? this.enterPathTrash() : this.enterPath(currentFolder.folderId)"><i
+                                            class="fa fa-refresh"></i> 刷新</button>&nbsp;
+                                    <!-- <button class="btn btn-white btn-sm" data-toggle="tooltip" data-placement="top"
                                         title="Mark as read"><i class="fa fa-eye"></i> </button>&nbsp;
                                     <button class="btn btn-white btn-sm" data-toggle="tooltip" data-placement="top"
-                                        title="Mark as important"><i class="fa fa-exclamation"></i> </button>&nbsp;
+                                        title="Mark as important"><i class="fa fa-exclamation"></i> </button>&nbsp; -->
                                     <button class="btn btn-white btn-sm" data-toggle="tooltip" data-placement="top"
                                         title="粘贴文件" @click="this.pasteFile()"><i class="fa fa-paste"></i> 粘贴
                                         <span v-if="this.isCutting" class="">
-                                            {{ this.currentCutFF.fileName ? this.currentCutFF.fileName : this.currentCutFF.folderName ?? "" }}
-                                        </span> 
+                                            {{ this.currentCutFF.fileName ? this.currentCutFF.fileName :
+                                                this.currentCutFF.folderName ?? "" }}
+                                        </span>
                                     </button>
                                 </div>
                             </div>
                             <div class="mail-box ibox table-responsive">
-                                <table class="table table-hover table-mail ibox-content" :class="{ 'sk-loading': loading }">
+                                <table class="table table-hover table-mail ibox-content"
+                                    :class="{ 'sk-loading': loading }">
                                     <div class="sk-spinner sk-spinner-cube-grid">
                                         <div class="sk-cube"></div>
                                         <div class="sk-cube"></div>
@@ -155,24 +153,26 @@
                                     </div>
                                     <thead>
                                         <tr>
-                                        <th></th>
-                                        <th>名称</th>
-                                        <th v-if="!this.isTrash"></th>  <!--重命名-->
-                                        <th>标签</th>
-                                        <th>文件大小</th>
-                                        <!-- <th>文件类型</th> -->
-                                        <th>上次修改者</th>
-                                        <th>上次修改时间</th>
-                                        <th>创建者</th>
-                                        <th>创建日期</th>
-                                        <th>操作</th>
+                                            <th></th>
+                                            <th>名称</th>
+                                            <th v-if="!this.isTrash"></th> <!--重命名-->
+                                            <th>标签</th>
+                                            <th>文件大小</th>
+                                            <!-- <th>文件类型</th> -->
+                                            <th>上次修改者</th>
+                                            <th>上次修改时间</th>
+                                            <th>创建者</th>
+                                            <th>创建日期</th>
+                                            <th>操作</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr v-for="(folder, index) in folders" :key="index" class="read" @dblclick="enterPath(folder.folderId, folder.parentId)">
+                                        <tr v-for="(folder, index) in folders" :key="index" class="read"
+                                            @dblclick="enterPath(folder.folderId, folder.parentId)">
                                             <td><i class="fa fa-folder-o"></i></td>
                                             <td>{{ folder.folderName }}</td>
-                                            <td v-if="!this.isTrash"><a @click="renameFolder(folder.folderId)"><i class="fa fa-edit"></i></a></td>
+                                            <td v-if="!this.isTrash"><a @click="renameFolder(folder.folderId)"><i
+                                                        class="fa fa-edit"></i></a></td>
                                             <td>{{ folder.tag }}</td>
                                             <td></td>
                                             <!-- <td></td> -->
@@ -183,20 +183,29 @@
                                             <td>
                                                 <div class="btn-group">
                                                     <!-- <a @click=""><i class="fa fa-download"></i></a>&nbsp; -->
-                                                    <a v-if="!this.isTrash" @click="collectionFolder(folder.folderId)"><i class="fa" :class="folderCollectionStatus[folder.folderId] ? 'fa-star' : 'fa-star-o'"></i>&nbsp;</a>
+                                                    <a v-if="!this.isTrash"
+                                                        @click="collectionFolder(folder.folderId)"><i class="fa"
+                                                            :class="folderCollectionStatus[folder.folderId] ? 'fa-star' : 'fa-star-o'"></i>&nbsp;</a>
+                                                    <a v-if="!this.isTrash" @click="">
+                                                            <i class="fa fa-share-alt"></i>&nbsp;</a>
                                                     <a v-if="!this.isTrash" @click="recycleBinFolder(folder.folderId)">
                                                         <i class="fa fa-trash-o"></i>&nbsp;</a>
-                                                    <a v-if="!this.isTrash" @click="cutFF(folder)"><i class="fa fa-scissors"></i>&nbsp;</a>
-                                                    <a v-if="this.isTrash" @click="deleteFolder(folder.folderId)"><i class="fa fa-trash-o"></i>&nbsp;</a>
-                                                    <a v-if="this.isTrash" @click="replyTrashFolder(folder.folderId)"><i class="fa fa-reply"></i>&nbsp;</a>
+                                                    <a v-if="!this.isTrash" @click="cutFF(folder)"><i
+                                                            class="fa fa-scissors"></i>&nbsp;</a>
+                                                    <a v-if="this.isTrash" @click="deleteFolder(folder.folderId)"><i
+                                                            class="fa fa-trash-o"></i>&nbsp;</a>
+                                                    <a v-if="this.isTrash" @click="replyTrashFolder(folder.folderId)"><i
+                                                            class="fa fa-reply"></i>&nbsp;</a>
                                                     <!-- <input type="checkbox"> -->
                                                 </div>
                                             </td>
                                         </tr>
-                                        <tr v-for="(file, index) in files" :key="index" class="read" @dblclick="filePreview(file)">
+                                        <tr v-for="(file, index) in files" :key="index" class="read"
+                                            @dblclick="filePreview(file)">
                                             <td><i class="fa fa-file-o"></i></td>
                                             <td>{{ file.fileName }}</td>
-                                            <td v-if="!this.isTrash"><a class="" @click="renameFile(file.fileId)"><i class="fa fa-edit"></i></a></td>
+                                            <td v-if="!this.isTrash"><a class="" @click="renameFile(file.fileId)"><i
+                                                        class="fa fa-edit"></i></a></td>
                                             <td>{{ file.tag }}</td>
                                             <td>{{ file.fileSize }}MB</td>
                                             <!-- <td>{{ file.fileType }}</td> -->
@@ -206,12 +215,21 @@
                                             <td>{{ new Date(file.uploadTime).toLocaleString() }}</td>
                                             <td>
                                                 <div class="btn-group">
-                                                    <a v-if="!this.isTrash" @click="collectionFile(file.fileId)"><i class="fa" :class="fileCollectionStatus[file.fileId] ? 'fa-star' : 'fa-star-o'"></i>&nbsp;</a>
-                                                    <a v-if="!this.isTrash" @click="downloadFile(file)"><i class="fa fa-download"></i>&nbsp;</a>
-                                                    <a v-if="!this.isTrash" @click="recycleBinFile(file.fileId)"><i class="fa fa-trash-o"></i>&nbsp;</a>
-                                                    <a v-if="!this.isTrash" @click="cutFF(file)"><i class="fa fa-scissors"></i>&nbsp;</a>
-                                                    <a v-if="this.isTrash" @click="deleteFile(file.fileId)"><i class="fa fa-trash-o"></i>&nbsp;</a>
-                                                    <a v-if="this.isTrash" @click="replyTrashFile(file.fileId)"><i class="fa fa-reply"></i>&nbsp;</a>
+                                                    <a v-if="!this.isTrash" @click="collectionFile(file.fileId)"><i
+                                                            class="fa"
+                                                            :class="fileCollectionStatus[file.fileId] ? 'fa-star' : 'fa-star-o'"></i>&nbsp;</a>
+                                                    <a v-if="!this.isTrash" @click="">
+                                                            <i class="fa fa-share-alt"></i>&nbsp;</a>
+                                                    <a v-if="!this.isTrash" @click="downloadFile(file)"><i
+                                                            class="fa fa-download"></i>&nbsp;</a>
+                                                    <a v-if="!this.isTrash" @click="recycleBinFile(file.fileId)"><i
+                                                            class="fa fa-trash-o"></i>&nbsp;</a>
+                                                    <a v-if="!this.isTrash" @click="cutFF(file)"><i
+                                                            class="fa fa-scissors"></i>&nbsp;</a>
+                                                    <a v-if="this.isTrash" @click="deleteFile(file.fileId)"><i
+                                                            class="fa fa-trash-o"></i>&nbsp;</a>
+                                                    <a v-if="this.isTrash" @click="replyTrashFile(file.fileId)"><i
+                                                            class="fa fa-reply"></i>&nbsp;</a>
                                                     <!-- <input type="checkbox"> -->
                                                 </div>
                                             </td>
@@ -222,15 +240,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="footer">
-                    <div class="pull-right">
-                        10GB of <strong>250GB</strong> Free.
-                    </div>
-                    <div>
-                        <strong>Copyright</strong> DocWings &copy; 2024
-                    </div>
-                </div>
-
+                <FootBar/>
             </div>
         </div>
     </div>
@@ -239,49 +249,56 @@
 <style>
 @import '../assets/css/plugins/iCheck/custom.css';
 @import '../assets/css/plugins/toastr/toastr.min.css';
+
 div:where(.swal2-container) div:where(.swal2-popup) {
     font-size: 1.5rem !important;
 }
 </style>
 
 <script>
-    import $ from 'jquery'
-    import "../assets/js/plugins/metisMenu/jquery.metisMenu.js"
-    import "../assets/js/plugins/slimscroll/jquery.slimscroll.min.js"
-    import "../assets/js/inspinia.js"
-    import "../assets/js/plugins/pace/pace.min.js"
-    import axios from "axios";
-    import 'viewerjs/dist/viewer.css'
-    import VueViewer from 'v-viewer'
-
-    import TopBar from '@/components/TopBar.vue'
-    import FileDropzone from '../components/FileDropzone.vue'
-    import UserItem from '@/components/UserItem.vue'
-    import toastr from "../assets/js/plugins/toastr/toastr.min.js"
-    toastr.options = {
-        "closeButton": true,
-        "debug": false,
-        "progressBar": true,
-        "preventDuplicates": true,
-        "positionClass": "toast-bottom-center",
-        "onclick": null,
-        "showDuration": "400",
-        "hideDuration": "1000",
-        "timeOut": "3000",
-        "extendedTimeOut": "1000",
-        "showEasing": "swing",
-        "hideEasing": "linear",
-        "showMethod": "fadeIn",
-        "hideMethod": "fadeOut"
-    }
-    export default {
-		name: 'Profile',
-        data() {
-            return {
+import $ from 'jquery'
+import "../assets/js/plugins/metisMenu/jquery.metisMenu.js"
+import "../assets/js/plugins/slimscroll/jquery.slimscroll.min.js"
+import "../assets/js/inspinia.js"
+import "../assets/js/plugins/pace/pace.min.js"
+import axios from "axios";
+import 'viewerjs/dist/viewer.css'
+import VueViewer from 'v-viewer'
+import { defineComponent } from 'vue'
+import { VideoPlayer } from '@videojs-player/vue'
+import '../../node_modules/video.js/dist/video-js.css'
+import toastr from "../assets/js/plugins/toastr/toastr.min.js"
+import TopBar from '@/components/TopBar.vue'
+import FileDropzone from '../components/FileDropzone.vue'
+import UserItem from '@/components/UserItem.vue'
+import FootBar from '@/components/FootBar.vue'
+toastr.options = {
+    "closeButton": true,
+    "debug": false,
+    "progressBar": true,
+    "preventDuplicates": true,
+    "positionClass": "toast-bottom-center",
+    "onclick": null,
+    "showDuration": "400",
+    "hideDuration": "1000",
+    "timeOut": "3000",
+    "extendedTimeOut": "1000",
+    "showEasing": "swing",
+    "hideEasing": "linear",
+    "showMethod": "fadeIn",
+    "hideMethod": "fadeOut"
+}
+export default {
+    name: 'Profile',
+    data() {
+        return {
                 folders: [],
                 files: [],
+                tags: [],
                 viewerOptions: {},
                 images: [],
+                audios: [],
+                videos: [],
                 currentFolder: JSON.parse(sessionStorage.getItem("currentFolder")) || {},
                 currentFFsCount: sessionStorage.getItem("currentFFsCount") || {},
                 loading: false,
@@ -301,8 +318,8 @@ div:where(.swal2-container) div:where(.swal2-popup) {
             else{
                 this.enterPath(0);
             }
-            
-        },
+            },
+
         methods: {
             checkRoute() {
                 if (this.$route.name === 'allfiles') {
@@ -319,7 +336,7 @@ div:where(.swal2-container) div:where(.swal2-popup) {
                     inputLabel: '请输入新的文件夹名',
                     inputValue: this.currentFolderName, // 当前文件夹名，可以作为默认值显示在输入框中
                     showCancelButton: true,
-                    confirmButtonText: '确定',  
+                    confirmButtonText: '确定',
                     cancelButtonText: '取消',
                     inputValidator: (value) => {
                         if (!value) {
@@ -331,7 +348,7 @@ div:where(.swal2-container) div:where(.swal2-popup) {
                 if (newName) {
                     // 调用 API 来更新文件名
                     let userId = JSON.parse(sessionStorage.getItem('userData')).userId;
-                    await axios.post('/api/insertOneFolder', { 
+                    await axios.post('/api/insertOneFolder', {
                         "folderName": newName,
                         "parentId": this.currentFolder.folderId,
                         "createrId": userId,
@@ -378,48 +395,42 @@ div:where(.swal2-container) div:where(.swal2-popup) {
                     viewer.index = key
                     viewer.show()
                 }
+                else if(file.fileType.startsWith('audio/')){
+                    const responseFiles = await axios.get(`/api/findAudioByParentId?parentId=${this.currentFolder.folderId}`);
+                    this.audios = responseFiles.data.data.audioList  // 更新列表
+                    let key = 0
+                    this.audios.forEach((src, index) => {  // 匹配选中
+                        if (src.split('=')[1] == file.fileId) {
+                            key = index;
+                        }
+                    })
+                }
+                else if(file.fileType.startsWith('video/')){
+
+                }
             },
             handleFileUploadSuccess() {  // 成功弹窗
                 toastr.success("上传文件成功！", "成功");
                 this.enterPath(this.currentFolder.folderId);
+                //更新容量
+                const event = new CustomEvent('update-capacity', {});
+                document.dispatchEvent(event);
             },
             showLoading() {this.loading = true;},
             hideLoading() {this.loading = false;},
-            async findFoldersByParentId(parentId){
-                try{
-                    const responseFolders = await axios.get('/api/findFoldersByParentId?parentId='+parentId);
-                    this.folders = responseFolders.data;
-                }catch (error) {
-                    console.error('Error findFoldersByParentId:', error);
-                }
-            },
-            async findFilesByParentId(parentId){
-                try{
-                    const responseFiles = await axios.get('/api/findFilesByParentId?parentId='+parentId);
-                    this.files = responseFiles.data;
-                }catch (error) {
-                    console.error('Error findFilesByParentId:', error);
-                }
-            },
             async findFolderById(id){
-                try{
-                    const responseFiles = await axios.get('/api/findFolderById?id='+id);
-                    sessionStorage.setItem("currentFolder",JSON.stringify(responseFiles.data));
-                }catch (error) {
-                    console.error('Error findFolderById:', error);
-                }
+                const responseFiles = await axios.get('/api/findFolderById?id='+id);
+                sessionStorage.setItem("currentFolder",JSON.stringify(responseFiles.data));
             },
             async countFFsByParentId(id){
-                try{
-                    const currentFFsCount = await axios.get('/api/countFFsByParentId?parentId='+id);
-                    sessionStorage.setItem("currentFFsCount",currentFFsCount.data);
-                }catch (error) {
-                    console.error('Error countFFsByParentId:', error);
-                }
+                const currentFFsCount = await axios.get('/api/countFFsByParentId?parentId='+id);
+                sessionStorage.setItem("currentFFsCount",currentFFsCount.data);
             },
             async findFFsByParentId(id){  // 寻找文件和文件夹
-                await this.findFoldersByParentId(id);
-                await this.findFilesByParentId(id);
+                const responseFolders = await axios.get('/api/findFoldersByParentId?parentId='+id);
+                this.folders = responseFolders.data;
+                const responseFiles = await axios.get('/api/findFilesByParentId?parentId='+id);
+                this.files = responseFiles.data;
             },
             async enterPath(id){  // 按下文件夹->改变路径
                 if(this.isTrash) return;
@@ -432,76 +443,101 @@ div:where(.swal2-container) div:where(.swal2-popup) {
                 await this.findFolderById(id);
                 await this.countFFsByParentId(id);
                 await this.checkAllFFsCollectionStatus();
-                this.currentFolder = JSON.parse(sessionStorage.getItem("currentFolder"));  // 更新 currentFolder
-                this.currentFFsCount = sessionStorage.getItem("currentFFsCount");  // 更新 currentFFsCount
-                // 发送文件夹更新信号
-                const event = new CustomEvent('update-dropzone', {
-                    detail: {
-                        newFolderId: this.currentFolder.folderId
-                    }
-                });
-                document.dispatchEvent(event);
-                this.hideLoading();  // 隐藏加载页面
-            },
-            async enterPathTrash(){
-                // 隐藏或disable上传和创建文件夹按钮，阻止用户进入和点击文件，重命名下载剪切和删除
-                this.showLoading();  // 显示加载页面
-                await this.findFileByDelete();
-                await this.findFolderByDelete();
-                const event = new CustomEvent('isTrash', {
-                    detail: {
-                        status: true
-                    }
-                });
-                document.dispatchEvent(event);
-                this.hideLoading();  // 隐藏加载页面
-            },
-            async backPath(){  //返回上一级
-                await this.enterPath(this.currentFolder.parentId);
-            },
-            async renameFile(fileId) {
-                const { value: newName } = await this.$swal.fire({
-                    title: '重命名文件',
-                    input: 'text',
-                    inputLabel: '请输入新的文件名',
-                    inputValue: this.currentFileName, // 当前文件名，可以作为默认值显示在输入框中
-                    showCancelButton: true,
-                    confirmButtonText: '确定',  
-                    cancelButtonText: '取消',
-                    inputValidator: (value) => {
-                        if (!value) {
+                await this.findTags();
+            this.currentFolder = JSON.parse(sessionStorage.getItem("currentFolder"));  // 更新 currentFolder
+            this.currentFFsCount = sessionStorage.getItem("currentFFsCount");  // 更新 currentFFsCount
+            // 发送文件夹更新信号
+            const event = new CustomEvent('update-path', {
+                detail: {
+                    newFolderId: this.currentFolder.folderId
+                }
+            });
+            document.dispatchEvent(event);
+            this.hideLoading();  // 隐藏加载页面
+        },
+        async findFFsByTag(tag) {
+            this.showLoading();  // 显示加载页面
+            const response = await axios.get('/api/findFFsByTag?tag=' + tag);
+            this.files = response.data.data.files;
+            this.folders = response.data.data.folders;
+            this.hideLoading();  // 隐藏加载页面
+        },
+        async findFilesByCategory(category){
+            this.showLoading();  // 显示加载页面
+            this.folders=[];
+            const response = await axios.get('/api/findFilesByCategory?category=' + category);
+            this.files = response.data.data.files;
+            this.hideLoading();  // 隐藏加载页面
+        },
+        async enterPathTrash() {
+            // 隐藏或disable上传和创建文件夹按钮，阻止用户进入和点击文件，重命名下载剪切和删除
+            this.showLoading();  // 显示加载页面
+            await this.findFFsByDelete();
+            await this.findTags();
+            const event = new CustomEvent('isTrash', {
+                detail: {
+                    status: true
+                }
+            });
+            document.dispatchEvent(event);
+            this.hideLoading();  // 隐藏加载页面
+        },
+        async findFFsByDelete(){
+            const responseFiles = await axios.post('/api/findFileByDelete',{"status":1});
+            this.files = responseFiles.data;
+            const responseFolders = await axios.post('/api/findFolderByDelete',{"status":1});
+            this.folders = responseFolders.data;
+        },
+        async backPath() {  //返回上一级
+            await this.enterPath(this.currentFolder.parentId);
+        },
+        async findTags() {
+            const responseTags = await axios.get('/api/findTags');
+            this.tags = responseTags.data;
+        },
+        async renameFile(fileId) {
+            const { value: newName } = await this.$swal.fire({
+                title: '重命名文件',
+                input: 'text',
+                inputLabel: '请输入新的文件名',
+                inputValue: this.currentFileName, // 当前文件名，可以作为默认值显示在输入框中
+                showCancelButton: true,
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                inputValidator: (value) => {
+                    if (!value) {
                         return '文件名不能为空！'
-                        }
                     }
-                });
-                // 如果用户点击了确定按钮，并且提供了新的文件名
-                if (newName) {
+                }
+            });
+            // 如果用户点击了确定按钮，并且提供了新的文件名
+            if (newName) {
                 // 调用 API 来更新文件名
                 await axios.post('/api/renameFile', { "fileId": fileId, "fileName": newName });
-                    this.$swal.fire('文件名已更新', `文件名已更新为:${newName}`, 'success');
-                    this.enterPath(this.currentFolder.folderId);
-                }
-                else{
-                    this.$swal.fire('操作取消', '文件名未更新', 'info');
-                }
-            },
-            async renameFolder(folderId) {
-                const { value: newName } = await this.$swal.fire({
-                    title: '重命名文件夹',
-                    input: 'text',
-                    inputLabel: '请输入新的文件夹名',
-                    inputValue: this.currentFolderName, // 当前文件夹名，可以作为默认值显示在输入框中
-                    showCancelButton: true,
-                    confirmButtonText: '确定',  
-                    cancelButtonText: '取消',
-                    inputValidator: (value) => {
-                        if (!value) {
+                this.$swal.fire('文件名已更新', `文件名已更新为:${newName}`, 'success');
+                this.enterPath(this.currentFolder.folderId);
+            }
+            else {
+                this.$swal.fire('操作取消', '文件名未更新', 'info');
+            }
+        },
+        async renameFolder(folderId) {
+            const { value: newName } = await this.$swal.fire({
+                title: '重命名文件夹',
+                input: 'text',
+                inputLabel: '请输入新的文件夹名',
+                inputValue: this.currentFolderName, // 当前文件夹名，可以作为默认值显示在输入框中
+                showCancelButton: true,
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                inputValidator: (value) => {
+                    if (!value) {
                         return '文件夹名不能为空！'
-                        }
                     }
-                });
-                // 如果用户点击了确定按钮，并且提供了新的文件名
-                if (newName) {
+                }
+            });
+            // 如果用户点击了确定按钮，并且提供了新的文件名
+            if (newName) {
                 // 调用 API 来更新文件名
                     await axios.post('/api/renameFolder', { "folderId": folderId, "folderName": newName });
                     this.$swal.fire('文件夹名已更新', `文件夹名已更新为:${newName}`, 'success');
@@ -565,22 +601,6 @@ div:where(.swal2-container) div:where(.swal2-popup) {
                     }
                 })
             },
-            async findFileByDelete(){
-                try{
-                    const responseFiles = await axios.post('/api/findFileByDelete',{"status":1});
-                    this.files = responseFiles.data;
-                }catch (error) {
-                    console.error('Error findFileByDelete:', error);
-                }
-            },
-            async findFolderByDelete(){
-                try{
-                    const responseFolders = await axios.post('/api/findFolderByDelete',{"status":1});
-                    this.folders = responseFolders.data;
-                }catch (error) {
-                    console.error('Error findFolderByDelete:', error);
-                }
-            },
             async replyTrashFile(fileId){
                 const result = await this.$swal.fire({
                     title: '是否将文件还原',
@@ -599,7 +619,6 @@ div:where(.swal2-container) div:where(.swal2-popup) {
                 }
             },
             async replyTrashFolder(folderId){
-                // BUG 将文件夹放入回收战后 只还原子文件夹 还原后无法显示
                 const result = await this.$swal.fire({
                     title: '是否将文件夹还原',
                     icon: 'warning',
@@ -627,6 +646,9 @@ div:where(.swal2-container) div:where(.swal2-popup) {
                 if (result.isConfirmed) {
                     await axios.post('/api/deleteFile', { "fileId": fileId });
                     this.$swal.fire('操作成功', '文件已删除', 'success');
+                    //更新容量
+                    const event = new CustomEvent('update-capacity', {});
+                    document.dispatchEvent(event);
                     this.enterPathTrash();
                 }
                 else{
@@ -644,6 +666,9 @@ div:where(.swal2-container) div:where(.swal2-popup) {
                 if (result.isConfirmed) {
                     await axios.post('/api/deleteFolder', { "folderId": folderId });
                     this.$swal.fire('操作成功', '文件夹已删除', 'success');
+                    //更新容量
+                    const event = new CustomEvent('update-capacity', {});
+                    document.dispatchEvent(event);
                     this.enterPathTrash();
                 }
                 else{
@@ -687,7 +712,9 @@ div:where(.swal2-container) div:where(.swal2-popup) {
         components: {
             TopBar,
             FileDropzone,
-            UserItem
+            UserItem,
+            VideoPlayer,
+        FootBar
         },
 		mounted() {},
 	}
