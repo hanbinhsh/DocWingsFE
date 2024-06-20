@@ -186,6 +186,8 @@
                                                     <a v-if="!this.isTrash"
                                                         @click="collectionFolder(folder.folderId)"><i class="fa"
                                                             :class="folderCollectionStatus[folder.folderId] ? 'fa-star' : 'fa-star-o'"></i>&nbsp;</a>
+                                                    <a v-if="!this.isTrash" @click="">
+                                                            <i class="fa fa-share-alt"></i>&nbsp;</a>
                                                     <a v-if="!this.isTrash" @click="recycleBinFolder(folder.folderId)">
                                                         <i class="fa fa-trash-o"></i>&nbsp;</a>
                                                     <a v-if="!this.isTrash" @click="cutFF(folder)"><i
@@ -216,6 +218,8 @@
                                                     <a v-if="!this.isTrash" @click="collectionFile(file.fileId)"><i
                                                             class="fa"
                                                             :class="fileCollectionStatus[file.fileId] ? 'fa-star' : 'fa-star-o'"></i>&nbsp;</a>
+                                                    <a v-if="!this.isTrash" @click="">
+                                                            <i class="fa fa-share-alt"></i>&nbsp;</a>
                                                     <a v-if="!this.isTrash" @click="downloadFile(file)"><i
                                                             class="fa fa-download"></i>&nbsp;</a>
                                                     <a v-if="!this.isTrash" @click="recycleBinFile(file.fileId)"><i

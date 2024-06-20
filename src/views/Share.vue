@@ -89,6 +89,15 @@
                                     </div>
                                     <div class="table-responsive">
                                         <table class="table table-hover issue-tracker">
+                                            <thead>
+                                                <td>状态</td>
+                                                <td>名称</td>
+                                                <td>权限</td>
+                                                <td>接收者</td>
+                                                <td>分享时间</td>
+                                                <td>到期时间</td>
+                                                <td>操作</td>
+                                            </thead>
                                             <tbody>
                                                 <tr>
                                                     <td>
