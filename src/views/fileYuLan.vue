@@ -22,5 +22,4 @@ onMounted(() => { // setup下先再获取到dom节点之后再进行挂载
       console.log("预览失败", e);
     });
 });
-
 </script>

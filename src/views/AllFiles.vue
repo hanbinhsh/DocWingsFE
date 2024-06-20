@@ -13,7 +13,7 @@
                     </div>
                     <div class="modal-body">
                         <div class="text-center">
-                            <VideoPlayer v-if="showPlayer" :options="this.audioOptions" class="video-js-a"/>
+                            <VideoPlayer v-if="showPlayer" :options="this.audioOptions" class="video-js-a vjs-big-play-centered"/>
                         </div>
                     </div>
                 </div>
@@ -27,7 +27,7 @@
                     </div>
                     <div class="modal-body">
                         <div class="text-center">
-                            <VideoPlayer v-if="showPlayer" :options="this.videoOptions" class="video-js-v"/>
+                            <VideoPlayer v-if="showPlayer" :options="this.videoOptions" class="video-js-v vjs-big-play-centered"/>
                         </div>
                     </div>
                 </div>
