@@ -62,12 +62,25 @@
                                     </div>
                                     <div class="ibox-content profile-content">
                                         <h4><strong>
-                                                NAME
-                                            </strong></h4>
-                                        <h5>兴趣</h5>
-                                        <p>
-                                            balabala
-                                        </p>
+                                                用户名:{{ userData.userName }}
+                                            </strong>
+                                        </h4>
+                                        <h4><strong>
+                                                用户ID:{{ userData.userId }}
+                                            </strong>
+                                        </h4>
+                                        <h4><strong>
+                                                用户组ID:{{ userData.groupId }}
+                                            </strong>
+                                        </h4>
+                                        <h4><strong>
+                                                邮箱地址:{{ userData.email }}
+                                            </strong>
+                                        </h4>
+                                        <h4><strong>
+                                                电话号码:{{ userData.phone }}
+                                            </strong>
+                                        </h4>
                                     </div>
                                 </div>
                             </div>
@@ -82,36 +95,27 @@
                                         <div class="feed-activity-list">
                                             <form class="m-t" role="form" action="ChangePassword" method="post">
                                                 <div class="form-group">
-                                                    <input type="password" name="oldPassword" class="form-control"
-                                                        placeholder="请输入旧密码">
+                                                    <input autocomplete="off" type="input" id="newPhone" class="form-control"
+                                                        placeholder="请输入新电话号码">
                                                 </div>
                                                 <div class="form-group">
-                                                    <input type="password" name="password" class="form-control"
-                                                        placeholder="请输入新密码">
+                                                    <input autocomplete="off" type="input" id="newEmail" class="form-control"
+                                                        placeholder="请输入新邮箱">
                                                 </div>
                                                 <div class="form-group">
-                                                    <input type="password" name="twicePassword" class="form-control"
-                                                        placeholder="请再次输入密码">
+                                                    <input type="password"  id="oldPassword" class="form-control"
+                                                        placeholder="请输入旧密码" >
                                                 </div>
-                                                <!-- <div class="form-group">
-                                                    <label class="checkbox-inline">
-                                                        <input type="checkbox" name="interests" value="学习数据结构">学习数据结构
-                                                    </label>
-                                                    <label class="checkbox-inline">
-                                                        <input type="checkbox" name="interests" value="学习JAVA">学习JAVA
-                                                    </label>
-                                                    <label class="checkbox-inline">
-                                                        <input type="checkbox" name="interests" value="学习高等数学">学习高等数学
-                                                    </label>
-                                                    <label class="checkbox-inline">
-                                                        <input type="checkbox" name="interests" value="学习数据库原理">学习数据库原理
-                                                    </label>
-                                                    <label class="checkbox-inline">
-                                                        <input type="checkbox" name="interests" value="学习深度学习">学习深度学习
-                                                    </label>
-                                                </div> -->
-                                                <button type="submit"
-                                                    class="btn btn-primary block full-width m-b">提交</button>
+                                                <div class="form-group">
+                                                    <input type="password"  id="newpassword" class="form-control"
+                                                        placeholder="请输入新密码" >
+                                                </div>
+                                                <div class="form-group">
+                                                    <input type="password"  id="twicePassword" class="form-control"
+                                                        placeholder="请再次输入密码" >
+                                                </div>  
+                                                <a type="submit" @click="modify()"
+                                                    class="btn btn-primary block full-width m-b">提交</a>
                                                 <a @click="unsubscibe()" class="btn btn-danger block full-width m-b">注销</a>
                                             </form>
                                         </div>
@@ -187,6 +191,41 @@
                     await axios.post('/api/UserDelete', { "userId":this.userData.userId });
                     window.sessionStorage.clear();
                     this.$router.push('/login');
+                }
+            },
+            async modify(){
+                const response = await axios.post('/api/login', { "userName": this.userData.userName, "password": oldPassword.value });
+                if(oldPassword.value==""){
+                    this.$swal.fire('密码未输入','','error');
+                }
+                else if (response.data == null||response.data=="") {
+                    this.$swal.fire('密码错误','','error');
+                }
+                else{
+                    if(newPhone.value!=""){
+                    await axios.post('/api/UpdatePhone',{"userId": this.userData.userId,"newPhone":newPhone.value});
+                    alert('您的电话号码已更改！');
+                    }
+                    if(newEmail.value!=""){
+                    await axios.post('/api/UpdateEmail',{"userId": this.userData.userId,"newEmail":newEmail.value});
+                    alert('您的邮箱已更改！');
+                    }
+                    if(twicePassword.value==newpassword.value&&twicePassword.value!=""){
+                    await axios.post('/api/UpdatePassword',{"userId": this.userData.userId,"newPassword":newpassword.value});
+                    const response1 = await axios.post('/api/login', { userName: this.userData.userName, password: newpassword.value });
+                    sessionStorage.setItem('userData', JSON.stringify(response1.data));
+                    alert('您的密码已更改！');
+                    window.location.reload();
+                    }else if(twicePassword.value!=newpassword.value&&twicePassword.value!=""){
+                    this.$swal.fire('两次密码不一样','','error');
+                    const response2 = await axios.post('/api/login', { userName: this.userData.userName, password: oldPassword.value });
+                    sessionStorage.setItem('userData', JSON.stringify(response2.data));
+                    window.location.reload();
+                    }else{
+                        const response3 = await axios.post('/api/login', { userName: this.userData.userName, password: oldPassword.value });
+                        sessionStorage.setItem('userData', JSON.stringify(response3.data));
+                        window.location.reload();
+                    }       
                 }
             }
 		}
