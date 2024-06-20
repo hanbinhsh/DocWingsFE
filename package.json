@@ -7,8 +7,12 @@
     "build": "vue-cli-service build"
   },
   "dependencies": {
+    "@js-preview/docx": "^1.6.2",
+    "@js-preview/excel": "^1.7.8",
+    "@js-preview/pdf": "^2.0.2",
     "@popperjs/core": "^2.11.8",
     "@videojs-player/vue": "^1.0.0",
+    "@vue-office/docx": "^1.6.2",
     "axios": "^1.7.2",
     "bootstrap": "^5.3.3",
     "core-js": "^3.8.3",
@@ -27,6 +31,7 @@
     "video.js": "^7.21.6",
     "viewerjs": "^1.11.6",
     "vue": "^3.2.13",
+    "vue-demi": "^0.14.8",
     "vue-router": "^4.0.3",
     "vuex": "^4.0.0"
   },

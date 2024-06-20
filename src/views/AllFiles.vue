@@ -318,8 +318,7 @@ export default {
             else{
                 this.enterPath(0);
             }
-            },
-
+        },
         methods: {
             checkRoute() {
                 if (this.$route.name === 'allfiles') {

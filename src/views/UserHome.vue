@@ -259,13 +259,25 @@ export default {
             this.files = response.data.data.files;
             this.folders = response.data.data.folders;
         },
-        async collectionFile(fileId) {
-            await axios.post('api/CollectionsDeleteFile', { "fileId": fileId, "userId": this.userData.userId });
-            this.enterPath()
+        async collectionFile(fileId){
+            const exist = this.fileCollectionStatus[fileId]//判断是否被收藏
+            if(exist){//被收藏删除
+                await axios.post('api/CollectionsDeleteFile',{"fileId":fileId,"userId":this.userData.userId});
+            }
+            else{//没被收藏插入
+                await axios.post('api/CollectionsInsertFile',{"fileId":fileId,"userId":this.userData.userId});
+            }
+            this.enterPath(this.currentFolder.folderId)
         },
-        async collectionFolder(folderId) {
-            await axios.post('api/CollectionsDeleteFolder', { "folderId": folderId, "userId": this.userData.userId });
-            this.enterPath()
+        async collectionFolder(folderId){
+            const exist = this.folderCollectionStatus[folderId]//判断是否被收藏
+            if(exist){//被收藏删除
+                await axios.post('api/CollectionsDeleteFolder',{"folderId":folderId,"userId":this.userData.userId});
+            }
+            else{//没被收藏插入
+                await axios.post('api/CollectionsInsertFolder',{"folderId":folderId,"userId":this.userData.userId});
+            }
+            this.enterPath(this.currentFolder.folderId)
         },
         async checkAllFFsCollectionStatus() {
             const response = await axios.post('/api/findCollectionFFs?userId=' + this.userData.userId);

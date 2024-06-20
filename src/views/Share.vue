@@ -41,7 +41,7 @@
             </nav>
 
             <div id="page-wrapper" class="gray-bg">
-                <TopBar/>
+                <TopBar />
                 <div class="row wrapper border-bottom white-bg page-heading">
                     <div class="col-lg-10">
                         <h2>分享</h2>
@@ -91,6 +91,7 @@
                                         <table class="table table-hover issue-tracker">
                                             <thead>
                                                 <td>状态</td>
+                                                <td>图标</td>
                                                 <td>名称</td>
                                                 <td>权限</td>
                                                 <td>接收者</td>
@@ -99,6 +100,29 @@
                                                 <td>操作</td>
                                             </thead>
                                             <tbody>
+                                                <tr v-for="(share, index) in shares" :key="index" @dblclick="">
+                                                    <td>
+                                                        <span v-if="share.validate==0" class="label label-danger">已过期</span>
+                                                        <span v-if="share.validate==1" class="label label-primary">正常</span>
+                                                        <span v-if="share.validate==3" class="label label-info">无限</span>
+                                                    </td>
+                                                    <td>
+                                                        <i v-if="share.isFolder==1" class="fa fa-folder-o"></i>
+                                                        <i v-if="share.isFolder==0" class="fa fa-file-o"></i>
+                                                    </td>
+                                                    <td v-if="share.isFolder==0">{{share.fileName}}</td>
+                                                    <td v-if="share.isFolder==1">{{share.folderName}}</td>
+                                                    <td>{{share.auth}}</td>
+                                                    <td>{{share.accepterName}}</td>
+                                                    <td>{{new Date(share.shareTime).toLocaleString()}}</td>
+                                                    <td v-if="share.dueTime==null">无限</td>
+                                                    <td v-if="share.dueTime!=null">{{new Date(share.dueTime).toLocaleString()}}</td>
+                                                    <td>
+                                                        <div class="btn-group">
+                                                            
+                                                        </div>
+                                                    </td>
+                                                </tr>
                                                 <tr>
                                                     <td>
                                                         <span class="label label-primary">Added</span>
@@ -194,15 +218,13 @@
                         </div>
                     </div>
                 </div>
-                <FootBar/>
+                <FootBar />
             </div>
         </div>
     </div>
 </template>
 
-<style scoped>
-
-</style>
+<style scoped></style>
 
 <script>
 import $ from 'jquery'
@@ -218,9 +240,22 @@ import UserItem from '@/components/UserItem.vue'
 import FootBar from '@/components/FootBar.vue'
 
 export default {
-	name: 'Share',
-	methods: {
-	},
+    name: 'Share',
+    data() {
+        return {
+            userData: JSON.parse(sessionStorage.getItem('userData')) || {},
+            shares: {}
+        }
+    },
+    created() {
+        this.getShares()
+    },
+    methods: {
+        async getShares() {
+            const res = await axios.get("api/getSharesByUserId?userId=" + this.userData.userId);
+            this.shares = res.data.data.shares;
+        },
+    },
     components: {
         TopBar,
         UserItem,
