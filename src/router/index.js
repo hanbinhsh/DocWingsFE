@@ -85,7 +85,13 @@ const routes = [
       title: '回收站',
       requiresAuth: true,
     }
-  }
+  },
+  {
+    path: '/test',
+    name: 'test',
+    component: () => import('../views/fileYuLan.vue'),
+    meta: { title: '文件预览' }
+  },
 ]
 
 const router = createRouter({
