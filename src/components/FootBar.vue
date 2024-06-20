@@ -35,7 +35,7 @@ export default {
         // 在组件加载完成后调用查询容量的方法
         onMounted(() => {
             queryCapacity(); // 直接调用查询容量方法
-            document.addEventListener('update-path', queryCapacity);
+            document.addEventListener('update-capacity', queryCapacity);
         });
         // 返回响应式数据和方法
         return {

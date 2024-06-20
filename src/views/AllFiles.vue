@@ -409,6 +409,9 @@ export default {
             handleFileUploadSuccess() {  // 成功弹窗
                 toastr.success("上传文件成功！", "成功");
                 this.enterPath(this.currentFolder.folderId);
+                //更新容量
+                const event = new CustomEvent('update-capacity', {});
+                document.dispatchEvent(event);
             },
             showLoading() {this.loading = true;},
             hideLoading() {this.loading = false;},
@@ -671,6 +674,9 @@ export default {
                 if (result.isConfirmed) {
                     await axios.post('/api/deleteFile', { "fileId": fileId });
                     this.$swal.fire('操作成功', '文件已删除', 'success');
+                    //更新容量
+                    const event = new CustomEvent('update-capacity', {});
+                    document.dispatchEvent(event);
                     this.enterPathTrash();
                 }
                 else{
@@ -688,6 +694,9 @@ export default {
                 if (result.isConfirmed) {
                     await axios.post('/api/deleteFolder', { "folderId": folderId });
                     this.$swal.fire('操作成功', '文件夹已删除', 'success');
+                    //更新容量
+                    const event = new CustomEvent('update-capacity', {});
+                    document.dispatchEvent(event);
                     this.enterPathTrash();
                 }
                 else{
