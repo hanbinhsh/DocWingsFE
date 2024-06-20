@@ -125,14 +125,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="footer">
-                    <div class="pull-right">
-                        10GB of <strong>250GB</strong> Free.
-                    </div>
-                    <div>
-                        <strong>Copyright</strong> DocWings &copy; 2024
-                    </div>
-                </div>
+                <FootBar/>
             </div>
         </div>
     </div>
@@ -150,6 +143,7 @@
     import axios from "axios";
     import TopBar from '@/components/TopBar.vue'
     import UserItem from '@/components/UserItem.vue'
+    import FootBar from '@/components/FootBar.vue'
     export default {
 		name: 'Profile',
         data(){
@@ -159,7 +153,8 @@
         },
         components: {
             TopBar,
-            UserItem
+            UserItem,
+            FootBar
         },
 		methods: {
             async unsubscibe(){
