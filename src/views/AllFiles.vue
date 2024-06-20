@@ -5,12 +5,32 @@
                 <img v-for="(src, index) in images" class="images" :key="index" :src="src">
             </div>
         </div>
-        <div v-show="true">
-            <div class="audio-preview">
-                <video-player v-for="(src, index) in audios" class="audios" :key="index" :src="src"
-                    :options="playerOptions"
-                    :volume="0.6"
-                />
+        <div class="modal inmodal fade in" id="myModal5" tabindex="-1" role="dialog" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="text-center">
+                            <VideoPlayer v-if="showPlayer" :options="this.audioOptions" class="video-js-a"/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal inmodal fade in" id="myModal6" tabindex="-1" role="dialog" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="text-center">
+                            <VideoPlayer v-if="showPlayer" :options="this.videoOptions" class="video-js-v"/>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -250,6 +270,46 @@
 div:where(.swal2-container) div:where(.swal2-popup) {
     font-size: 1.5rem !important;
 }
+.modal-lg {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 80vh; /* 或者设置一个具体的像素高度 */
+  width: 300px;
+}
+.modal-content{
+    align-items: center;
+    height: 600px;
+    width: 900px;
+}
+.modal-header{
+    height: 50px;
+}
+.modal-body{
+    height: 550px;
+}
+.text-center{
+    align-items: center;
+    height: 100%; 
+}
+.video-js-a{
+    background-image: url('../assets/music.jpg');
+    background-size: cover; /* 背景图片覆盖整个容器 */
+    background-position: center; /* 背景图片居中 */
+    background-repeat: no-repeat; /* 不重复背景图片 */
+    align-items: center;
+    width: 100%;
+    height: 100%; 
+}
+.video-js-v{
+    align-items: center;
+    width: 100%;
+    height: 100%; 
+}
+.vjs-tech{
+    width: 100%;
+    height: 100%;
+}
 </style>
 
 <script>
@@ -263,6 +323,7 @@ import 'viewerjs/dist/viewer.css'
 import VueViewer from 'v-viewer'
 import { defineComponent } from 'vue'
 import { VideoPlayer } from '@videojs-player/vue'
+import { ref } from 'vue';
 import '../../node_modules/video.js/dist/video-js.css'
 import toastr from "../assets/js/plugins/toastr/toastr.min.js"
 import TopBar from '@/components/TopBar.vue'
@@ -294,8 +355,6 @@ export default {
                 tags: [],
                 viewerOptions: {},
                 images: [],
-                audios: [],
-                videos: [],
                 currentFolder: JSON.parse(sessionStorage.getItem("currentFolder")) || {},
                 currentFFsCount: sessionStorage.getItem("currentFFsCount") || {},
                 loading: false,
@@ -305,6 +364,26 @@ export default {
                 userData: JSON.parse(sessionStorage.getItem('userData')) || {},
                 folderCollectionStatus: {},
                 fileCollectionStatus: {},
+                audioOptions: {
+                    autoplay: false,
+                    controls: true,
+                    sources: 
+                    {
+                        src: 'api/downloadFile?fileID=35',
+                        type: 'audio/mpeg',
+                    },
+                    showPlayer: true,
+                },
+                videoOptions: {
+                    autoplay: false,
+                    controls: true,
+                    sources:
+                    {
+                        src: 'api/downloadFile?fileID=34',
+                        type: 'video/mp4',
+                    },
+                    showPlayer: true,
+                },
             };
         },
         created() {
@@ -389,22 +468,34 @@ export default {
                             key = index;
                         }
                     })
+                    console.log(this.images);
                     viewer.index = key
                     viewer.show()
                 }
                 else if(file.fileType.startsWith('audio/')){
-                    const responseFiles = await axios.get(`/api/findAudioByParentId?parentId=${this.currentFolder.folderId}`);
-                    this.audios = responseFiles.data.data.audioList  // 更新列表
-                    let key = 0
-                    this.audios.forEach((src, index) => {  // 匹配选中
-                        if (src.split('=')[1] == file.fileId) {
-                            key = index;
-                        }
-                    })
+                    this.changeAudioSource(file.fileId);
+                    this.enterPath(this.currentFolder.folderId);
+                    $('#myModal5').modal('show');
                 }
-                else if(file.fileType.startsWith('video/')){
-
+                else if(file.fileType.startsWith('video/')){ 
+                    this.changeVideoSource(file.fileId);
+                    this.enterPath(this.currentFolder.folderId);
+                    $('#myModal6').modal('show');
                 }
+            },
+            changeAudioSource(fileId){
+                this.audioOptions.sources.src = 'api/downloadFile?fileID='+fileId;
+                this.showPlayer = false;
+                this.$nextTick(() => {
+                    this.showPlayer = true;
+                });
+            },
+            changeVideoSource(fileId){
+                this.videoOptions.sources.src = 'api/downloadFile?fileID='+fileId;
+                this.showPlayer = false;
+                this.$nextTick(() => {
+                    this.showPlayer = true;
+                });
             },
             handleFileUploadSuccess() {  // 成功弹窗
                 toastr.success("上传文件成功！", "成功");
