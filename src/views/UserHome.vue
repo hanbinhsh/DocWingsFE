@@ -103,7 +103,46 @@
                         <div class="col-lg-9 animated fadeInRight">
                             <div class="row">
                                 <div class="col-lg-12">
-                                   <div class="file-box" v-for="(folder, index) in folders" :key="index" @click="">
+                                    <div class="mail-box-header">
+                                <form method="get" action="index.html" class="pull-right mail-search">
+                                    <div class="input-group">
+                                        <input type="text" class="form-control input-sm" name="search"
+                                            placeholder="搜索内容">
+                                        <div class="input-group-btn">
+                                            <button type="submit" class="btn btn-sm btn-primary">
+                                                搜索
+                                            </button>
+                                        </div>
+                                    </div>
+                                </form>
+                                <h2>
+                                    <!-- {{currentFolder.folderName}} ({{ this.currentFFsCount }}) -->
+                                    {{ isTrash ? '回收站' : currentFolder.folderName + ' (' + this.currentFFsCount + ')' }}
+                                </h2>
+                                <div class="mail-tools tooltip-demo m-t-md">
+                                    <div class="btn-group pull-right">
+                                        <button class="btn btn-white btn-sm" @click="backPath()"><i
+                                                class="fa fa-arrow-left"></i></button>
+                                        <!-- <button class="btn btn-white btn-sm"><i class="fa fa-arrow-right"></i></button> -->
+                                    </div>
+                                    <button class="btn btn-white btn-sm" data-toggle="tooltip" data-placement="left"
+                                        title="刷新页面"
+                                        @click="isTrash ? this.enterPathTrash() : this.enterPath(currentFolder.folderId)"><i
+                                            class="fa fa-refresh"></i> 刷新</button>&nbsp;
+                                    <button class="btn btn-white btn-sm" data-toggle="tooltip" data-placement="top"
+                                        title="Mark as read"><i class="fa fa-eye"></i> </button>&nbsp;
+                                    <button class="btn btn-white btn-sm" data-toggle="tooltip" data-placement="top"
+                                        title="Mark as important"><i class="fa fa-exclamation"></i> </button>&nbsp;
+                                    <button class="btn btn-white btn-sm" data-toggle="tooltip" data-placement="top"
+                                        title="粘贴文件" @click="this.pasteFile()"><i class="fa fa-paste"></i> 粘贴
+                                        <span v-if="this.isCutting" class="">
+                                            {{ this.currentCutFF.fileName ? this.currentCutFF.fileName :
+                                                this.currentCutFF.folderName ?? "" }}
+                                        </span>
+                                    </button>
+                                </div>
+                            </div>
+                                   <div class="file-box" v-for="(folder, index) in folders" :key="index" @dblclick="enterPath(folder.folderId, folder.parentId)">
                                         <div class="file">
                                             <a>
                                                 <span class="corner"></span>
@@ -114,7 +153,7 @@
                                                     &nbsp;<a @click="collectionFolder(folder.folderId)"><i class="fa"
                                                             :class="folderCollectionStatus[folder.folderId] ? 'fa-star' : 'fa-star-o'"></i>&nbsp;</a>
                                                 </div>
-                                                <div class="file-name">
+                                                <div class="file-name"> 
                                                     <a>{{ folder.folderName }}</a>
                                                     <br />
                                                     <small>{{ new Date(folder.createTime).toLocaleString() }}</small>
@@ -275,8 +314,13 @@ import Raphael from "../assets/js/plugins/morris/raphael-2.1.0.min.js"
             showLoading() {this.loading = true;},
             hideLoading() {this.loading = false;},
             async findFFsByParentId(id){  // 寻找文件和文件夹
-                await this.findFoldersByParentIdUserId(id);
-                await this.findFilesByParentIdUserId(id);
+                if(id===0){
+                    await this.findFoldersByParentIdUserId(id);
+                    await this.findFilesByParentIdUserId(id);
+                }else{
+                 await this.findFoldersByParentId(id);
+                await this.findFilesByParentId(id);   
+                }
             },
             async collectionFile(fileId) {
                 const exist = this.fileCollectionStatus[fileId]//判断是否被收藏
@@ -311,6 +355,103 @@ import Raphael from "../assets/js/plugins/morris/raphael-2.1.0.min.js"
                     }
                 });
             },
+            async findFoldersByParentId(parentId){
+                try{
+                    const responseFolders = await axios.get('/api/findFoldersByParentId?parentId='+parentId);
+                    this.folders = responseFolders.data;
+                }catch (error) {
+                    console.error('Error findFoldersByParentId:', error);
+                }
+            },
+            async findFilesByParentId(parentId){
+                try{
+                    const responseFiles = await axios.get('/api/findFilesByParentId?parentId='+parentId);
+                    this.files = responseFiles.data;
+                }catch (error) {
+                    console.error('Error findFilesByParentId:', error);
+                }
+            },
+            async backPath() {  //返回上一级
+            await this.enterPath(this.currentFolder.parentId);
+            },
+            async enterPathTrash() {
+            // 隐藏或disable上传和创建文件夹按钮，阻止用户进入和点击文件，重命名下载剪切和删除
+            this.showLoading();  // 显示加载页面
+            await this.findFileByDelete();
+            await this.findFolderByDelete();
+            const event = new CustomEvent('isTrash', {
+                detail: {
+                    status: true
+                }
+            });
+            document.dispatchEvent(event);
+            this.hideLoading();  // 隐藏加载页面
+            },
+            async enterPath(id){  // 按下文件夹->改变路径
+                if(this.isTrash) return;
+                if(id === this.currentCutFF?.folderId){
+                    toastr.error(`无法进入正在剪切板的文件夹！`, "警告");
+                    return
+                }
+                this.showLoading();  // 显示加载页面
+                await this.findFFsByParentId(id);
+                await this.findFolderById(id);
+                await this.countFFsByParentId(id);
+                await this.checkAllFFsCollectionStatus();await this.findTags();
+            this.currentFolder = JSON.parse(sessionStorage.getItem("currentFolder"));  // 更新 currentFolder
+            this.currentFFsCount = sessionStorage.getItem("currentFFsCount");  // 更新 currentFFsCount
+            // 发送文件夹更新信号
+            const event = new CustomEvent('update-path', {
+                detail: {
+                    newFolderId: this.currentFolder.folderId
+                }
+            });
+            document.dispatchEvent(event);
+            this.hideLoading();  // 隐藏加载页面
+            },
+            async pasteFile(){
+                if(this.currentCutFF != null && this.currentCutFF != undefined){
+                    let FFName = this.currentCutFF.fileName ? this.currentCutFF.fileName : this.currentCutFF.folderName;
+                    if(this.currentCutFF.fileName != null && this.currentCutFF.fileName != undefined){
+                        // 文件
+                        await axios.post(`/api/changeFileRouteById?id=${this.currentCutFF.fileId}&parentId=${this.currentFolder.folderId}`);
+                    }else{
+                        // 文件夹
+                        await axios.post(`/api/changeFolderRouteById?id=${this.currentCutFF.folderId}&parentId=${this.currentFolder.folderId}`);
+                    }
+                    this.enterPath(this.currentFolder.folderId);
+                    this.currentCutFF = null;
+                    this.isCutting = false;
+                    toastr.success(`成功粘贴:${FFName}`, "成功");
+                }
+            },
+            async findFolderById(id){
+                try{
+                    const responseFiles = await axios.get('/api/findFolderById?id='+id);
+                    sessionStorage.setItem("currentFolder",JSON.stringify(responseFiles.data));
+                }catch (error) {
+                    console.error('Error findFolderById:', error);
+                }
+            },
+            async countFFsByParentId(id){
+                try{
+                    if(id==0){
+                    const currentFFsCount2 = await axios.post('/api/countFFsByParentIdUserId',{"userId":this.userData.userId});
+                    console.log(currentFFsCount2.data);
+                    sessionStorage.setItem("currentFFsCount",currentFFsCount2.data);
+                    }else{
+                    const currentFFsCount = await axios.get('/api/countFFsByParentId?parentId='+id);
+                    sessionStorage.setItem("currentFFsCount",currentFFsCount.data);   
+                    }
+                    
+                }catch (error) {
+                    console.error('Error countFFsByParentId:', error);
+                }
+            },
+            async findTags() {
+            const responseTags = await axios.get('/api/findTags');
+            this.tags = responseTags.data;
+        },
             downloadFile(file) {
                 axios.post('/api/downloadFile?fileID=' + file.fileId, { responseType: 'blob' }).then(res => {
                     let blob = new Blob([res.data])
