@@ -8,6 +8,7 @@
   },
   "dependencies": {
     "@popperjs/core": "^2.11.8",
+    "@videojs-player/vue": "^1.0.0",
     "axios": "^1.7.2",
     "bootstrap": "^5.3.3",
     "core-js": "^3.8.3",
@@ -19,12 +20,16 @@
     "metismenu": "^3.0.7",
     "pace": "^0.0.4",
     "pace-js": "^1.2.4",
+    "plyr": "^3.7.8",
     "sweetalert": "^2.1.2",
     "sweetalert2": "^11.11.1",
     "v-viewer": "^3.0.13",
+    "video.js": "^8.12.0",
     "viewerjs": "^1.11.6",
     "vue": "^3.2.13",
+    "vue-core-video-player": "^0.2.0",
     "vue-router": "^4.0.3",
+    "vue3-video-play": "^1.3.2",
     "vuex": "^4.0.0"
   },
   "devDependencies": {
