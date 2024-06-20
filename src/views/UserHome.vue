@@ -41,12 +41,9 @@
                         <li>
                             <a href="profile"><i class="fa fa-diamond"></i> <span class="nav-label">个人资料</span></a>
                         </li>
-
                     </ul>
-
                 </div>
             </nav>
-
             <div id="page-wrapper" class="gray-bg">
                 <TopBar />
                 <div class="row wrapper border-bottom white-bg page-heading">
@@ -82,16 +79,11 @@
                                             <li><a href="file_manager"><i class="fa fa-folder"></i> Films</a></li>
                                             <li><a href="file_manager"><i class="fa fa-folder"></i> Books</a></li>
                                         </ul>
-                                        <h5 class="tag-title">Tags</h5>
+                                        <h5 class="tag-title">标签</h5>
                                         <ul class="tag-list" style="padding: 0">
-                                            <li><a href="file_manager">Family</a></li>
-                                            <li><a href="file_manager">Work</a></li>
-                                            <li><a href="file_manager">Home</a></li>
-                                            <li><a href="file_manager">Children</a></li>
-                                            <li><a href="file_manager">Holidays</a></li>
-                                            <li><a href="file_manager">Music</a></li>
-                                            <li><a href="file_manager">Photography</a></li>
-                                            <li><a href="file_manager">Film</a></li>
+                                            <li v-for="(tag, index) in tags" :key="index"><a
+                                                    @click="findFFsByTag(tag)"><i class="fa fa-tag"></i> {{ tag }}</a>
+                                            </li>
                                         </ul>
                                         <div class="clearfix"></div>
                                     </div>
@@ -109,7 +101,8 @@
                                                     <i class="fa fa-folder"></i>
                                                 </div>
                                                 <div>
-                                                    &nbsp;<a @click="collectionFolder(folder.folderId)"><i class="fa fa-star"></i></a>
+                                                    &nbsp;<a @click="collectionFolder(folder.folderId)"><i class="fa"
+                                                        :class="folderCollectionStatus[folder.folderId] ? 'fa-star' : 'fa-star-o'"></i></a>
                                                     &nbsp;<a @click="recycleBinFolder(folder.folderId)"><i
                                                             class="fa fa-trash-o"></i></a>
                                                 </div>
@@ -134,7 +127,8 @@
                                                         :src="getImageUrl(file.fileId)">
                                                 </div>
                                                 <div>
-                                                    &nbsp;<a @click="collectionFile(file.fileId)"><i class="fa fa-star"></i></a>
+                                                    &nbsp;<a @click="collectionFile(file.fileId)"><i class="fa"
+                                                        :class="fileCollectionStatus[file.fileId] ? 'fa-star' : 'fa-star-o'"></i></a>
                                                     &nbsp;<a @click="downloadFile(file)"><i
                                                             class="fa fa-download"></i></a>
                                                     &nbsp;<a @click="recycleBinFile(file.fileId)"><i
@@ -198,10 +192,13 @@ export default {
     data() {
         return {
             folders: [],
+            tags: [],
             files: [],
             images: [],
             loading: false,
             userData: JSON.parse(sessionStorage.getItem('userData')) || {},
+            folderCollectionStatus: {},
+            fileCollectionStatus: {},
         };
     },
     created() {
@@ -220,6 +217,10 @@ export default {
         });
     },
     methods: {
+        async findTags() {
+            const responseTags = await axios.get('/api/findTags');
+            this.tags = responseTags.data;
+        },
         getImageUrl(fileId) {
             const imageUrl = this.images.find(url => url.includes(`fileID=${fileId}`));
             return imageUrl || '';
@@ -247,6 +248,8 @@ export default {
             this.showLoading();  // 显示加载页面
             await this.findCollectionFFsByUserId();
             await this.checkAllFFsCollectionStatus();
+            await this.checkAllFFsCollectionStatus();
+            await this.findTags();
             this.hideLoading();  // 隐藏加载页面
         },
         showLoading() { this.loading = true; },
@@ -331,6 +334,26 @@ export default {
                 this.$swal.fire('操作取消', '文件夹未放入回收站', 'info');
             }
         },
+        async findFFsByTag(tag) {
+            this.showLoading();  // 显示加载页面
+            const response = await axios.get('/api/findFFsByTag?tag=' + tag);
+            this.files = response.data.data.files;
+            this.folders = response.data.data.folders;
+            this.hideLoading();  // 隐藏加载页面
+        },
+        async checkAllFFsCollectionStatus() {
+            const response=await axios.post('/api/findCollectionFFs?userId='+this.userData.userId);
+            const data = response.data
+            this.folderCollectionStatus = {}
+            this.fileCollectionStatus = {}
+            data.forEach(item => {
+                if (item.isFolder) {
+                    this.folderCollectionStatus[item.folderId] = true;
+                } else {
+                    this.fileCollectionStatus[item.fileId] = true;
+                }
+            });
+        }
     },
     mounted() {}
 }

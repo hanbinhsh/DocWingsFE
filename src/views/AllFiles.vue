@@ -13,7 +13,6 @@
                 />
             </div>
         </div>
-
         <div id="wrapper">
             <nav class="navbar-default navbar-static-side" role="navigation">
                 <div class="sidebar-collapse">
@@ -415,41 +414,19 @@ export default {
             },
             showLoading() {this.loading = true;},
             hideLoading() {this.loading = false;},
-            async findFoldersByParentId(parentId){
-                try{
-                    const responseFolders = await axios.get('/api/findFoldersByParentId?parentId='+parentId);
-                    this.folders = responseFolders.data;
-                }catch (error) {
-                    console.error('Error findFoldersByParentId:', error);
-                }
-            },
-            async findFilesByParentId(parentId){
-                try{
-                    const responseFiles = await axios.get('/api/findFilesByParentId?parentId='+parentId);
-                    this.files = responseFiles.data;
-                }catch (error) {
-                    console.error('Error findFilesByParentId:', error);
-                }
-            },
             async findFolderById(id){
-                try{
-                    const responseFiles = await axios.get('/api/findFolderById?id='+id);
-                    sessionStorage.setItem("currentFolder",JSON.stringify(responseFiles.data));
-                }catch (error) {
-                    console.error('Error findFolderById:', error);
-                }
+                const responseFiles = await axios.get('/api/findFolderById?id='+id);
+                sessionStorage.setItem("currentFolder",JSON.stringify(responseFiles.data));
             },
             async countFFsByParentId(id){
-                try{
-                    const currentFFsCount = await axios.get('/api/countFFsByParentId?parentId='+id);
-                    sessionStorage.setItem("currentFFsCount",currentFFsCount.data);
-                }catch (error) {
-                    console.error('Error countFFsByParentId:', error);
-                }
+                const currentFFsCount = await axios.get('/api/countFFsByParentId?parentId='+id);
+                sessionStorage.setItem("currentFFsCount",currentFFsCount.data);
             },
             async findFFsByParentId(id){  // 寻找文件和文件夹
-                await this.findFoldersByParentId(id);
-                await this.findFilesByParentId(id);
+                const responseFolders = await axios.get('/api/findFoldersByParentId?parentId='+id);
+                this.folders = responseFolders.data;
+                const responseFiles = await axios.get('/api/findFilesByParentId?parentId='+id);
+                this.files = responseFiles.data;
             },
             async enterPath(id){  // 按下文件夹->改变路径
                 if(this.isTrash) return;
@@ -461,7 +438,8 @@ export default {
                 await this.findFFsByParentId(id);
                 await this.findFolderById(id);
                 await this.countFFsByParentId(id);
-                await this.checkAllFFsCollectionStatus();await this.findTags();
+                await this.checkAllFFsCollectionStatus();
+                await this.findTags();
             this.currentFolder = JSON.parse(sessionStorage.getItem("currentFolder"));  // 更新 currentFolder
             this.currentFFsCount = sessionStorage.getItem("currentFFsCount");  // 更新 currentFFsCount
             // 发送文件夹更新信号
@@ -490,8 +468,8 @@ export default {
         async enterPathTrash() {
             // 隐藏或disable上传和创建文件夹按钮，阻止用户进入和点击文件，重命名下载剪切和删除
             this.showLoading();  // 显示加载页面
-            await this.findFileByDelete();
-            await this.findFolderByDelete();
+            await this.findFFsByDelete();
+            await this.findTags();
             const event = new CustomEvent('isTrash', {
                 detail: {
                     status: true
@@ -499,6 +477,12 @@ export default {
             });
             document.dispatchEvent(event);
             this.hideLoading();  // 隐藏加载页面
+        },
+        async findFFsByDelete(){
+            const responseFiles = await axios.post('/api/findFileByDelete',{"status":1});
+            this.files = responseFiles.data;
+            const responseFolders = await axios.post('/api/findFolderByDelete',{"status":1});
+            this.folders = responseFolders.data;
         },
         async backPath() {  //返回上一级
             await this.enterPath(this.currentFolder.parentId);
@@ -612,22 +596,6 @@ export default {
                         document.body.removeChild(elink);
                     }
                 })
-            },
-            async findFileByDelete(){
-                try{
-                    const responseFiles = await axios.post('/api/findFileByDelete',{"status":1});
-                    this.files = responseFiles.data;
-                }catch (error) {
-                    console.error('Error findFileByDelete:', error);
-                }
-            },
-            async findFolderByDelete(){
-                try{
-                    const responseFolders = await axios.post('/api/findFolderByDelete',{"status":1});
-                    this.folders = responseFolders.data;
-                }catch (error) {
-                    console.error('Error findFolderByDelete:', error);
-                }
             },
             async replyTrashFile(fileId){
                 const result = await this.$swal.fire({
