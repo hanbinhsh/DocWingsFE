@@ -24,7 +24,7 @@
                             <a href="share"><i class="fa fa-share-square-o"></i> <span class="nav-label">分享</span></a>
                         </li>
                         <li>
-                            <a href="searchAllServlet"><i class="fa fa-trash-o"></i> <span
+                            <a href="trash"><i class="fa fa-trash-o"></i> <span
                                     class="nav-label">回收站</span></a>
                         </li>
                         <li>
@@ -228,15 +228,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="footer">
-                    <div class="pull-right">
-                        10GB of <strong>250GB</strong> Free.
-                    </div>
-                    <div>
-                        <strong>Copyright</strong> DocWings &copy; 2024
-                    </div>
-                </div>
-
+                <FootBar/>
             </div>
         </div>
     </div>
@@ -252,11 +244,13 @@ import axios from "axios";
 
 import TopBar from '@/components/TopBar.vue'
 import UserItem from '@/components/UserItem.vue'
+import FootBar from '@/components/FootBar.vue'
 export default {
     name: 'Log',
     components: {
         TopBar,
-        UserItem
+        UserItem,
+        FootBar
     },
     data() {
         return {

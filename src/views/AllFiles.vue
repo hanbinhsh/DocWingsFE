@@ -83,8 +83,8 @@
                                         <ul class="category-list" style="padding: 0">
                                             <li><a @click="findFilesByCategory(0)"> <i class="fa fa-circle text-navy"></i> 图片</a></li>
                                             <li><a @click="findFilesByCategory(1)"> <i class="fa fa-circle text-danger"></i> 文档</a></li>
-                                            <li><a @click="findFilesByCategory(2)"> <i class="fa fa-circle text-primary"></i> 音频</a></li>
-                                            <li><a @click="findFilesByCategory(3)"> <i class="fa fa-circle text-info"></i> 视频</a></li>
+                                            <li><a @click="findFilesByCategory(3)"> <i class="fa fa-circle text-primary"></i> 视频</a></li>
+                                            <li><a @click="findFilesByCategory(2)"> <i class="fa fa-circle text-info"></i> 音乐</a></li>
                                             <li><a @click="findFilesByCategory(4)"> <i class="fa fa-circle text-warning"></i> 其他</a></li>
                                         </ul>
                                         <h5 class="tag-title">标签</h5>
@@ -237,15 +237,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="footer">
-                    <div class="pull-right">
-                        10GB of <strong>250GB</strong> Free.
-                    </div>
-                    <div>
-                        <strong>Copyright</strong> DocWings &copy; 2024
-                    </div>
-                </div>
-
+                <FootBar/>
             </div>
         </div>
     </div>
@@ -272,11 +264,11 @@ import VueViewer from 'v-viewer'
 import { defineComponent } from 'vue'
 import { VideoPlayer } from '@videojs-player/vue'
 import '../../node_modules/video.js/dist/video-js.css'
-
+import toastr from "../assets/js/plugins/toastr/toastr.min.js"
 import TopBar from '@/components/TopBar.vue'
 import FileDropzone from '../components/FileDropzone.vue'
 import UserItem from '@/components/UserItem.vue'
-import toastr from "../assets/js/plugins/toastr/toastr.min.js"
+import FootBar from '@/components/FootBar.vue'
 toastr.options = {
     "closeButton": true,
     "debug": false,
@@ -470,7 +462,7 @@ export default {
             this.currentFolder = JSON.parse(sessionStorage.getItem("currentFolder"));  // 更新 currentFolder
             this.currentFFsCount = sessionStorage.getItem("currentFFsCount");  // 更新 currentFFsCount
             // 发送文件夹更新信号
-            const event = new CustomEvent('update-dropzone', {
+            const event = new CustomEvent('update-path', {
                 detail: {
                     newFolderId: this.currentFolder.folderId
                 }
@@ -740,7 +732,8 @@ export default {
             TopBar,
             FileDropzone,
             UserItem,
-            VideoPlayer
+            VideoPlayer,
+        FootBar
         },
 		mounted() {},
 	}
