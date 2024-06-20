@@ -33,7 +33,6 @@
                 </div>
             </div>
         </div>
-
         <div id="wrapper">
             <nav class="navbar-default navbar-static-side" role="navigation">
                 <div class="sidebar-collapse">
@@ -145,10 +144,10 @@
                                         title="刷新页面"
                                         @click="isTrash ? this.enterPathTrash() : this.enterPath(currentFolder.folderId)"><i
                                             class="fa fa-refresh"></i> 刷新</button>&nbsp;
-                                    <button class="btn btn-white btn-sm" data-toggle="tooltip" data-placement="top"
+                                    <!-- <button class="btn btn-white btn-sm" data-toggle="tooltip" data-placement="top"
                                         title="Mark as read"><i class="fa fa-eye"></i> </button>&nbsp;
                                     <button class="btn btn-white btn-sm" data-toggle="tooltip" data-placement="top"
-                                        title="Mark as important"><i class="fa fa-exclamation"></i> </button>&nbsp;
+                                        title="Mark as important"><i class="fa fa-exclamation"></i> </button>&nbsp; -->
                                     <button class="btn btn-white btn-sm" data-toggle="tooltip" data-placement="top"
                                         title="粘贴文件" @click="this.pasteFile()"><i class="fa fa-paste"></i> 粘贴
                                         <span v-if="this.isCutting" class="">
@@ -207,6 +206,8 @@
                                                     <a v-if="!this.isTrash"
                                                         @click="collectionFolder(folder.folderId)"><i class="fa"
                                                             :class="folderCollectionStatus[folder.folderId] ? 'fa-star' : 'fa-star-o'"></i>&nbsp;</a>
+                                                    <a v-if="!this.isTrash" @click="">
+                                                            <i class="fa fa-share-alt"></i>&nbsp;</a>
                                                     <a v-if="!this.isTrash" @click="recycleBinFolder(folder.folderId)">
                                                         <i class="fa fa-trash-o"></i>&nbsp;</a>
                                                     <a v-if="!this.isTrash" @click="cutFF(folder)"><i
@@ -237,6 +238,8 @@
                                                     <a v-if="!this.isTrash" @click="collectionFile(file.fileId)"><i
                                                             class="fa"
                                                             :class="fileCollectionStatus[file.fileId] ? 'fa-star' : 'fa-star-o'"></i>&nbsp;</a>
+                                                    <a v-if="!this.isTrash" @click="">
+                                                            <i class="fa fa-share-alt"></i>&nbsp;</a>
                                                     <a v-if="!this.isTrash" @click="downloadFile(file)"><i
                                                             class="fa fa-download"></i>&nbsp;</a>
                                                     <a v-if="!this.isTrash" @click="recycleBinFile(file.fileId)"><i
@@ -500,44 +503,25 @@ export default {
             handleFileUploadSuccess() {  // 成功弹窗
                 toastr.success("上传文件成功！", "成功");
                 this.enterPath(this.currentFolder.folderId);
+                //更新容量
+                const event = new CustomEvent('update-capacity', {});
+                document.dispatchEvent(event);
             },
             showLoading() {this.loading = true;},
             hideLoading() {this.loading = false;},
-            async findFoldersByParentId(parentId){
-                try{
-                    const responseFolders = await axios.get('/api/findFoldersByParentId?parentId='+parentId);
-                    this.folders = responseFolders.data;
-                }catch (error) {
-                    console.error('Error findFoldersByParentId:', error);
-                }
-            },
-            async findFilesByParentId(parentId){
-                try{
-                    const responseFiles = await axios.get('/api/findFilesByParentId?parentId='+parentId);
-                    this.files = responseFiles.data;
-                }catch (error) {
-                    console.error('Error findFilesByParentId:', error);
-                }
-            },
             async findFolderById(id){
-                try{
-                    const responseFiles = await axios.get('/api/findFolderById?id='+id);
-                    sessionStorage.setItem("currentFolder",JSON.stringify(responseFiles.data));
-                }catch (error) {
-                    console.error('Error findFolderById:', error);
-                }
+                const responseFiles = await axios.get('/api/findFolderById?id='+id);
+                sessionStorage.setItem("currentFolder",JSON.stringify(responseFiles.data));
             },
             async countFFsByParentId(id){
-                try{
-                    const currentFFsCount = await axios.get('/api/countFFsByParentId?parentId='+id);
-                    sessionStorage.setItem("currentFFsCount",currentFFsCount.data);
-                }catch (error) {
-                    console.error('Error countFFsByParentId:', error);
-                }
+                const currentFFsCount = await axios.get('/api/countFFsByParentId?parentId='+id);
+                sessionStorage.setItem("currentFFsCount",currentFFsCount.data);
             },
             async findFFsByParentId(id){  // 寻找文件和文件夹
-                await this.findFoldersByParentId(id);
-                await this.findFilesByParentId(id);
+                const responseFolders = await axios.get('/api/findFoldersByParentId?parentId='+id);
+                this.folders = responseFolders.data;
+                const responseFiles = await axios.get('/api/findFilesByParentId?parentId='+id);
+                this.files = responseFiles.data;
             },
             async enterPath(id){  // 按下文件夹->改变路径
                 if(this.isTrash) return;
@@ -549,7 +533,8 @@ export default {
                 await this.findFFsByParentId(id);
                 await this.findFolderById(id);
                 await this.countFFsByParentId(id);
-                await this.checkAllFFsCollectionStatus();await this.findTags();
+                await this.checkAllFFsCollectionStatus();
+                await this.findTags();
             this.currentFolder = JSON.parse(sessionStorage.getItem("currentFolder"));  // 更新 currentFolder
             this.currentFFsCount = sessionStorage.getItem("currentFFsCount");  // 更新 currentFFsCount
             // 发送文件夹更新信号
@@ -578,8 +563,8 @@ export default {
         async enterPathTrash() {
             // 隐藏或disable上传和创建文件夹按钮，阻止用户进入和点击文件，重命名下载剪切和删除
             this.showLoading();  // 显示加载页面
-            await this.findFileByDelete();
-            await this.findFolderByDelete();
+            await this.findFFsByDelete();
+            await this.findTags();
             const event = new CustomEvent('isTrash', {
                 detail: {
                     status: true
@@ -587,6 +572,12 @@ export default {
             });
             document.dispatchEvent(event);
             this.hideLoading();  // 隐藏加载页面
+        },
+        async findFFsByDelete(){
+            const responseFiles = await axios.post('/api/findFileByDelete',{"status":1});
+            this.files = responseFiles.data;
+            const responseFolders = await axios.post('/api/findFolderByDelete',{"status":1});
+            this.folders = responseFolders.data;
         },
         async backPath() {  //返回上一级
             await this.enterPath(this.currentFolder.parentId);
@@ -701,22 +692,6 @@ export default {
                     }
                 })
             },
-            async findFileByDelete(){
-                try{
-                    const responseFiles = await axios.post('/api/findFileByDelete',{"status":1});
-                    this.files = responseFiles.data;
-                }catch (error) {
-                    console.error('Error findFileByDelete:', error);
-                }
-            },
-            async findFolderByDelete(){
-                try{
-                    const responseFolders = await axios.post('/api/findFolderByDelete',{"status":1});
-                    this.folders = responseFolders.data;
-                }catch (error) {
-                    console.error('Error findFolderByDelete:', error);
-                }
-            },
             async replyTrashFile(fileId){
                 const result = await this.$swal.fire({
                     title: '是否将文件还原',
@@ -762,6 +737,9 @@ export default {
                 if (result.isConfirmed) {
                     await axios.post('/api/deleteFile', { "fileId": fileId });
                     this.$swal.fire('操作成功', '文件已删除', 'success');
+                    //更新容量
+                    const event = new CustomEvent('update-capacity', {});
+                    document.dispatchEvent(event);
                     this.enterPathTrash();
                 }
                 else{
@@ -779,6 +757,9 @@ export default {
                 if (result.isConfirmed) {
                     await axios.post('/api/deleteFolder', { "folderId": folderId });
                     this.$swal.fire('操作成功', '文件夹已删除', 'success');
+                    //更新容量
+                    const event = new CustomEvent('update-capacity', {});
+                    document.dispatchEvent(event);
                     this.enterPathTrash();
                 }
                 else{
