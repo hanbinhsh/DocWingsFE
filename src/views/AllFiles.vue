@@ -208,7 +208,7 @@
                                             <td>{{ new Date(folder.createTime).toLocaleString() }}</td>
                                             <td>
                                                 <div class="btn-group">
-                                                    <a v-if="!this.isTrash" @click="">
+                                                    <a v-if="!this.isTrash" @click="shareFolder(folder)">
                                                             <i class="fa fa-share-alt"></i>&nbsp;</a>
                                                     <a v-if="!this.isTrash" @click="recycleBinFolder(folder.folderId)">
                                                         <i class="fa fa-trash-o"></i>&nbsp;</a>
@@ -252,7 +252,7 @@
                                             <td>{{ new Date(file.uploadTime).toLocaleString() }}</td>
                                             <td>
                                                 <div class="btn-group">
-                                                    <a v-if="!this.isTrash" @click="">
+                                                    <a v-if="!this.isTrash" @click="shareFile(file)">
                                                             <i class="fa fa-share-alt"></i>&nbsp;</a>
                                                     <a v-if="!this.isTrash" @click="downloadFile(file)"><i
                                                             class="fa fa-download"></i>&nbsp;</a>
@@ -699,27 +699,27 @@ export default {
             },
             async renameFolderTag(folder){
                 const { value: newName } = await this.$swal.fire({
-                title: '重命名标签',
-                input: 'text',
-                inputLabel: '请输入新的标签',
-                inputValue: folder.tag,
-                showCancelButton: true,
-                confirmButtonText: '确定',
-                cancelButtonText: '取消',
-                inputValidator: (value) => {
-                    if (!value) {
-                        return '标签名不能为空！'
+                    title: '重命名标签',
+                    input: 'text',
+                    inputLabel: '请输入新的标签',
+                    inputValue: folder.tag,
+                    showCancelButton: true,
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    inputValidator: (value) => {
+                        if (!value) {
+                            return '标签名不能为空！'
+                        }
                     }
+                });
+                if (newName) {
+                        await axios.post('/api/renameFolderTag', { "folderId": folder.folderId, "tag": newName });
+                        this.$swal.fire('标签已更改', `标签已更改为:${newName}`, 'success');
+                        this.enterPath(this.currentFolder.folderId);
+                    }
+                else{
+                    this.$swal.fire('操作取消', '标签未更改', 'info');
                 }
-            });
-            if (newName) {
-                    await axios.post('/api/renameFolderTag', { "folderId": folder.folderId, "tag": newName });
-                    this.$swal.fire('标签已更改', `标签已更改为:${newName}`, 'success');
-                    this.enterPath(this.currentFolder.folderId);
-                }
-            else{
-                this.$swal.fire('操作取消', '标签未更改', 'info');
-            }
             },
             async recycleBinFile(fileId){
                 const result = await this.$swal.fire({
@@ -868,6 +868,56 @@ export default {
                     await axios.post('api/CollectionsInsertFolder',{"folderId":folderId,"userId":this.userData.userId});
                 }
                 this.enterPath(this.currentFolder.folderId)
+            },
+            async shareFile(file){
+                // TODO
+                const { value: newName } = await this.$swal.fire({
+                    title: '重命名标签',
+                    input: 'text',
+                    inputLabel: '请输入新的标签',
+                    inputValue: file.tag, // 当前文件名，可以作为默认值显示在输入框中
+                    showCancelButton: true,
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    inputValidator: (value) => {
+                        if (!value) {
+                            return '标签名不能为空！'
+                        }
+                    }
+                });
+                if (newName) {
+                    await axios.post('/api/renameFileTag', { "fileId": file.fileId, "tag": newName });
+                    this.$swal.fire('标签已更改', `标签已更改为:${newName}`, 'success');
+                    this.enterPath(this.currentFolder.folderId);
+                }
+                else {
+                    this.$swal.fire('操作取消', '标签未更改', 'info');
+                }
+            },
+            async shareFolder(folder){
+                // TODO
+                const { value: newName } = await this.$swal.fire({
+                    title: '重命名标签',
+                    input: 'text',
+                    inputLabel: '请输入新的标签',
+                    inputValue: folder.tag,
+                    showCancelButton: true,
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    inputValidator: (value) => {
+                        if (!value) {
+                            return '标签名不能为空！'
+                        }
+                    }
+                });
+                if (newName) {
+                        await axios.post('/api/renameFolderTag', { "folderId": folder.folderId, "tag": newName });
+                        this.$swal.fire('标签已更改', `标签已更改为:${newName}`, 'success');
+                        this.enterPath(this.currentFolder.folderId);
+                    }
+                else{
+                    this.$swal.fire('操作取消', '标签未更改', 'info');
+                }
             },
             async checkAllFFsCollectionStatus() {
                 const response=await axios.post('/api/findCollectionFFs?userId='+this.userData.userId);

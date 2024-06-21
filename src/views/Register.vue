@@ -177,6 +177,7 @@ export default {
 
                     $.ajax({
                         // TODO 用户名冲突、跳转页面
+                        // FIXME success指的是表单返回信息，不是response
                         type: "POST",
                         url: "/api/registerUser",
                         contentType: "application/json; charset=utf-8",
