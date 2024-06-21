@@ -9,7 +9,8 @@
             <div class="modal-dialog modal-lg">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                        {{this.audio_videoTitle}}
+                        <button @click="closeModal" type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
                     </div>
                     <div class="modal-body">
                         <div class="text-center">
@@ -23,7 +24,8 @@
             <div class="modal-dialog modal-lg">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                        {{this.audio_videoTitle}}
+                        <button @click="closeModal" type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
                     </div>
                     <div class="modal-body">
                         <div class="text-center">
@@ -269,6 +271,7 @@
 <style>
 @import '../assets/css/plugins/iCheck/custom.css';
 @import '../assets/css/plugins/toastr/toastr.min.css';
+@import '../../node_modules/video.js/dist/video-js.css';
 
 div:where(.swal2-container) div:where(.swal2-popup) {
     font-size: 1.5rem !important;
@@ -327,7 +330,6 @@ import VueViewer from 'v-viewer'
 import { defineComponent } from 'vue'
 import { VideoPlayer } from '@videojs-player/vue'
 import { ref } from 'vue';
-import '../../node_modules/video.js/dist/video-js.css'
 import toastr from "../assets/js/plugins/toastr/toastr.min.js"
 import TopBar from '@/components/TopBar.vue'
 import FileDropzone from '../components/FileDropzone.vue'
@@ -367,9 +369,11 @@ export default {
                 userData: JSON.parse(sessionStorage.getItem('userData')) || {},
                 folderCollectionStatus: {},
                 fileCollectionStatus: {},
+                audio_videoTitle: null,
                 audioOptions: {
                     autoplay: false,
                     controls: true,
+                    bigPlayButton: true,
                     sources: 
                     {
                         src: 'api/downloadFile?fileID=35',
@@ -380,6 +384,7 @@ export default {
                 videoOptions: {
                     autoplay: false,
                     controls: true,
+                    bigPlayButton: true,
                     sources:
                     {
                         src: 'api/downloadFile?fileID=34',
@@ -475,11 +480,13 @@ export default {
                     viewer.show()
                 }
                 else if(file.fileType.startsWith('audio/')){
+                    this.audio_videoTitle = file.fileName;
                     this.changeAudioSource(file.fileId);
                     this.enterPath(this.currentFolder.folderId);
                     $('#myModal5').modal('show');
                 }
                 else if(file.fileType.startsWith('video/')){ 
+                    this.audio_videoTitle = file.fileName;
                     this.changeVideoSource(file.fileId);
                     this.enterPath(this.currentFolder.folderId);
                     $('#myModal6').modal('show');
@@ -498,6 +505,10 @@ export default {
                 this.$nextTick(() => {
                     this.showPlayer = true;
                 });
+            },
+            closeModal(){
+                this.showPlayer = false;
+                this.enterPath(this.currentFolder.folderId);
             },
             handleFileUploadSuccess() {  // 成功弹窗
                 toastr.success("上传文件成功！", "成功");
