@@ -5,6 +5,7 @@ import Profile from '../views/Profile.vue';
 import AllFiles from '../views/AllFiles.vue';
 import Log from '../views/Log.vue';
 import Share from '../views/Share.vue';
+import ShareAccept from '../views/ShareAccept.vue';
 import toastr from "../assets/js/plugins/toastr/toastr.min.js";
 toastr.options = {
 	"closeButton": true,
@@ -97,6 +98,15 @@ const routes = [
     path: '/share',
     name: 'share',
     component: Share,
+    meta: {
+      title: '分享',
+      requiresAuth: true,
+    }
+  },
+  {
+    path: '/shareaccept',
+    name: 'shareaccept',
+    component: ShareAccept,
     meta: {
       title: '分享',
       requiresAuth: true,
