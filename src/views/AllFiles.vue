@@ -143,16 +143,13 @@
                                     <div class="btn-group pull-right">
                                         <button :class="{ 'disabled': isTrash }" class="btn btn-white btn-sm" @click="backPath()"><i
                                                 class="fa fa-arrow-left"></i></button>
-                                        <!-- <button class="btn btn-white btn-sm"><i class="fa fa-arrow-right"></i></button> -->
+                                        <button :class="{ 'disabled': isTrash }" class="btn btn-white btn-sm" @click="enterPath(0)"><i
+                                                class="fa fa-home"></i></button>
                                     </div>
                                     <button class="btn btn-white btn-sm" data-toggle="tooltip" data-placement="left"
                                         title="刷新页面"
                                         @click="isTrash ? this.enterPathTrash() : this.enterPath(currentFolder.folderId)"><i
                                             class="fa fa-refresh"></i> 刷新</button>&nbsp;
-                                    <!-- <button class="btn btn-white btn-sm" data-toggle="tooltip" data-placement="top"
-                                        title="Mark as read"><i class="fa fa-eye"></i> </button>&nbsp;
-                                    <button class="btn btn-white btn-sm" data-toggle="tooltip" data-placement="top"
-                                        title="Mark as important"><i class="fa fa-exclamation"></i> </button>&nbsp; -->
                                     <button class="btn btn-white btn-sm" data-toggle="tooltip" data-placement="top"
                                         title="粘贴文件" @click="this.pasteFile()" :class="{ 'disabled': isTrash }">
                                         <i class="fa fa-paste"></i> 粘贴
