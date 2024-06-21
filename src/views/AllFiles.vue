@@ -179,6 +179,7 @@
                                             <th>名称</th>
                                             <th v-if="!this.isTrash"></th> <!--重命名-->
                                             <th>标签</th>
+                                            <th v-if="!this.isTrash"></th> <!--重命名标签-->
                                             <th>文件大小</th>
                                             <!-- <th>文件类型</th> -->
                                             <th>上次修改者</th>
@@ -193,9 +194,11 @@
                                             @dblclick="enterPath(folder.folderId, folder.parentId)">
                                             <td><i class="fa fa-folder-o"></i></td>
                                             <td>{{ folder.folderName }}</td>
-                                            <td v-if="!this.isTrash"><a @click="renameFolder(folder.folderId)"><i
+                                            <td v-if="!this.isTrash"><a @click="renameFolder(folder)"><i
                                                         class="fa fa-edit"></i></a></td>
                                             <td>{{ folder.tag }}</td>
+                                            <td v-if="!this.isTrash"><a v-if="folder.tag" @click="renameFolderTag(folder)"><i
+                                                class="fa fa-edit"></i></a></td>
                                             <td></td>
                                             <!-- <td></td> -->
                                             <td>{{ folder.lastModifierName }}</td>
@@ -226,9 +229,11 @@
                                             @dblclick="filePreview(file)">
                                             <td><i class="fa fa-file-o"></i></td>
                                             <td>{{ file.fileName }}</td>
-                                            <td v-if="!this.isTrash"><a class="" @click="renameFile(file.fileId)"><i
+                                            <td v-if="!this.isTrash"><a class="" @click="renameFile(file)"><i
                                                         class="fa fa-edit"></i></a></td>
                                             <td>{{ file.tag }}</td>
+                                            <td v-if="!this.isTrash"><a v-if="file.tag" @click="renameFileTag(file)"><i
+                                                class="fa fa-edit"></i></a></td>
                                             <td>{{ file.fileSize }}MB</td>
                                             <!-- <td>{{ file.fileType }}</td> -->
                                             <td>{{ file.lastModifierName }}</td>
@@ -555,98 +560,144 @@ export default {
             });
             document.dispatchEvent(event);
             this.hideLoading();  // 隐藏加载页面
-        },
-        async findFFsByTag(tag) {
-            this.showLoading();  // 显示加载页面
-            const response = await axios.get('/api/findFFsByTag?tag=' + tag);
-            this.files = response.data.data.files;
-            this.folders = response.data.data.folders;
-            this.hideLoading();  // 隐藏加载页面
-        },
-        async findFilesByCategory(category){
-            this.showLoading();  // 显示加载页面
-            this.folders=[];
-            const response = await axios.get('/api/findFilesByCategory?category=' + category);
-            this.files = response.data.data.files;
-            this.hideLoading();  // 隐藏加载页面
-        },
-        async enterPathTrash() {
-            // 隐藏或disable上传和创建文件夹按钮，阻止用户进入和点击文件，重命名下载剪切和删除
-            this.showLoading();  // 显示加载页面
-            await this.findFFsByDelete();
-            await this.findTags();
-            const event = new CustomEvent('isTrash', {
-                detail: {
-                    status: true
-                }
-            });
-            document.dispatchEvent(event);
-            this.hideLoading();  // 隐藏加载页面
-        },
-        async findFFsByDelete(){
-            const responseFiles = await axios.post('/api/findFileByDelete',{"status":1});
-            this.files = responseFiles.data;
-            const responseFolders = await axios.post('/api/findFolderByDelete',{"status":1});
-            this.folders = responseFolders.data;
-        },
-        async backPath() {  //返回上一级
-            await this.enterPath(this.currentFolder.parentId);
-        },
-        async findTags() {
-            const responseTags = await axios.get('/api/findTags');
-            this.tags = responseTags.data;
-        },
-        async renameFile(fileId) {
-            const { value: newName } = await this.$swal.fire({
-                title: '重命名文件',
-                input: 'text',
-                inputLabel: '请输入新的文件名',
-                inputValue: this.currentFileName, // 当前文件名，可以作为默认值显示在输入框中
-                showCancelButton: true,
-                confirmButtonText: '确定',
-                cancelButtonText: '取消',
-                inputValidator: (value) => {
-                    if (!value) {
-                        return '文件名不能为空！'
+            },
+            async findFFsByTag(tag) {
+                this.showLoading();  // 显示加载页面
+                const response = await axios.get('/api/findFFsByTag?tag=' + tag);
+                this.files = response.data.data.files;
+                this.folders = response.data.data.folders;
+                this.hideLoading();  // 隐藏加载页面
+            },
+            async findFilesByCategory(category){
+                this.showLoading();  // 显示加载页面
+                this.folders=[];
+                const response = await axios.get('/api/findFilesByCategory?category=' + category);
+                this.files = response.data.data.files;
+                this.hideLoading();  // 隐藏加载页面
+            },
+            async enterPathTrash() {
+                // 隐藏或disable上传和创建文件夹按钮，阻止用户进入和点击文件，重命名下载剪切和删除
+                this.showLoading();  // 显示加载页面
+                await this.findFFsByDelete();
+                await this.findTags();
+                const event = new CustomEvent('isTrash', {
+                    detail: {
+                        status: true
                     }
-                }
-            });
-            // 如果用户点击了确定按钮，并且提供了新的文件名
-            if (newName) {
-                // 调用 API 来更新文件名
-                await axios.post('/api/renameFile', { "fileId": fileId, "fileName": newName });
-                this.$swal.fire('文件名已更新', `文件名已更新为:${newName}`, 'success');
-                this.enterPath(this.currentFolder.folderId);
-            }
-            else {
-                this.$swal.fire('操作取消', '文件名未更新', 'info');
-            }
-        },
-        async renameFolder(folderId) {
-            const { value: newName } = await this.$swal.fire({
-                title: '重命名文件夹',
-                input: 'text',
-                inputLabel: '请输入新的文件夹名',
-                inputValue: this.currentFolderName, // 当前文件夹名，可以作为默认值显示在输入框中
-                showCancelButton: true,
-                confirmButtonText: '确定',
-                cancelButtonText: '取消',
-                inputValidator: (value) => {
-                    if (!value) {
-                        return '文件夹名不能为空！'
+                });
+                document.dispatchEvent(event);
+                this.hideLoading();  // 隐藏加载页面
+            },
+            async findFFsByDelete(){
+                const responseFiles = await axios.post('/api/findFileByDelete',{"status":1});
+                this.files = responseFiles.data;
+                const responseFolders = await axios.post('/api/findFolderByDelete',{"status":1});
+                this.folders = responseFolders.data;
+            },
+            async backPath() {  //返回上一级
+                await this.enterPath(this.currentFolder.parentId);
+            },
+            async findTags() {
+                const responseTags = await axios.get('/api/findTags');
+                this.tags = responseTags.data;
+            },
+            async renameFile(file) {
+                const { value: newName } = await this.$swal.fire({
+                    title: '重命名文件',
+                    input: 'text',
+                    inputLabel: '请输入新的文件名',
+                    inputValue: file.fileName, // 当前文件名，可以作为默认值显示在输入框中
+                    showCancelButton: true,
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    inputValidator: (value) => {
+                        if (!value) {
+                            return '文件名不能为空！'
+                        }
                     }
-                }
-            });
-            // 如果用户点击了确定按钮，并且提供了新的文件名
-            if (newName) {
-                // 调用 API 来更新文件名
-                    await axios.post('/api/renameFolder', { "folderId": folderId, "folderName": newName });
-                    this.$swal.fire('文件夹名已更新', `文件夹名已更新为:${newName}`, 'success');
+                });
+                // 如果用户点击了确定按钮，并且提供了新的文件名
+                if (newName) {
+                    // 调用 API 来更新文件名
+                    await axios.post('/api/renameFile', { "fileId": file.fileId, "fileName": newName });
+                    this.$swal.fire('文件名已更新', `文件名已更新为:${newName}`, 'success');
                     this.enterPath(this.currentFolder.folderId);
                 }
+                else {
+                    this.$swal.fire('操作取消', '文件名未更新', 'info');
+                }
+            },
+            async renameFolder(folder) {
+                const { value: newName } = await this.$swal.fire({
+                    title: '重命名文件夹',
+                    input: 'text',
+                    inputLabel: '请输入新的文件夹名',
+                    inputValue: folder.folderName,
+                    showCancelButton: true,
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    inputValidator: (value) => {
+                        if (!value) {
+                            return '文件夹名不能为空！'
+                        }
+                    }
+                });
+                if (newName) {
+                        await axios.post('/api/renameFolder', { "folderId": folder.folderId, "folderName": newName });
+                        this.$swal.fire('文件夹名已更新', `文件夹名已更新为:${newName}`, 'success');
+                        this.enterPath(this.currentFolder.folderId);
+                    }
                 else{
                     this.$swal.fire('操作取消', '文件夹名未更新', 'info');
                 }
+            },
+            async renameFileTag(file){
+                const { value: newName } = await this.$swal.fire({
+                    title: '重命名标签',
+                    input: 'text',
+                    inputLabel: '请输入新的标签',
+                    inputValue: file.tag, // 当前文件名，可以作为默认值显示在输入框中
+                    showCancelButton: true,
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    inputValidator: (value) => {
+                        if (!value) {
+                            return '标签名不能为空！'
+                        }
+                    }
+                });
+                if (newName) {
+                    await axios.post('/api/renameFileTag', { "fileId": file.fileId, "tag": newName });
+                    this.$swal.fire('标签已更改', `标签已更改为:${newName}`, 'success');
+                    this.enterPath(this.currentFolder.folderId);
+                }
+                else {
+                    this.$swal.fire('操作取消', '标签未更改', 'info');
+                }
+            },
+            async renameFolderTag(folder){
+                const { value: newName } = await this.$swal.fire({
+                title: '重命名标签',
+                input: 'text',
+                inputLabel: '请输入新的标签',
+                inputValue: folder.tag,
+                showCancelButton: true,
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                inputValidator: (value) => {
+                    if (!value) {
+                        return '标签名不能为空！'
+                    }
+                }
+            });
+            if (newName) {
+                    await axios.post('/api/renameFolderTag', { "folderId": folder.folderId, "tag": newName });
+                    this.$swal.fire('标签已更改', `标签已更改为:${newName}`, 'success');
+                    this.enterPath(this.currentFolder.folderId);
+                }
+            else{
+                this.$swal.fire('操作取消', '标签未更改', 'info');
+            }
             },
             async recycleBinFile(fileId){
                 const result = await this.$swal.fire({
