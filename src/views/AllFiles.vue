@@ -543,10 +543,9 @@ export default {
                 sessionStorage.setItem("currentFFsCount",currentFFsCount.data);
             },
             async findFFsByParentId(id){  // 寻找文件和文件夹
-                const responseFolders = await axios.get('/api/findFoldersByParentId?parentId='+id);
-                this.folders = responseFolders.data;
-                const responseFiles = await axios.get('/api/findFilesByParentId?parentId='+id);
-                this.files = responseFiles.data;
+                const response = await axios.get('/api/findFFsByParentId?parentId='+id);
+                this.folders = response.data.data.folders;
+                this.files = response.data.data.files;
             },
             async enterPath(id){  // 按下文件夹->改变路径
                 if(this.isTrash) return;
