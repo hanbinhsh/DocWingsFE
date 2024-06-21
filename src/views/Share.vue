@@ -58,9 +58,7 @@
                                     </div>
                                 </div>
                                 <div class="ibox-content">
-
                                     <div class="m-b-lg">
-
                                         <div class="input-group">
                                             <input type="text" placeholder="输入要查找的分享......"
                                                 class=" form-control">
@@ -69,7 +67,6 @@
                                             </span>
                                         </div>
                                         <div class="m-t-md">
-
                                             <div class="pull-right">
                                                 <button type="button" class="btn btn-sm btn-white"> <i
                                                         class="fa fa-comments"></i> </button>
