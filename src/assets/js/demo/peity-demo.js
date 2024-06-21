@@ -30,5 +30,4 @@ $(function() {
             .text(values.join(","))
             .change()
     }, 1000);
-
 });
