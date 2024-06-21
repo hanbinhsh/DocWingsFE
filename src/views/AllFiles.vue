@@ -183,6 +183,7 @@
                                             <th>名称</th>
                                             <th v-if="!this.isTrash"></th> <!--重命名-->
                                             <th>标签</th>
+                                            <th v-if="!this.isTrash"></th> <!--重命名标签-->
                                             <th>文件大小</th>
                                             <!-- <th>文件类型</th> -->
                                             <th>上次修改者</th>
@@ -197,9 +198,11 @@
                                             @dblclick="enterPath(folder.folderId, folder.parentId)">
                                             <td><i class="fa fa-folder-o"></i></td>
                                             <td>{{ folder.folderName }}</td>
-                                            <td v-if="!this.isTrash"><a @click="renameFolder(folder.folderId)"><i
+                                            <td v-if="!this.isTrash"><a @click="renameFolder(folder)"><i
                                                         class="fa fa-edit"></i></a></td>
                                             <td>{{ folder.tag }}</td>
+                                            <td v-if="!this.isTrash"><a v-if="folder.tag" @click="renameFolderTag(folder)"><i
+                                                class="fa fa-edit"></i></a></td>
                                             <td></td>
                                             <!-- <td></td> -->
                                             <td>{{ folder.lastModifierName }}</td>
@@ -230,9 +233,11 @@
                                             @dblclick="filePreview(file)">
                                             <td><i class="fa fa-file-o"></i></td>
                                             <td>{{ file.fileName }}</td>
-                                            <td v-if="!this.isTrash"><a class="" @click="renameFile(file.fileId)"><i
+                                            <td v-if="!this.isTrash"><a class="" @click="renameFile(file)"><i
                                                         class="fa fa-edit"></i></a></td>
                                             <td>{{ file.tag }}</td>
+                                            <td v-if="!this.isTrash"><a v-if="file.tag" @click="renameFileTag(file)"><i
+                                                class="fa fa-edit"></i></a></td>
                                             <td>{{ file.fileSize }}MB</td>
                                             <!-- <td>{{ file.fileType }}</td> -->
                                             <td>{{ file.lastModifierName }}</td>
@@ -662,6 +667,54 @@ export default {
                 else{
                     this.$swal.fire('操作取消', '文件夹名未更新', 'info');
                 }
+            },
+            async renameFileTag(file){
+                const { value: newName } = await this.$swal.fire({
+                    title: '重命名标签',
+                    input: 'text',
+                    inputLabel: '请输入新的标签',
+                    inputValue: file.tag, // 当前文件名，可以作为默认值显示在输入框中
+                    showCancelButton: true,
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    inputValidator: (value) => {
+                        if (!value) {
+                            return '标签名不能为空！'
+                        }
+                    }
+                });
+                if (newName) {
+                    await axios.post('/api/renameFileTag', { "fileId": file.fileId, "tag": newName });
+                    this.$swal.fire('标签已更改', `标签已更改为:${newName}`, 'success');
+                    this.enterPath(this.currentFolder.folderId);
+                }
+                else {
+                    this.$swal.fire('操作取消', '标签未更改', 'info');
+                }
+            },
+            async renameFolderTag(folder){
+                const { value: newName } = await this.$swal.fire({
+                title: '重命名标签',
+                input: 'text',
+                inputLabel: '请输入新的标签',
+                inputValue: folder.tag,
+                showCancelButton: true,
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                inputValidator: (value) => {
+                    if (!value) {
+                        return '标签名不能为空！'
+                    }
+                }
+            });
+            if (newName) {
+                    await axios.post('/api/renameFolderTag', { "folderId": folder.folderId, "tag": newName });
+                    this.$swal.fire('标签已更改', `标签已更改为:${newName}`, 'success');
+                    this.enterPath(this.currentFolder.folderId);
+                }
+            else{
+                this.$swal.fire('操作取消', '标签未更改', 'info');
+            }
             },
             async recycleBinFile(fileId){
                 const result = await this.$swal.fire({
