@@ -65,7 +65,10 @@
                                         <div class="hr-line-dashed"></div>
                                         <button class="btn btn-primary btn-block">Upload Files</button>
                                         <div class="hr-line-dashed"></div>
-                                        <div id="morris-donut-chart"></div>
+                                        <div class="row">
+                                            <div class="col-lg-6" id="file-trash-donut" style="height: 180px;padding:0"></div>
+                                            <div class="col-lg-6" id="category-donut" style="height: 180px;padding:0"></div>
+                                        </div>
                                         <div class="hr-line-dashed"></div>
                                         <h5>Folders</h5>
                                         <ul class="folder-list" style="padding: 0">
@@ -136,7 +139,7 @@
                                                 </div>
                                                 <div class="file-name">
                                                     <a>{{ file.fileName }}</a>
-                                                    <br />
+                                                    <br/>
                                                     <small>{{ new Date(file.uploadTime).toLocaleString() }}</small>
                                                 </div>
                                             </a>
@@ -199,24 +202,46 @@ export default {
             userData: JSON.parse(sessionStorage.getItem('userData')) || {},
             folderCollectionStatus: {},
             fileCollectionStatus: {},
+            categoryCapacity:{},
         };
     },
     created() {
+        this.queryCategoryCapacity();
         this.updateFilePreview();
         this.enterPath();
-        $(function () {// 图表使用
-            Morris.Donut({
-                element: 'morris-donut-chart',
-                data: [{ label: "剩余空间", value: 12 },
-                { label: "文档", value: 30 },
-                { label: "其他", value: 20 }],
-                resize: true,
-                colors: ['#87d6c6', '#54cdb4', '#1ab394'],
-                formatter: function (y, data) { return y + '%' },
-            });
-        });
     },
     methods: {
+        async queryCategoryCapacity(){
+            const responseTags = await axios.get('/api/queryCategoryCapacity');
+            this.categoryCapacity = responseTags.data.data;
+            const self = this;  // 保存对 this 的引用
+            $(function () {// 图表使用
+                Morris.Donut({
+                    element: 'file-trash-donut',
+                    data: [
+                        { label: "剩余空间", value: self.categoryCapacity.leftCapacity },
+                        { label: "回收站", value: self.categoryCapacity.trashFilesCapacity },
+                        { label: "已用空间", value: self.categoryCapacity.filesCapacity },
+                    ],
+                    resize: true,
+                    colors: ['#87d6c6', '#54cdb4', '#1ab394'],
+                    formatter: function (y, data) { return y + 'GB' },
+                });
+                Morris.Donut({
+                    element: 'category-donut',
+                    data: [
+                        { label: "图片", value: self.categoryCapacity.imageCapacity },
+                        { label: "文档", value: self.categoryCapacity.documentCapacity },
+                        { label: "视频", value: self.categoryCapacity.videoCapacity },
+                        { label: "音乐", value: self.categoryCapacity.audioCapacity },
+                        { label: "其他", value: self.categoryCapacity.otherCapacity },
+                    ],
+                    resize: true,
+                    colors: ['#a1e4d9', '#87d6c6', '#54cdb4', '#1ab394', '#34a386'],
+                    formatter: function (y, data) { return y + 'GB' },
+                });
+            });
+        },
         async findTags() {
             const responseTags = await axios.get('/api/findTags');
             this.tags = responseTags.data;
