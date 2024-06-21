@@ -58,10 +58,9 @@
                                 <div class="ibox-content">
                                     <div class="file-manager">
                                         <h5>查看:</h5>
-                                        <a href="file_manager#" class="file-control active">Ale</a>
-                                        <a href="file_manager#" class="file-control">Documents</a>
-                                        <a href="file_manager#" class="file-control">Audio</a>
-                                        <a href="file_manager#" class="file-control">Images</a>
+                                        <a @click="enterPath()" class="file-control active">收藏</a>
+                                        <a @click="" class="file-control">最近访问</a>
+                                        <a @click="" class="file-control">所有文件</a>
                                         <div class="hr-line-dashed"></div>
                                         <a class="btn btn-primary btn-block" href="allfiles">上传文件</a>
                                         <div class="hr-line-dashed"></div>
@@ -270,7 +269,8 @@ export default {
             this.tags = responseTags.data;
         },
         getImageUrl(fileId) {
-            const imageUrl = this.images.find(url => url.includes(`fileID=${fileId}`));
+            // const imageUrl = this.images.find(url => url.includes(`fileID=${fileId}`));
+            let imageUrl = "api/downloadFile?fileID="+fileId;
             return imageUrl || '';
         },
         async updateFilePreview() {
