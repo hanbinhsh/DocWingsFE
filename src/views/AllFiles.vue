@@ -8,11 +8,10 @@
         <div v-show="true">
             <div class="audio-preview">
                 <video-player v-for="(src, index) in audios" class="audios" :key="index" :src="src"
-                    :options="playerOptions"
-                    :volume="0.6"
-                />
+                    :options="playerOptions" :volume="0.6" />
             </div>
         </div>
+        <div id="docx-preview"></div>
         <div id="wrapper">
             <nav class="navbar-default navbar-static-side" role="navigation">
                 <div class="sidebar-collapse">
@@ -80,11 +79,16 @@
                                         </ul>
                                         <h5>类别</h5>
                                         <ul class="category-list" style="padding: 0">
-                                            <li><a @click="findFilesByCategory(0)"> <i class="fa fa-circle text-navy"></i> 图片</a></li>
-                                            <li><a @click="findFilesByCategory(1)"> <i class="fa fa-circle text-danger"></i> 文档</a></li>
-                                            <li><a @click="findFilesByCategory(3)"> <i class="fa fa-circle text-primary"></i> 视频</a></li>
-                                            <li><a @click="findFilesByCategory(2)"> <i class="fa fa-circle text-info"></i> 音乐</a></li>
-                                            <li><a @click="findFilesByCategory(4)"> <i class="fa fa-circle text-warning"></i> 其他</a></li>
+                                            <li><a @click="findFilesByCategory(0)"> <i
+                                                        class="fa fa-circle text-navy"></i> 图片</a></li>
+                                            <li><a @click="findFilesByCategory(1)"> <i
+                                                        class="fa fa-circle text-danger"></i> 文档</a></li>
+                                            <li><a @click="findFilesByCategory(3)"> <i
+                                                        class="fa fa-circle text-primary"></i> 视频</a></li>
+                                            <li><a @click="findFilesByCategory(2)"> <i
+                                                        class="fa fa-circle text-info"></i> 音乐</a></li>
+                                            <li><a @click="findFilesByCategory(4)"> <i
+                                                        class="fa fa-circle text-warning"></i> 其他</a></li>
                                         </ul>
                                         <h5 class="tag-title">标签</h5>
                                         <ul class="tag-list" style="padding: 0">
@@ -187,7 +191,7 @@
                                                         @click="collectionFolder(folder.folderId)"><i class="fa"
                                                             :class="folderCollectionStatus[folder.folderId] ? 'fa-star' : 'fa-star-o'"></i>&nbsp;</a>
                                                     <a v-if="!this.isTrash" @click="">
-                                                            <i class="fa fa-share-alt"></i>&nbsp;</a>
+                                                        <i class="fa fa-share-alt"></i>&nbsp;</a>
                                                     <a v-if="!this.isTrash" @click="recycleBinFolder(folder.folderId)">
                                                         <i class="fa fa-trash-o"></i>&nbsp;</a>
                                                     <a v-if="!this.isTrash" @click="cutFF(folder)"><i
@@ -219,7 +223,7 @@
                                                             class="fa"
                                                             :class="fileCollectionStatus[file.fileId] ? 'fa-star' : 'fa-star-o'"></i>&nbsp;</a>
                                                     <a v-if="!this.isTrash" @click="">
-                                                            <i class="fa fa-share-alt"></i>&nbsp;</a>
+                                                        <i class="fa fa-share-alt"></i>&nbsp;</a>
                                                     <a v-if="!this.isTrash" @click="downloadFile(file)"><i
                                                             class="fa fa-download"></i>&nbsp;</a>
                                                     <a v-if="!this.isTrash" @click="recycleBinFile(file.fileId)"><i
@@ -240,7 +244,7 @@
                         </div>
                     </div>
                 </div>
-                <FootBar/>
+                <FootBar />
             </div>
         </div>
     </div>
@@ -272,6 +276,9 @@ import TopBar from '@/components/TopBar.vue'
 import FileDropzone from '../components/FileDropzone.vue'
 import UserItem from '@/components/UserItem.vue'
 import FootBar from '@/components/FootBar.vue'
+import { ref } from "vue";
+import jsPreviewDocx from "@js-preview/docx";
+import "@js-preview/docx/lib/index.css";
 toastr.options = {
     "closeButton": true,
     "debug": false,
@@ -292,158 +299,171 @@ export default {
     name: 'Profile',
     data() {
         return {
-                folders: [],
-                files: [],
-                tags: [],
-                viewerOptions: {},
-                images: [],
-                audios: [],
-                videos: [],
-                currentFolder: JSON.parse(sessionStorage.getItem("currentFolder")) || {},
-                currentFFsCount: sessionStorage.getItem("currentFFsCount") || {},
-                loading: false,
-                isTrash: false,
-                isCutting: false,
-                currentCutFF: null,
-                userData: JSON.parse(sessionStorage.getItem('userData')) || {},
-                folderCollectionStatus: {},
-                fileCollectionStatus: {},
-            };
+            folders: [],
+            files: [],
+            tags: [],
+            viewerOptions: {},
+            images: [],
+            audios: [],
+            videos: [],
+            docx: [],
+            currentFolder: JSON.parse(sessionStorage.getItem("currentFolder")) || {},
+            currentFFsCount: sessionStorage.getItem("currentFFsCount") || {},
+            loading: false,
+            isTrash: false,
+            isCutting: false,
+            currentCutFF: null,
+            userData: JSON.parse(sessionStorage.getItem('userData')) || {},
+            folderCollectionStatus: {},
+            fileCollectionStatus: {},
+        };
+    },
+    created() {
+        this.checkRoute();
+        if (this.isTrash) {
+            this.enterPathTrash();
+        }
+        else {
+            this.enterPath(0);
+        }
+    },
+
+    methods: {
+        checkRoute() {
+            if (this.$route.name === 'allfiles') {
+                this.isTrash = false;
+            } else if (this.$route.name === 'trash') {
+                this.isTrash = true;
+            }
         },
-        created() {
-            this.checkRoute();
-            if (this.isTrash){
-                this.enterPathTrash();
-            }
-            else{
-                this.enterPath(0);
-            }
-            },
-
-        methods: {
-            checkRoute() {
-                if (this.$route.name === 'allfiles') {
-                    this.isTrash = false;
-                } else if (this.$route.name === 'trash') {
-                    this.isTrash = true;
-                }
-            },
-            async createFolder(){
-                if(this.isTrash) return;
-                const { value: newName } = await this.$swal.fire({
-                    title: '新文件夹',
-                    input: 'text',
-                    inputLabel: '请输入新的文件夹名',
-                    inputValue: this.currentFolderName, // 当前文件夹名，可以作为默认值显示在输入框中
-                    showCancelButton: true,
-                    confirmButtonText: '确定',
-                    cancelButtonText: '取消',
-                    inputValidator: (value) => {
-                        if (!value) {
-                            return '文件夹名不能为空！'
-                        }
+        async createFolder() {
+            if (this.isTrash) return;
+            const { value: newName } = await this.$swal.fire({
+                title: '新文件夹',
+                input: 'text',
+                inputLabel: '请输入新的文件夹名',
+                inputValue: this.currentFolderName, // 当前文件夹名，可以作为默认值显示在输入框中
+                showCancelButton: true,
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                inputValidator: (value) => {
+                    if (!value) {
+                        return '文件夹名不能为空！'
                     }
+                }
+            });
+            // 如果用户点击了确定按钮，并且提供了新的文件名
+            if (newName) {
+                // 调用 API 来更新文件名
+                let userId = JSON.parse(sessionStorage.getItem('userData')).userId;
+                await axios.post('/api/insertOneFolder', {
+                    "folderName": newName,
+                    "parentId": this.currentFolder.folderId,
+                    "createrId": userId,
+                    "lastModifierId": userId,
                 });
-                // 如果用户点击了确定按钮，并且提供了新的文件名
-                if (newName) {
-                    // 调用 API 来更新文件名
-                    let userId = JSON.parse(sessionStorage.getItem('userData')).userId;
-                    await axios.post('/api/insertOneFolder', {
-                        "folderName": newName,
-                        "parentId": this.currentFolder.folderId,
-                        "createrId": userId,
-                        "lastModifierId": userId,
-                    });
-                    this.$swal.fire('文件夹创建成功', `已创建文件夹:${newName}`, 'success');
-                    this.enterPath(this.currentFolder.folderId);
-                }
-            },
-            cutFF(file){
-                this.currentCutFF = file;
-                this.isCutting = true;
-                toastr.success(`成功剪切文件:${file.fileName ? file.fileName : file.folderName}`, "成功");
-            },
-            async pasteFile(){
-                if(this.currentCutFF != null && this.currentCutFF != undefined){
-                    let FFName = this.currentCutFF.fileName ? this.currentCutFF.fileName : this.currentCutFF.folderName;
-                    if(this.currentCutFF.fileName != null && this.currentCutFF.fileName != undefined){
-                        // 文件
-                        await axios.post(`/api/changeFileRouteById?id=${this.currentCutFF.fileId}&parentId=${this.currentFolder.folderId}`);
-                    }else{
-                        // 文件夹
-                        await axios.post(`/api/changeFolderRouteById?id=${this.currentCutFF.folderId}&parentId=${this.currentFolder.folderId}`);
-                    }
-                    this.enterPath(this.currentFolder.folderId);
-                    this.currentCutFF = null;
-                    this.isCutting = false;
-                    toastr.success(`成功粘贴:${FFName}`, "成功");
-                }
-            },
-            async filePreview(file){
-                if(this.isTrash) return;
-                if(file.fileType.startsWith('image/')){
-                    const responseFiles = await axios.get(`/api/findImagesByParentId?parentId=${this.currentFolder.folderId}`);
-                    this.images = responseFiles.data.data.imageList  // 更新图片列表
-                    const imageDivs = this.$el.querySelector('.images')
-                    const viewer = imageDivs.$viewer
-                    let key = 0
-                    this.images.forEach((src, index) => {  // 匹配选中图片
-                        if (src.split('=')[1] == file.fileId) {
-                            key = index;
-                        }
-                    })
-                    viewer.index = key
-                    viewer.show()
-                }
-                else if(file.fileType.startsWith('audio/')){
-                    const responseFiles = await axios.get(`/api/findAudioByParentId?parentId=${this.currentFolder.folderId}`);
-                    this.audios = responseFiles.data.data.audioList  // 更新列表
-                    let key = 0
-                    this.audios.forEach((src, index) => {  // 匹配选中
-                        if (src.split('=')[1] == file.fileId) {
-                            key = index;
-                        }
-                    })
-                }
-                else if(file.fileType.startsWith('video/')){
-
-                }
-            },
-            handleFileUploadSuccess() {  // 成功弹窗
-                toastr.success("上传文件成功！", "成功");
+                this.$swal.fire('文件夹创建成功', `已创建文件夹:${newName}`, 'success');
                 this.enterPath(this.currentFolder.folderId);
-                //更新容量
-                const event = new CustomEvent('update-capacity', {});
-                document.dispatchEvent(event);
-            },
-            showLoading() {this.loading = true;},
-            hideLoading() {this.loading = false;},
-            async findFolderById(id){
-                const responseFiles = await axios.get('/api/findFolderById?id='+id);
-                sessionStorage.setItem("currentFolder",JSON.stringify(responseFiles.data));
-            },
-            async countFFsByParentId(id){
-                const currentFFsCount = await axios.get('/api/countFFsByParentId?parentId='+id);
-                sessionStorage.setItem("currentFFsCount",currentFFsCount.data);
-            },
-            async findFFsByParentId(id){  // 寻找文件和文件夹
-                const responseFolders = await axios.get('/api/findFoldersByParentId?parentId='+id);
-                this.folders = responseFolders.data;
-                const responseFiles = await axios.get('/api/findFilesByParentId?parentId='+id);
-                this.files = responseFiles.data;
-            },
-            async enterPath(id){  // 按下文件夹->改变路径
-                if(this.isTrash) return;
-                if(id === this.currentCutFF?.folderId){
-                    toastr.error(`无法进入正在剪切板的文件夹！`, "警告");
-                    return
+            }
+        },
+        cutFF(file) {
+            this.currentCutFF = file;
+            this.isCutting = true;
+            toastr.success(`成功剪切文件:${file.fileName ? file.fileName : file.folderName}`, "成功");
+        },
+        async pasteFile() {
+            if (this.currentCutFF != null && this.currentCutFF != undefined) {
+                let FFName = this.currentCutFF.fileName ? this.currentCutFF.fileName : this.currentCutFF.folderName;
+                if (this.currentCutFF.fileName != null && this.currentCutFF.fileName != undefined) {
+                    // 文件
+                    await axios.post(`/api/changeFileRouteById?id=${this.currentCutFF.fileId}&parentId=${this.currentFolder.folderId}`);
+                } else {
+                    // 文件夹
+                    await axios.post(`/api/changeFolderRouteById?id=${this.currentCutFF.folderId}&parentId=${this.currentFolder.folderId}`);
                 }
-                this.showLoading();  // 显示加载页面
-                await this.findFFsByParentId(id);
-                await this.findFolderById(id);
-                await this.countFFsByParentId(id);
-                await this.checkAllFFsCollectionStatus();
-                await this.findTags();
+                this.enterPath(this.currentFolder.folderId);
+                this.currentCutFF = null;
+                this.isCutting = false;
+                toastr.success(`成功粘贴:${FFName}`, "成功");
+            }
+        },
+        async filePreview(file) {
+            if (this.isTrash) return;
+            if (file.fileType.startsWith('image/')) {
+                const responseFiles = await axios.get(`/api/findImagesByParentId?parentId=${this.currentFolder.folderId}`);
+                console.log(responseFiles);
+                this.images = responseFiles.data.data.imageList  // 更新图片列表
+                const imageDivs = this.$el.querySelector('.images')
+                const viewer = imageDivs.$viewer
+                let key = 0
+                this.images.forEach((src, index) => {  // 匹配选中图片
+                    if (src.split('=')[1] == file.fileId) {
+                        key = index;
+                    }
+                })
+                viewer.index = key
+                viewer.show()
+            }
+            else if (file.fileType.startsWith('audio/')) {
+                const responseFiles = await axios.get(`/api/findAudioByParentId?parentId=${this.currentFolder.folderId}`);
+                this.audios = responseFiles.data.data.audioList  // 更新列表
+                let key = 0
+                this.audios.forEach((src, index) => {  // 匹配选中
+                    if (src.split('=')[1] == file.fileId) {
+                        key = index;
+                    }
+                })
+            }
+            else if (file.fileType.startsWith('video/')) {
+
+            }
+            else if (file.fileType.startsWith('application/')) {
+                const responseFiles = await axios.get(`/api/findDocxByParentId?parentId=${this.currentFolder.folderId}`);
+                console.log(responseFiles)
+                this.docx = responseFiles.data.data.docxList  // 更新列表
+                let key = 0
+                this.docx.forEach((src, index) => {  // 匹配选中
+                    if (src.split('=')[1] == file.fileId) {
+                        key = index;
+                    }
+                })
+            }
+        },
+        handleFileUploadSuccess() {  // 成功弹窗
+            toastr.success("上传文件成功！", "成功");
+            this.enterPath(this.currentFolder.folderId);
+            //更新容量
+            const event = new CustomEvent('update-capacity', {});
+            document.dispatchEvent(event);
+        },
+        showLoading() { this.loading = true; },
+        hideLoading() { this.loading = false; },
+        async findFolderById(id) {
+            const responseFiles = await axios.get('/api/findFolderById?id=' + id);
+            sessionStorage.setItem("currentFolder", JSON.stringify(responseFiles.data));
+        },
+        async countFFsByParentId(id) {
+            const currentFFsCount = await axios.get('/api/countFFsByParentId?parentId=' + id);
+            sessionStorage.setItem("currentFFsCount", currentFFsCount.data);
+        },
+        async findFFsByParentId(id) {  // 寻找文件和文件夹
+            const responseFolders = await axios.get('/api/findFoldersByParentId?parentId=' + id);
+            this.folders = responseFolders.data;
+            const responseFiles = await axios.get('/api/findFilesByParentId?parentId=' + id);
+            this.files = responseFiles.data;
+        },
+        async enterPath(id) {  // 按下文件夹->改变路径
+            if (this.isTrash) return;
+            if (id === this.currentCutFF?.folderId) {
+                toastr.error(`无法进入正在剪切板的文件夹！`, "警告");
+                return
+            }
+            this.showLoading();  // 显示加载页面
+            await this.findFFsByParentId(id);
+            await this.findFolderById(id);
+            await this.countFFsByParentId(id);
+            await this.checkAllFFsCollectionStatus();
+            await this.findTags();
             this.currentFolder = JSON.parse(sessionStorage.getItem("currentFolder"));  // 更新 currentFolder
             this.currentFFsCount = sessionStorage.getItem("currentFFsCount");  // 更新 currentFFsCount
             // 发送文件夹更新信号
@@ -462,9 +482,9 @@ export default {
             this.folders = response.data.data.folders;
             this.hideLoading();  // 隐藏加载页面
         },
-        async findFilesByCategory(category){
+        async findFilesByCategory(category) {
             this.showLoading();  // 显示加载页面
-            this.folders=[];
+            this.folders = [];
             const response = await axios.get('/api/findFilesByCategory?category=' + category);
             this.files = response.data.data.files;
             this.hideLoading();  // 隐藏加载页面
@@ -482,10 +502,10 @@ export default {
             document.dispatchEvent(event);
             this.hideLoading();  // 隐藏加载页面
         },
-        async findFFsByDelete(){
-            const responseFiles = await axios.post('/api/findFileByDelete',{"status":1});
+        async findFFsByDelete() {
+            const responseFiles = await axios.post('/api/findFileByDelete', { "status": 1 });
             this.files = responseFiles.data;
-            const responseFolders = await axios.post('/api/findFolderByDelete',{"status":1});
+            const responseFolders = await axios.post('/api/findFolderByDelete', { "status": 1 });
             this.folders = responseFolders.data;
         },
         async backPath() {  //返回上一级
@@ -539,183 +559,183 @@ export default {
             // 如果用户点击了确定按钮，并且提供了新的文件名
             if (newName) {
                 // 调用 API 来更新文件名
-                    await axios.post('/api/renameFolder', { "folderId": folderId, "folderName": newName });
-                    this.$swal.fire('文件夹名已更新', `文件夹名已更新为:${newName}`, 'success');
-                    this.enterPath(this.currentFolder.folderId);
-                }
-                else{
-                    this.$swal.fire('操作取消', '文件夹名未更新', 'info');
-                }
-            },
-            async recycleBinFile(fileId){
-                const result = await this.$swal.fire({
-                    title: '是否将文件放入回收站',
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonText: '确定',  
-                    cancelButtonText: '取消',
-                });
-                if (result.isConfirmed) {
-                    await axios.post('/api/recycleBinFile', { "fileId": fileId, "status": 1 });
-                    this.$swal.fire('操作成功', '文件已放入回收站', 'success');
-                    this.enterPath(this.currentFolder.folderId);
-                }
-                else{
-                    this.$swal.fire('操作取消', '文件未放入回收站', 'info');
-                }
-            },
-            async recycleBinFolder(folderId){
-                const result = await this.$swal.fire({
-                    title: '是否将文件夹放入回收站',
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonText: '确定',  
-                    cancelButtonText: '取消',
-                });
-                if (result.isConfirmed) {
-                    await axios.post('/api/recycleBinFolder', { "folderId": folderId, "status": 1 });
-                    this.$swal.fire('操作成功', '文件夹已放入回收站', 'success');
-                    this.enterPath(this.currentFolder.folderId);
-                }
-                else{
-                    this.$swal.fire('操作取消', '文件夹未放入回收站', 'info');
-                }
-            },
-            downloadFile(file){
-                axios.post('/api/downloadFile?fileID='+file.fileId, {responseType: 'blob'}).then(res => {
-                    let blob = new Blob([res.data])
-                    let fileName = file.fileName
-                    if (blob.size > 0) {
-                        const elink = document.createElement('a');
-                        elink.style.display = 'none';
-                        elink.href = URL.createObjectURL(blob);
-                        // 类似a标签下载
-                        // 自定义文件名称和导出类型。最好和后台保持一致
-                        elink.download = `${fileName}`; //模版字符串
-                        document.body.appendChild(elink);
-                        elink.click();//触发click事件 下载
-                        // 释放URL 对象
-                        URL.revokeObjectURL(elink.href);
-                        // 删除创建的 a 标签      
-                        document.body.removeChild(elink);
-                    }
-                })
-            },
-            async replyTrashFile(fileId){
-                const result = await this.$swal.fire({
-                    title: '是否将文件还原',
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonText: '确定',  
-                    cancelButtonText: '取消',
-                });
-                if (result.isConfirmed) {
-                    await axios.post('/api/recycleBinFile', { "fileId": fileId, "status": 0 });
-                    this.$swal.fire('操作成功', '文件已还原', 'success');
-                    this.enterPathTrash();
-                }
-                else{
-                    this.$swal.fire('操作取消', '文件未还原', 'info');
-                }
-            },
-            async replyTrashFolder(folderId){
-                const result = await this.$swal.fire({
-                    title: '是否将文件夹还原',
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonText: '确定',  
-                    cancelButtonText: '取消',
-                });
-                if (result.isConfirmed) {
-                    await axios.post('/api/recycleBinFolder', { "folderId": folderId, "status": 0 });
-                    this.$swal.fire('操作成功', '文件夹已还原', 'success');
-                    this.enterPathTrash();
-                }
-                else{
-                    this.$swal.fire('操作取消', '文件夹未还原', 'info');
-                }
-            },
-            async deleteFile(fileId){
-                const result = await this.$swal.fire({
-                    title: '是否将文件删除',
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonText: '确定',  
-                    cancelButtonText: '取消',
-                });
-                if (result.isConfirmed) {
-                    await axios.post('/api/deleteFile', { "fileId": fileId });
-                    this.$swal.fire('操作成功', '文件已删除', 'success');
-                    //更新容量
-                    const event = new CustomEvent('update-capacity', {});
-                    document.dispatchEvent(event);
-                    this.enterPathTrash();
-                }
-                else{
-                    this.$swal.fire('操作取消', '文件未删除', 'info');
-                }
-            },
-            async deleteFolder(folderId){
-                const result = await this.$swal.fire({
-                    title: '是否将文件夹删除',
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonText: '确定',  
-                    cancelButtonText: '取消',
-                });
-                if (result.isConfirmed) {
-                    await axios.post('/api/deleteFolder', { "folderId": folderId });
-                    this.$swal.fire('操作成功', '文件夹已删除', 'success');
-                    //更新容量
-                    const event = new CustomEvent('update-capacity', {});
-                    document.dispatchEvent(event);
-                    this.enterPathTrash();
-                }
-                else{
-                    this.$swal.fire('操作取消', '文件夹未删除', 'info');
-                }
-            },
-            async collectionFile(fileId){
-                const exist = this.fileCollectionStatus[fileId]//判断是否被收藏
-                if(exist){//被收藏删除
-                    await axios.post('api/CollectionsDeleteFile',{"fileId":fileId,"userId":this.userData.userId});
-                }
-                else{//没被收藏插入
-                    await axios.post('api/CollectionsInsertFile',{"fileId":fileId,"userId":this.userData.userId});
-                }
-                this.enterPath(this.currentFolder.folderId)
-            },
-            async collectionFolder(folderId){
-                const exist = this.folderCollectionStatus[folderId]//判断是否被收藏
-                if(exist){//被收藏删除
-                    await axios.post('api/CollectionsDeleteFolder',{"folderId":folderId,"userId":this.userData.userId});
-                }
-                else{//没被收藏插入
-                    await axios.post('api/CollectionsInsertFolder',{"folderId":folderId,"userId":this.userData.userId});
-                }
-                this.enterPath(this.currentFolder.folderId)
-            },
-            async checkAllFFsCollectionStatus() {
-                const response=await axios.post('/api/findCollectionFFs?userId='+this.userData.userId);
-                const data = response.data
-                this.folderCollectionStatus = {}
-                this.fileCollectionStatus = {}
-                data.forEach(item => {
-                    if (item.isFolder) {
-                        this.folderCollectionStatus[item.folderId] = true;
-                    } else {
-                        this.fileCollectionStatus[item.fileId] = true;
-                    }
-                });
+                await axios.post('/api/renameFolder', { "folderId": folderId, "folderName": newName });
+                this.$swal.fire('文件夹名已更新', `文件夹名已更新为:${newName}`, 'success');
+                this.enterPath(this.currentFolder.folderId);
+            }
+            else {
+                this.$swal.fire('操作取消', '文件夹名未更新', 'info');
             }
         },
-        components: {
-            TopBar,
-            FileDropzone,
-            UserItem,
-            VideoPlayer,
-        FootBar
+        async recycleBinFile(fileId) {
+            const result = await this.$swal.fire({
+                title: '是否将文件放入回收站',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+            });
+            if (result.isConfirmed) {
+                await axios.post('/api/recycleBinFile', { "fileId": fileId, "status": 1 });
+                this.$swal.fire('操作成功', '文件已放入回收站', 'success');
+                this.enterPath(this.currentFolder.folderId);
+            }
+            else {
+                this.$swal.fire('操作取消', '文件未放入回收站', 'info');
+            }
         },
-		mounted() {},
-	}
+        async recycleBinFolder(folderId) {
+            const result = await this.$swal.fire({
+                title: '是否将文件夹放入回收站',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+            });
+            if (result.isConfirmed) {
+                await axios.post('/api/recycleBinFolder', { "folderId": folderId, "status": 1 });
+                this.$swal.fire('操作成功', '文件夹已放入回收站', 'success');
+                this.enterPath(this.currentFolder.folderId);
+            }
+            else {
+                this.$swal.fire('操作取消', '文件夹未放入回收站', 'info');
+            }
+        },
+        downloadFile(file) {
+            axios.post('/api/downloadFile?fileID=' + file.fileId, { responseType: 'blob' }).then(res => {
+                let blob = new Blob([res.data])
+                let fileName = file.fileName
+                if (blob.size > 0) {
+                    const elink = document.createElement('a');
+                    elink.style.display = 'none';
+                    elink.href = URL.createObjectURL(blob);
+                    // 类似a标签下载
+                    // 自定义文件名称和导出类型。最好和后台保持一致
+                    elink.download = `${fileName}`; //模版字符串
+                    document.body.appendChild(elink);
+                    elink.click();//触发click事件 下载
+                    // 释放URL 对象
+                    URL.revokeObjectURL(elink.href);
+                    // 删除创建的 a 标签      
+                    document.body.removeChild(elink);
+                }
+            })
+        },
+        async replyTrashFile(fileId) {
+            const result = await this.$swal.fire({
+                title: '是否将文件还原',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+            });
+            if (result.isConfirmed) {
+                await axios.post('/api/recycleBinFile', { "fileId": fileId, "status": 0 });
+                this.$swal.fire('操作成功', '文件已还原', 'success');
+                this.enterPathTrash();
+            }
+            else {
+                this.$swal.fire('操作取消', '文件未还原', 'info');
+            }
+        },
+        async replyTrashFolder(folderId) {
+            const result = await this.$swal.fire({
+                title: '是否将文件夹还原',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+            });
+            if (result.isConfirmed) {
+                await axios.post('/api/recycleBinFolder', { "folderId": folderId, "status": 0 });
+                this.$swal.fire('操作成功', '文件夹已还原', 'success');
+                this.enterPathTrash();
+            }
+            else {
+                this.$swal.fire('操作取消', '文件夹未还原', 'info');
+            }
+        },
+        async deleteFile(fileId) {
+            const result = await this.$swal.fire({
+                title: '是否将文件删除',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+            });
+            if (result.isConfirmed) {
+                await axios.post('/api/deleteFile', { "fileId": fileId });
+                this.$swal.fire('操作成功', '文件已删除', 'success');
+                //更新容量
+                const event = new CustomEvent('update-capacity', {});
+                document.dispatchEvent(event);
+                this.enterPathTrash();
+            }
+            else {
+                this.$swal.fire('操作取消', '文件未删除', 'info');
+            }
+        },
+        async deleteFolder(folderId) {
+            const result = await this.$swal.fire({
+                title: '是否将文件夹删除',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+            });
+            if (result.isConfirmed) {
+                await axios.post('/api/deleteFolder', { "folderId": folderId });
+                this.$swal.fire('操作成功', '文件夹已删除', 'success');
+                //更新容量
+                const event = new CustomEvent('update-capacity', {});
+                document.dispatchEvent(event);
+                this.enterPathTrash();
+            }
+            else {
+                this.$swal.fire('操作取消', '文件夹未删除', 'info');
+            }
+        },
+        async collectionFile(fileId) {
+            const exist = this.fileCollectionStatus[fileId]//判断是否被收藏
+            if (exist) {//被收藏删除
+                await axios.post('api/CollectionsDeleteFile', { "fileId": fileId, "userId": this.userData.userId });
+            }
+            else {//没被收藏插入
+                await axios.post('api/CollectionsInsertFile', { "fileId": fileId, "userId": this.userData.userId });
+            }
+            this.enterPath(this.currentFolder.folderId)
+        },
+        async collectionFolder(folderId) {
+            const exist = this.folderCollectionStatus[folderId]//判断是否被收藏
+            if (exist) {//被收藏删除
+                await axios.post('api/CollectionsDeleteFolder', { "folderId": folderId, "userId": this.userData.userId });
+            }
+            else {//没被收藏插入
+                await axios.post('api/CollectionsInsertFolder', { "folderId": folderId, "userId": this.userData.userId });
+            }
+            this.enterPath(this.currentFolder.folderId)
+        },
+        async checkAllFFsCollectionStatus() {
+            const response = await axios.post('/api/findCollectionFFs?userId=' + this.userData.userId);
+            const data = response.data
+            this.folderCollectionStatus = {}
+            this.fileCollectionStatus = {}
+            data.forEach(item => {
+                if (item.isFolder) {
+                    this.folderCollectionStatus[item.folderId] = true;
+                } else {
+                    this.fileCollectionStatus[item.fileId] = true;
+                }
+            });
+        }
+    },
+    components: {
+        TopBar,
+        FileDropzone,
+        UserItem,
+        VideoPlayer,
+        FootBar
+    },
+    mounted() { },
+}
 </script>
