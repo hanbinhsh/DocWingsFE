@@ -54,7 +54,7 @@
                                 <div class="ibox-title">
                                     <h5>分享列表</h5>
                                     <div class="ibox-tools">
-                                        <a href="issue_tracker.html" class="btn btn-primary btn-xs">Add new issue</a>
+                                        <a href="issue_tracker.html" class="btn btn-primary btn-xs">新建分享</a>
                                     </div>
                                 </div>
                                 <div class="ibox-content">
@@ -62,10 +62,10 @@
                                     <div class="m-b-lg">
 
                                         <div class="input-group">
-                                            <input type="text" placeholder="Search issue by name..."
+                                            <input type="text" placeholder="输入要查找的分享......"
                                                 class=" form-control">
                                             <span class="input-group-btn">
-                                                <button type="button" class="btn btn-white"> Search</button>
+                                                <button type="button" class="btn btn-white"> 查找</button>
                                             </span>
                                         </div>
                                         <div class="m-t-md">
