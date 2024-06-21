@@ -410,19 +410,6 @@ export default {
             this.folders = response.data.data.folders;
             this.hideLoading();  // 隐藏加载页面
         },
-        async checkAllFFsCollectionStatus() {
-            const response=await axios.post('/api/findCollectionFFs?userId='+this.userData.userId);
-            const data = response.data
-            this.folderCollectionStatus = {}
-            this.fileCollectionStatus = {}
-            data.forEach(item => {
-                if (item.isFolder) {
-                    this.folderCollectionStatus[item.folderId] = true;
-                } else {
-                    this.fileCollectionStatus[item.fileId] = true;
-                }
-            });
-        }
     },
     mounted() {}
 }
