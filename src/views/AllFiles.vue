@@ -182,7 +182,6 @@
                                             <th>标签</th>
                                             <th v-if="!this.isTrash"></th> <!--重命名标签-->
                                             <th>文件大小</th>
-                                            <!-- <th>文件类型</th> -->
                                             <th>上次修改者</th>
                                             <th>上次修改时间</th>
                                             <th>创建者</th>
@@ -203,7 +202,6 @@
                                             <td v-if="!this.isTrash"><a @click="renameFolderTag(folder)"><i
                                                 class="fa fa-edit"></i></a></td>
                                             <td></td>
-                                            <!-- <td></td> -->
                                             <td>{{ folder.lastModifierName }}</td>
                                             <td>{{ new Date(folder.lastModifyTime).toLocaleString() }}</td>
                                             <td>{{ folder.creatorName }}</td>
@@ -225,9 +223,21 @@
                                         </tr>
                                         <tr v-for="(file, index) in files" :key="index" class="read"
                                             @dblclick="filePreview(file)">
-                                            <td><i class="fa fa-file-o"></i>
-                                            <a v-if="!this.isTrash" @click="collectionFile(file.fileId)">&nbsp;<i class="fa"
-                                                    :class="fileCollectionStatus[file.fileId] ? 'fa-star' : 'fa-star-o'"></i></a></td>
+                                            <td>
+                                                <i v-if="file.fileType.startsWith('image/')" class="fa fa-file-image-o"></i>
+                                                <i v-else-if="file.fileType.includes('pdf')" class="fa fa-file-pdf-o"></i>
+                                                <i v-else-if="file.fileType.includes('word')" class="fa fa-file-word-o"></i>
+                                                <i v-else-if="file.fileType.includes('excel')" class="fa fa-file-excel-o"></i>
+                                                <i v-else-if="file.fileType.includes('sheet')" class="fa fa-file-excel-o"></i>
+                                                <i v-else-if="file.fileType.includes('powerpoint')" class="fa fa-file-powerpoint-o"></i>
+                                                <i v-else-if="file.fileType.includes('presentation')" class="fa fa-file-powerpoint-o"></i>
+                                                <i v-else-if="file.fileType.startsWith('video/')" class="fa fa-file-movie-o"></i>
+                                                <i v-else-if="file.fileType.startsWith('audio/')" class="fa fa-file-audio-o"></i>
+                                                <i v-else-if="file.fileType.includes('compressed')" class="fa fa-file-archive-o"></i>
+                                                <i v-else class="fa fa-file-o"></i>
+                                                <a v-if="!this.isTrash" @click="collectionFile(file.fileId)">&nbsp;<i class="fa"
+                                                    :class="fileCollectionStatus[file.fileId] ? 'fa-star' : 'fa-star-o'"></i></a>
+                                            </td>
                                             <td>{{ file.fileName }}</td>
                                             <td v-if="!this.isTrash"><a class="" @click="renameFile(file)"><i
                                                         class="fa fa-edit"></i></a></td>
@@ -472,8 +482,6 @@ export default {
             async filePreview(file){
                 if(this.isTrash) return;
                 if(file.fileType.startsWith('image/')){
-                    const responseFiles = await axios.get(`/api/findImagesByParentId?parentId=${this.currentFolder.folderId}`);
-                    this.images = responseFiles.data.data.imageList  // 更新图片列表
                     const imageDivs = this.$el.querySelector('.images')
                     const viewer = imageDivs.$viewer
                     let key = 0
@@ -550,6 +558,8 @@ export default {
                 await this.findFFsByParentId(id);
                 await this.findFolderById(id);
                 await this.countFFsByParentId(id);
+                const imageFiles = await axios.get(`/api/findImagesByParentId?parentId=${this.currentFolder.folderId}`);
+                this.images = imageFiles.data.data.imageList  // 更新图片列表
                 this.checkAllFFsCollectionStatus();
                 this.findTags();
                 this.queryCategoryCapacity();
@@ -578,6 +588,10 @@ export default {
                 this.folders=[];
                 const response = await axios.get('/api/findFilesByCategory?category=' + category);
                 this.files = response.data.data.files;
+                if(category===0){
+                    const imagesRes = await axios.get('/api/findImages');
+                    this.images = imagesRes.data.data.imageList;
+                }
                 this.hideLoading();  // 隐藏加载页面
             },
             async enterPathTrash() {

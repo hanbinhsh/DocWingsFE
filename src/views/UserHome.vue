@@ -133,7 +133,17 @@
                                             <a>
                                                 <span class="corner"></span>
                                                 <div v-if="!file.fileType.startsWith('image/')" class="icon">
-                                                    <i class="fa fa-file"></i>
+                                                    <i v-if="file.fileType.startsWith('image/')" class="fa fa-file-image-o"></i>
+                                                    <i v-else-if="file.fileType.includes('pdf')" class="fa fa-file-pdf-o"></i>
+                                                    <i v-else-if="file.fileType.includes('word')" class="fa fa-file-word-o"></i>
+                                                    <i v-else-if="file.fileType.includes('excel')" class="fa fa-file-excel-o"></i>
+                                                    <i v-else-if="file.fileType.includes('sheet')" class="fa fa-file-excel-o"></i>
+                                                    <i v-else-if="file.fileType.includes('powerpoint')" class="fa fa-file-powerpoint-o"></i>
+                                                    <i v-else-if="file.fileType.includes('presentation')" class="fa fa-file-powerpoint-o"></i>
+                                                    <i v-else-if="file.fileType.startsWith('video/')" class="fa fa-file-movie-o"></i>
+                                                    <i v-else-if="file.fileType.startsWith('audio/')" class="fa fa-file-audio-o"></i>
+                                                    <i v-else-if="file.fileType.includes('compressed')" class="fa fa-file-archive-o"></i>
+                                                    <i v-else class="fa fa-file-o"></i>
                                                 </div>
                                                 <div v-if="file.fileType.startsWith('image/')" class="image">
                                                     <img alt="image" class="img-responsive"
@@ -226,11 +236,11 @@ export default {
             this.showLoading();  // 显示加载页面
             this.folders=[];
             const response = await axios.get('/api/findFilesByCategory?category=' + category);
+            this.files = response.data.data.files;
             if(category===0){
                 const imagesRes = await axios.get('/api/findImages');
                 this.images = imagesRes.data.data.imageList;
             }
-            this.files = response.data.data.files;
             this.hideLoading();  // 隐藏加载页面
         },
         async queryCategoryCapacity(){
