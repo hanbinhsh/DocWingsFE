@@ -193,6 +193,9 @@
                 if(oldPassword.value==""){
                     this.$swal.fire('密码未输入','','error');
                 }
+                else if(response.data.accountLocked==true){
+                    this.$swal.fire('用户已冻结,请稍后再试','','error');
+                }
                 else if (response.data == null||response.data=="") {
                     this.$swal.fire('密码错误','','error');
                 }

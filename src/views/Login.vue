@@ -80,7 +80,10 @@ async function login() {
 		} else {
 			const response = await axios.post('/api/login', { userName: username.value, password: password.value });
 			console.log(response.data);
-			if (response.data == null||response.data=="") {  // 登陆失败
+			if(response.data.accountLocked==true){
+				toastr.error("账户已冻结！请稍后再试！", "错误");
+			}
+			else if (response.data == null||response.data=="") {  // 登陆失败
 				toastr.error("用户名或密码错误！请重新登录！", "错误");
 				username.value = '';
 				password.value = '';
