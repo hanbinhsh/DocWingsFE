@@ -88,25 +88,28 @@
                                         <a class="btn btn-block btn-primary compose-mail"
                                             :class="{ 'disabled': isTrash }" @click="createFolder">创建文件夹</a>
                                         <div class="space-25"></div>
-                                        <h5>Folders</h5>
-                                        <ul class="folder-list m-b-md" style="padding: 0">
-                                            <li><a href="mailbox.html"> <i class="fa fa-inbox "></i> Inbox <span
-                                                        class="label label-warning pull-right">16</span> </a></li>
-                                            <li><a href="mailbox.html"> <i class="fa fa-envelope-o"></i> Send Mail</a>
-                                            </li>
-                                            <li><a href="mailbox.html"> <i class="fa fa-certificate"></i> Important</a>
-                                            </li>
-                                            <li><a href="mailbox.html"> <i class="fa fa-file-text-o"></i> Drafts<span
-                                                        class="label label-danger pull-right">2</span></a></li>
-                                            <li><a href="mailbox.html"> <i class="fa fa-trash-o"></i> Trash</a></li>
-                                        </ul>
                                         <h5>类别</h5>
-                                        <ul class="category-list" style="padding: 0">
-                                            <li><a @click="findFilesByCategory(0)"> <i class="fa fa-circle text-navy"></i> 图片</a></li>
-                                            <li><a @click="findFilesByCategory(1)"> <i class="fa fa-circle text-danger"></i> 文档</a></li>
-                                            <li><a @click="findFilesByCategory(3)"> <i class="fa fa-circle text-primary"></i> 视频</a></li>
-                                            <li><a @click="findFilesByCategory(2)"> <i class="fa fa-circle text-info"></i> 音乐</a></li>
-                                            <li><a @click="findFilesByCategory(4)"> <i class="fa fa-circle text-warning"></i> 其他</a></li>
+                                        <ul class="category-list folder-list m-b-md" style="padding: 0">
+                                            <li>
+                                                <a @click="findFilesByCategory(0)"> <i class="fa fa-circle text-navy"></i> 图片
+                                                <span class="label label-primary pull-right">{{ this.categoryCapacity.imageCapacity }}GB</span></a>
+                                            </li>
+                                            <li>
+                                                <a @click="findFilesByCategory(1)"> <i class="fa fa-circle text-danger"></i> 文档
+                                                <span class="label label-primary pull-right">{{ this.categoryCapacity.documentCapacity }}GB</span></a>
+                                            </li>
+                                            <li>
+                                                <a @click="findFilesByCategory(3)"> <i class="fa fa-circle text-primary"></i> 视频
+                                                <span class="label label-primary pull-right">{{ this.categoryCapacity.videoCapacity }}GB</span></a>
+                                            </li>
+                                            <li>
+                                                <a @click="findFilesByCategory(2)"> <i class="fa fa-circle text-info"></i> 音乐
+                                                <span class="label label-primary pull-right">{{ this.categoryCapacity.audioCapacity }}GB</span></a>
+                                            </li>
+                                            <li>
+                                                <a @click="findFilesByCategory(4)"> <i class="fa fa-circle text-warning"></i> 其他
+                                                <span class="label label-primary pull-right">{{ this.categoryCapacity.otherCapacity }}GB</span></a>
+                                            </li>
                                         </ul>
                                         <h5 class="tag-title">标签</h5>
                                         <ul class="tag-list" style="padding: 0">
@@ -138,7 +141,7 @@
                                 </h2>
                                 <div class="mail-tools tooltip-demo m-t-md">
                                     <div class="btn-group pull-right">
-                                        <button class="btn btn-white btn-sm" @click="backPath()"><i
+                                        <button :class="{ 'disabled': isTrash }" class="btn btn-white btn-sm" @click="backPath()"><i
                                                 class="fa fa-arrow-left"></i></button>
                                         <!-- <button class="btn btn-white btn-sm"><i class="fa fa-arrow-right"></i></button> -->
                                     </div>
@@ -151,7 +154,8 @@
                                     <button class="btn btn-white btn-sm" data-toggle="tooltip" data-placement="top"
                                         title="Mark as important"><i class="fa fa-exclamation"></i> </button>&nbsp; -->
                                     <button class="btn btn-white btn-sm" data-toggle="tooltip" data-placement="top"
-                                        title="粘贴文件" @click="this.pasteFile()"><i class="fa fa-paste"></i> 粘贴
+                                        title="粘贴文件" @click="this.pasteFile()" :class="{ 'disabled': isTrash }">
+                                        <i class="fa fa-paste"></i> 粘贴
                                         <span v-if="this.isCutting" class="">
                                             {{ this.currentCutFF.fileName ? this.currentCutFF.fileName :
                                                 this.currentCutFF.folderName ?? "" }}
@@ -355,6 +359,7 @@ export default {
     name: 'Profile',
     data() {
         return {
+                categoryCapacity:{},
                 folders: [],
                 files: [],
                 tags: [],
@@ -404,6 +409,10 @@ export default {
             }
         },
         methods: {
+            async queryCategoryCapacity(){
+                const responseTags = await axios.get('/api/queryCategoryCapacity');
+                this.categoryCapacity = responseTags.data.data;
+            },
             checkRoute() {
                 if (this.$route.name === 'allfiles') {
                     this.isTrash = false;
@@ -447,6 +456,7 @@ export default {
                 toastr.success(`成功剪切文件:${file.fileName ? file.fileName : file.folderName}`, "成功");
             },
             async pasteFile(){
+                if(this.isTrash) return;
                 if(this.currentCutFF != null && this.currentCutFF != undefined){
                     let FFName = this.currentCutFF.fileName ? this.currentCutFF.fileName : this.currentCutFF.folderName;
                     if(this.currentCutFF.fileName != null && this.currentCutFF.fileName != undefined){
@@ -543,87 +553,92 @@ export default {
                 await this.findFFsByParentId(id);
                 await this.findFolderById(id);
                 await this.countFFsByParentId(id);
-                await this.checkAllFFsCollectionStatus();
-                await this.findTags();
-            this.currentFolder = JSON.parse(sessionStorage.getItem("currentFolder"));  // 更新 currentFolder
-            this.currentFFsCount = sessionStorage.getItem("currentFFsCount");  // 更新 currentFFsCount
-            // 发送文件夹更新信号
-            const event = new CustomEvent('update-path', {
-                detail: {
-                    newFolderId: this.currentFolder.folderId
-                }
-            });
-            document.dispatchEvent(event);
-            this.hideLoading();  // 隐藏加载页面
-        },
-        async findFFsByTag(tag) {
-            this.showLoading();  // 显示加载页面
-            const response = await axios.get('/api/findFFsByTag?tag=' + tag);
-            this.files = response.data.data.files;
-            this.folders = response.data.data.folders;
-            this.hideLoading();  // 隐藏加载页面
-        },
-        async findFilesByCategory(category){
-            this.showLoading();  // 显示加载页面
-            this.folders=[];
-            const response = await axios.get('/api/findFilesByCategory?category=' + category);
-            this.files = response.data.data.files;
-            this.hideLoading();  // 隐藏加载页面
-        },
-        async enterPathTrash() {
-            // 隐藏或disable上传和创建文件夹按钮，阻止用户进入和点击文件，重命名下载剪切和删除
-            this.showLoading();  // 显示加载页面
-            await this.findFFsByDelete();
-            await this.findTags();
-            const event = new CustomEvent('isTrash', {
-                detail: {
-                    status: true
-                }
-            });
-            document.dispatchEvent(event);
-            this.hideLoading();  // 隐藏加载页面
-        },
-        async findFFsByDelete(){
-            const responseFiles = await axios.post('/api/findFileByDelete',{"status":1});
-            this.files = responseFiles.data;
-            const responseFolders = await axios.post('/api/findFolderByDelete',{"status":1});
-            this.folders = responseFolders.data;
-        },
-        async backPath() {  //返回上一级
-            await this.enterPath(this.currentFolder.parentId);
-        },
-        async findTags() {
-            const responseTags = await axios.get('/api/findTags');
-            this.tags = responseTags.data;
-        },
-        async renameFile(fileId) {
-            const { value: newName } = await this.$swal.fire({
-                title: '重命名文件',
-                input: 'text',
-                inputLabel: '请输入新的文件名',
-                inputValue: this.currentFileName, // 当前文件名，可以作为默认值显示在输入框中
-                showCancelButton: true,
-                confirmButtonText: '确定',
-                cancelButtonText: '取消',
-                inputValidator: (value) => {
-                    if (!value) {
-                        return '文件名不能为空！'
+                this.checkAllFFsCollectionStatus();
+                this.findTags();
+                this.queryCategoryCapacity();
+                this.currentFolder = JSON.parse(sessionStorage.getItem("currentFolder"));  // 更新 currentFolder
+                this.currentFFsCount = sessionStorage.getItem("currentFFsCount");  // 更新 currentFFsCount
+                // 发送文件夹更新信号
+                const event = new CustomEvent('update-path', {
+                    detail: {
+                        newFolderId: this.currentFolder.folderId
                     }
+                });
+                document.dispatchEvent(event);
+                this.hideLoading();  // 隐藏加载页面
+            },
+            async findFFsByTag(tag) {
+                if(this.isTrash) return;
+                this.showLoading();  // 显示加载页面
+                const response = await axios.get('/api/findFFsByTag?tag=' + tag);
+                this.files = response.data.data.files;
+                this.folders = response.data.data.folders;
+                this.hideLoading();  // 隐藏加载页面
+            },
+            async findFilesByCategory(category){
+                if(this.isTrash) return;
+                this.showLoading();  // 显示加载页面
+                this.folders=[];
+                const response = await axios.get('/api/findFilesByCategory?category=' + category);
+                this.files = response.data.data.files;
+                this.hideLoading();  // 隐藏加载页面
+            },
+            async enterPathTrash() {
+                // 隐藏或disable上传和创建文件夹按钮，阻止用户进入和点击文件，重命名下载剪切和删除
+                this.showLoading();  // 显示加载页面
+                await this.findFFsByDelete();
+                await this.findTags();
+                this.queryCategoryCapacity();
+                const event = new CustomEvent('isTrash', {
+                    detail: {
+                        status: true
+                    }
+                });
+                document.dispatchEvent(event);
+                this.hideLoading();  // 隐藏加载页面
+            },
+            async findFFsByDelete(){
+                const responseFiles = await axios.post('/api/findFileByDelete',{"status":1});
+                this.files = responseFiles.data;
+                const responseFolders = await axios.post('/api/findFolderByDelete',{"status":1});
+                this.folders = responseFolders.data;
+            },
+            async backPath() {  //返回上一级
+                if(this.isTrash) return;
+                await this.enterPath(this.currentFolder.parentId);
+            },
+            async findTags() {
+                const responseTags = await axios.get('/api/findTags');
+                this.tags = responseTags.data;
+            },
+            async renameFile(fileId) {
+                const { value: newName } = await this.$swal.fire({
+                    title: '重命名文件',
+                    input: 'text',
+                    inputLabel: '请输入新的文件名',
+                    inputValue: this.currentFileName, // 当前文件名，可以作为默认值显示在输入框中
+                    showCancelButton: true,
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    inputValidator: (value) => {
+                        if (!value) {
+                            return '文件名不能为空！'
+                        }
+                    }
+                });
+                // 如果用户点击了确定按钮，并且提供了新的文件名
+                if (newName) {
+                    // 调用 API 来更新文件名
+                    await axios.post('/api/renameFile', { "fileId": fileId, "fileName": newName });
+                    this.$swal.fire('文件名已更新', `文件名已更新为:${newName}`, 'success');
+                    this.enterPath(this.currentFolder.folderId);
                 }
-            });
-            // 如果用户点击了确定按钮，并且提供了新的文件名
-            if (newName) {
-                // 调用 API 来更新文件名
-                await axios.post('/api/renameFile', { "fileId": fileId, "fileName": newName });
-                this.$swal.fire('文件名已更新', `文件名已更新为:${newName}`, 'success');
-                this.enterPath(this.currentFolder.folderId);
-            }
-            else {
-                this.$swal.fire('操作取消', '文件名未更新', 'info');
-            }
-        },
-        async renameFolder(folderId) {
-            const { value: newName } = await this.$swal.fire({
+                else {
+                    this.$swal.fire('操作取消', '文件名未更新', 'info');
+                }
+            },
+            async renameFolder(folderId) {
+                const { value: newName } = await this.$swal.fire({
                 title: '重命名文件夹',
                 input: 'text',
                 inputLabel: '请输入新的文件夹名',

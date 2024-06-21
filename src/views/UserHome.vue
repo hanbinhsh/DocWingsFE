@@ -57,13 +57,13 @@
                             <div class="ibox float-e-margins">
                                 <div class="ibox-content">
                                     <div class="file-manager">
-                                        <h5>Show:</h5>
+                                        <h5>查看:</h5>
                                         <a href="file_manager#" class="file-control active">Ale</a>
                                         <a href="file_manager#" class="file-control">Documents</a>
                                         <a href="file_manager#" class="file-control">Audio</a>
                                         <a href="file_manager#" class="file-control">Images</a>
                                         <div class="hr-line-dashed"></div>
-                                        <button class="btn btn-primary btn-block">Upload Files</button>
+                                        <button class="btn btn-primary btn-block">上传文件</button>
                                         <div class="hr-line-dashed"></div>
                                         <div class="row">
                                             <div class="col-lg-6" id="file-trash-donut" style="height: 180px;padding:0"></div>
