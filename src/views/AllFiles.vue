@@ -198,7 +198,7 @@
                                             <td v-if="!this.isTrash"><a @click="renameFolder(folder)"><i
                                                         class="fa fa-edit"></i></a></td>
                                             <td>{{ folder.tag }}</td>
-                                            <td v-if="!this.isTrash"><a v-if="folder.tag" @click="renameFolderTag(folder)"><i
+                                            <td v-if="!this.isTrash"><a @click="renameFolderTag(folder)"><i
                                                 class="fa fa-edit"></i></a></td>
                                             <td></td>
                                             <!-- <td></td> -->
@@ -233,7 +233,7 @@
                                             <td v-if="!this.isTrash"><a class="" @click="renameFile(file)"><i
                                                         class="fa fa-edit"></i></a></td>
                                             <td>{{ file.tag }}</td>
-                                            <td v-if="!this.isTrash"><a v-if="file.tag" @click="renameFileTag(file)"><i
+                                            <td v-if="!this.isTrash"><a @click="renameFileTag(file)"><i
                                                 class="fa fa-edit"></i></a></td>
                                             <td>{{ file.fileSize }}MB</td>
                                             <!-- <td>{{ file.fileType }}</td> -->
