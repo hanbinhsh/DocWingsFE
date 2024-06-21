@@ -4,15 +4,7 @@
             <div id="page-wrapper" class="gray-bg">
                 <div class="row wrapper border-bottom white-bg page-heading">
                     <div class="col-sm-4">
-                        <h2>Off canvas menu</h2>
-                        <ol class="breadcrumb">
-                            <li>
-                                <a href="index.html">Home</a>
-                            </li>
-                            <li class="active">
-                                <strong>Off canvas menu</strong>
-                            </li>
-                        </ol>
+                        <h2>查看分享</h2>
                     </div>
                 </div>
                 <div class="wrapper wrapper-content  animated fadeInRight article">
@@ -108,11 +100,8 @@
                     </div>
                 </div>
                 <div class="footer">
-                    <div class="pull-right">
-                        10GB of <strong>250GB</strong> Free.
-                    </div>
                     <div>
-                        <strong>Copyright</strong> Example Company &copy; 2014-2017
+                        <strong>Copyright</strong> DocWings &copy; 2024
                     </div>
                 </div>
             </div>

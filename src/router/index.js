@@ -108,7 +108,7 @@ const routes = [
     name: 'shareaccept',
     component: ShareAccept,
     meta: {
-      title: '分享',
+      title: '查看分享',
       requiresAuth: true,
     }
   }

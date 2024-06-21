@@ -146,11 +146,11 @@
                                         <button :class="{ 'disabled': isTrash }" class="btn btn-white btn-sm" @click="enterPath(0)"><i
                                                 class="fa fa-home"></i></button>
                                     </div>
-                                    <button class="btn btn-white btn-sm" data-toggle="tooltip" data-placement="left"
+                                    <button class="btn btn-white btn-sm" data-toggle="tooltip" data-placement="bottom"
                                         title="刷新页面"
                                         @click="isTrash ? this.enterPathTrash() : this.enterPath(currentFolder.folderId)"><i
                                             class="fa fa-refresh"></i> 刷新</button>&nbsp;
-                                    <button class="btn btn-white btn-sm" data-toggle="tooltip" data-placement="top"
+                                    <button class="btn btn-white btn-sm" data-toggle="tooltip" data-placement="bottom"
                                         title="粘贴文件" @click="this.pasteFile()" :class="{ 'disabled': isTrash }">
                                         <i class="fa fa-paste"></i> 粘贴
                                         <span v-if="this.isCutting" class="">
