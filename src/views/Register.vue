@@ -195,9 +195,17 @@ export default {
                                 alert("注册成功"); // 或者其他成功提示方式
                                 window.location.href = "/login"; // 跳转到成功页面
                             }
-                            else
+                            else if(response == '用户名已存在')
                             {
                                 toastr.error("注册失败，用户名已存在"); // 提示用户注册失败
+                            }
+                            else if(response == '邮箱已注册')
+                            {
+                                toastr.error("注册失败，邮箱已注册"); // 提示用户注册失败
+                            }
+                            else if(response == '电话号码已注册')
+                            {
+                                toastr.error("注册失败，电话号码已注册"); // 提示用户注册失败
                             }
                         },
                         error: function (response) {
