@@ -39,7 +39,6 @@
                 </div>
             </div>
         </div>
-        <div id="docx-preview"></div>
         <div id="wrapper">
             <nav class="navbar-default navbar-static-side" role="navigation">
                 <div class="sidebar-collapse">
@@ -259,8 +258,6 @@
                                                 <div class="btn-group">
                                                     <a v-if="!this.isTrash" @click="shareFile(file)">
                                                             <i class="fa fa-share-alt"></i>&nbsp;</a>
-                                                    <a v-if="!this.isTrash" @click="">
-                                                        <i class="fa fa-share-alt"></i>&nbsp;</a>
                                                     <a v-if="!this.isTrash" @click="downloadFile(file)"><i
                                                             class="fa fa-download"></i>&nbsp;</a>
                                                     <a v-if="!this.isTrash" @click="recycleBinFile(file.fileId)"><i
@@ -280,7 +277,7 @@
                         </div>
                     </div>
                 </div>
-                <FootBar />
+                <FootBar/>
             </div>
         </div>
     </div>
@@ -348,14 +345,12 @@ import VueViewer from 'v-viewer'
 import { defineComponent } from 'vue'
 import { VideoPlayer } from '@videojs-player/vue'
 import videojs from 'video.js';
+import { ref } from 'vue';
 import toastr from "../assets/js/plugins/toastr/toastr.min.js"
 import TopBar from '@/components/TopBar.vue'
 import FileDropzone from '../components/FileDropzone.vue'
 import UserItem from '@/components/UserItem.vue'
 import FootBar from '@/components/FootBar.vue'
-import { ref } from "vue";
-import jsPreviewDocx from "@js-preview/docx";
-import "@js-preview/docx/lib/index.css";
 toastr.options = {
     "closeButton": true,
     "debug": false,
@@ -376,13 +371,12 @@ export default {
     name: 'Profile',
     data() {
         return {
+                categoryCapacity:{},
                 folders: [],
                 files: [],
                 tags: [],
                 viewerOptions: {},
                 images: [],
-                audios: [],
-                videos: [],
                 currentFolder: JSON.parse(sessionStorage.getItem("currentFolder")) || {},
                 currentFFsCount: sessionStorage.getItem("currentFFsCount") || {},
                 loading: false,
@@ -424,9 +418,12 @@ export default {
             else{
                 this.enterPath(0);
             }
-            },
-
+        },
         methods: {
+            async queryCategoryCapacity(){
+                const responseTags = await axios.get('/api/queryCategoryCapacity');
+                this.categoryCapacity = responseTags.data.data;
+            },
             checkRoute() {
                 if (this.$route.name === 'allfiles') {
                     this.isTrash = false;
@@ -470,6 +467,7 @@ export default {
                 toastr.success(`成功剪切文件:${file.fileName ? file.fileName : file.folderName}`, "成功");
             },
             async pasteFile(){
+                if(this.isTrash) return;
                 if(this.currentCutFF != null && this.currentCutFF != undefined){
                     let FFName = this.currentCutFF.fileName ? this.currentCutFF.fileName : this.currentCutFF.folderName;
                     if(this.currentCutFF.fileName != null && this.currentCutFF.fileName != undefined){
@@ -496,6 +494,7 @@ export default {
                             key = index;
                         }
                     })
+                    console.log(this.images);
                     viewer.index = key
                     viewer.show()
                 }
@@ -553,7 +552,7 @@ export default {
                 await this.findFFsByParentId(id);
                 await this.findFolderById(id);
                 await this.countFFsByParentId(id);
-                const imageFiles = await axios.get(`/api/findImagesByParentId?parentId=${this.currentFolder.folderId}`);
+                const imageFiles = await axios.get(`/api/findImagesByParentId?parentId=${this.currentFolder.folderId??0}`);
                 this.images = imageFiles.data.data.imageList  // 更新图片列表
                 this.checkAllFFsCollectionStatus();
                 this.findTags();
@@ -935,7 +934,7 @@ export default {
             UserItem,
             VideoPlayer,
         FootBar
-    },
-    mounted() { },
-}
+        },
+		mounted() {},
+	}
 </script>
