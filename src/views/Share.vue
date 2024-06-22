@@ -54,13 +54,11 @@
                                 <div class="ibox-title">
                                     <h5>分享列表</h5>
                                     <div class="ibox-tools">
-                                        <a href="issue_tracker.html" class="btn btn-primary btn-xs">新建分享</a>
+                                        <a href="allfiles" class="btn btn-primary btn-xs">新建分享</a>
                                     </div>
                                 </div>
                                 <div class="ibox-content">
-
                                     <div class="m-b-lg">
-
                                         <div class="input-group">
                                             <input type="text" placeholder="输入要查找的分享......"
                                                 class=" form-control">
@@ -69,26 +67,26 @@
                                             </span>
                                         </div>
                                         <div class="m-t-md">
-
                                             <div class="pull-right">
-                                                <button type="button" class="btn btn-sm btn-white"> <i
-                                                        class="fa fa-comments"></i> </button>
-                                                <button type="button" class="btn btn-sm btn-white"> <i
-                                                        class="fa fa-user"></i> </button>
-                                                <button type="button" class="btn btn-sm btn-white"> <i
-                                                        class="fa fa-list"></i> </button>
-                                                <button type="button" class="btn btn-sm btn-white"> <i
-                                                        class="fa fa-pencil"></i> </button>
-                                                <button type="button" class="btn btn-sm btn-white"> <i
-                                                        class="fa fa-print"></i> </button>
-                                                <button type="button" class="btn btn-sm btn-white"> <i
-                                                        class="fa fa-cogs"></i> </button>
+                                                <button class="btn btn-white btn-sm" data-toggle="tooltip" data-placement="left"
+                                                    title="刷新页面" @click="getShares()"><i class="fa fa-refresh"></i> 刷新</button>
                                             </div>
                                             <strong>共{{this.shareCount}}条分享</strong>
                                         </div>
                                     </div>
-                                    <div class="table-responsive">
-                                        <table class="table table-hover issue-tracker">
+                                    <div class="table-responsive ibox">
+                                        <table class="table table-hover issue-tracker ibox-content">
+                                            <div class="sk-spinner sk-spinner-cube-grid" v-show="loading">
+                                                <div class="sk-cube"></div>
+                                                <div class="sk-cube"></div>
+                                                <div class="sk-cube"></div>
+                                                <div class="sk-cube"></div>
+                                                <div class="sk-cube"></div>
+                                                <div class="sk-cube"></div>
+                                                <div class="sk-cube"></div>
+                                                <div class="sk-cube"></div>
+                                                <div class="sk-cube"></div>
+                                            </div>
                                             <thead>
                                                 <td>状态</td>
                                                 <td></td><!--图标-->
@@ -96,13 +94,14 @@
                                                 <td>权限</td>
                                                 <td></td><!--更改权限-->
                                                 <td>接收者</td>
+                                                <td></td><!--更改接收者-->
                                                 <td>分享时间</td>
                                                 <td>到期时间</td>
                                                 <td></td><!--更改到期时间-->
                                                 <td>操作</td>
                                             </thead>
                                             <tbody>
-                                                <tr v-for="(share, index) in shares" :key="index" @dblclick="">
+                                                <tr v-for="(share, index) in shares" :key="index" @dblclick="" class="read">
                                                     <td>
                                                         <span v-if="share.validate==0" class="label label-danger">已过期</span>
                                                         <span v-if="share.validate==1" class="label label-primary">正常</span>
@@ -117,6 +116,7 @@
                                                     <td>{{share.auth}}</td>
                                                     <td><a @click=""><i class="fa fa-edit"></i></a></td>
                                                     <td>{{share.accepterName}}</td>
+                                                    <td><a @click=""><i class="fa fa-edit"></i></a></td>
                                                     <td>{{new Date(share.shareTime).toLocaleString()}}</td>
                                                     <td v-if="share.dueTime==null">无限</td>
                                                     <td v-if="share.dueTime!=null">
@@ -126,7 +126,9 @@
                                                     <td><a @click=""><i class="fa fa-edit"></i></a></td>
                                                     <td>
                                                         <div class="btn-group">
-                                                            <a @click=""><i class="fa fa-trash-o"></i></a>
+                                                            <a @click=""><i class="fa fa-trash-o"></i>&nbsp;</a>
+                                                            <a @click=""><i class="fa fa-eye"></i>&nbsp;</a>
+                                                            <a @click=""><i class="fa fa-copy"></i>&nbsp;</a>
                                                         </div>
                                                     </td>
                                                 </tr>
@@ -164,48 +166,47 @@ export default {
         return {
             userData: JSON.parse(sessionStorage.getItem('userData')) || {},
             shares: {},
-            shareCount: 0
+            shareCount: 0,
+            loading: false,
         }
     },
     created() {
         this.getShares()
     },
     methods: {
+        showLoading() {this.loading = true;},
+        hideLoading() {this.loading = false;},
         async getShares() {
+            this.showLoading()
             const res = await axios.get("api/getSharesByUserId?userId=" + this.userData.userId);
             this.shares = res.data.data.shares;
             this.shareCount = res.data.data.shareCount;
-            this.$nextTick(() => {
+            await this.$nextTick(() => {
                 this.initializePeity();
             });
+            this.hideLoading()
         },
         initializePeity() {
             $('span.pie').peity('pie', {
                 fill: ['#1ab394', '#d7d7d7', '#ffffff']
             });
-
             $('.line').peity('line', {
                 fill: '#1ab394',
                 stroke: '#169c81'
             });
-
             $('.bar').peity('bar', {
                 fill: ['#1ab394', '#d7d7d7']
             });
-
             $('.bar_dashboard').peity('bar', {
                 fill: ['#1ab394', '#d7d7d7'],
                 width: 100
             });
-
             const updatingChart = $('.updating-chart').peity('line', { fill: '#1ab394', stroke: '#169c81', width: 64 });
-
             setInterval(() => {
                 const random = Math.round(Math.random() * 10);
                 const values = updatingChart.text().split(',');
                 values.shift();
                 values.push(random);
-
                 updatingChart.text(values.join(',')).change();
             }, 1000);
         }

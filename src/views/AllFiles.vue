@@ -5,31 +5,35 @@
                 <img v-for="(src, index) in images" class="images" :key="index" :src="src">
             </div>
         </div>
-        <div class="modal inmodal fade in" id="myModal5" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal inmodal fade in" id="audioModal" tabindex="-1" role="dialog" aria-hidden="true">
             <div class="modal-dialog modal-lg">
                 <div class="modal-content">
                     <div class="modal-header">
                         {{this.audio_videoTitle}}
-                        <button @click="closeModal" type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                        <button @click="closePlayer" type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
                     </div>
                     <div class="modal-body">
                         <div class="text-center">
-                            <VideoPlayer v-if="showPlayer" :options="this.audioOptions" class="video-js-a vjs-big-play-centered"/>
+                            <VideoPlayer v-if="showPlayer" :options="this.audioOptions" 
+                            :key="new Date().getTime()"
+                            class="video-js-a vjs-big-play-centered"/>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="modal inmodal fade in" id="myModal6" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal inmodal fade in" id="videoModal" tabindex="-1" role="dialog" aria-hidden="true">
             <div class="modal-dialog modal-lg">
                 <div class="modal-content">
                     <div class="modal-header">
                         {{this.audio_videoTitle}}
-                        <button @click="closeModal" type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                        <button @click="closePlayer" type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
                     </div>
                     <div class="modal-body">
                         <div class="text-center">
-                            <VideoPlayer v-if="showPlayer" :options="this.videoOptions" class="video-js-v vjs-big-play-centered"/>
+                            <VideoPlayer v-if="showPlayer" :options="this.videoOptions" 
+                            :key="new Date().getTime()"
+                            class="video-js-v vjs-big-play-centered"/>
                         </div>
                     </div>
                 </div>
@@ -147,11 +151,11 @@
                                         <button :class="{ 'disabled': isTrash }" class="btn btn-white btn-sm" @click="enterPath(0)"><i
                                                 class="fa fa-home"></i></button>
                                     </div>
-                                    <button class="btn btn-white btn-sm" data-toggle="tooltip" data-placement="left"
+                                    <button class="btn btn-white btn-sm" data-toggle="tooltip" data-placement="bottom"
                                         title="刷新页面"
                                         @click="isTrash ? this.enterPathTrash() : this.enterPath(currentFolder.folderId)"><i
                                             class="fa fa-refresh"></i> 刷新</button>&nbsp;
-                                    <button class="btn btn-white btn-sm" data-toggle="tooltip" data-placement="top"
+                                    <button class="btn btn-white btn-sm" data-toggle="tooltip" data-placement="bottom"
                                         title="粘贴文件" @click="this.pasteFile()" :class="{ 'disabled': isTrash }">
                                         <i class="fa fa-paste"></i> 粘贴
                                         <span v-if="this.isCutting" class="">
@@ -183,7 +187,6 @@
                                             <th>标签</th>
                                             <th v-if="!this.isTrash"></th> <!--重命名标签-->
                                             <th>文件大小</th>
-                                            <!-- <th>文件类型</th> -->
                                             <th>上次修改者</th>
                                             <th>上次修改时间</th>
                                             <th>创建者</th>
@@ -204,15 +207,14 @@
                                             <td v-if="!this.isTrash"><a @click="renameFolderTag(folder)"><i
                                                 class="fa fa-edit"></i></a></td>
                                             <td></td>
-                                            <!-- <td></td> -->
                                             <td>{{ folder.lastModifierName }}</td>
                                             <td>{{ new Date(folder.lastModifyTime).toLocaleString() }}</td>
                                             <td>{{ folder.creatorName }}</td>
                                             <td>{{ new Date(folder.createTime).toLocaleString() }}</td>
                                             <td>
                                                 <div class="btn-group">
-                                                    <a v-if="!this.isTrash" @click="">
-                                                        <i class="fa fa-share-alt"></i>&nbsp;</a>
+                                                    <a v-if="!this.isTrash" @click="shareFolder(folder)">
+                                                            <i class="fa fa-share-alt"></i>&nbsp;</a>
                                                     <a v-if="!this.isTrash" @click="recycleBinFolder(folder.folderId)">
                                                         <i class="fa fa-trash-o"></i>&nbsp;</a>
                                                     <a v-if="!this.isTrash" @click="cutFF(folder)"><i
@@ -226,9 +228,21 @@
                                         </tr>
                                         <tr v-for="(file, index) in files" :key="index" class="read"
                                             @dblclick="filePreview(file)">
-                                            <td><i class="fa fa-file-o"></i>
-                                            <a v-if="!this.isTrash" @click="collectionFile(file.fileId)">&nbsp;<i class="fa"
-                                                    :class="fileCollectionStatus[file.fileId] ? 'fa-star' : 'fa-star-o'"></i></a></td>
+                                            <td>
+                                                <i v-if="file.fileType.startsWith('image/')" class="fa fa-file-image-o"></i>
+                                                <i v-else-if="file.fileType.includes('pdf')" class="fa fa-file-pdf-o"></i>
+                                                <i v-else-if="file.fileType.includes('word')" class="fa fa-file-word-o"></i>
+                                                <i v-else-if="file.fileType.includes('excel')" class="fa fa-file-excel-o"></i>
+                                                <i v-else-if="file.fileType.includes('sheet')" class="fa fa-file-excel-o"></i>
+                                                <i v-else-if="file.fileType.includes('powerpoint')" class="fa fa-file-powerpoint-o"></i>
+                                                <i v-else-if="file.fileType.includes('presentation')" class="fa fa-file-powerpoint-o"></i>
+                                                <i v-else-if="file.fileType.startsWith('video/')" class="fa fa-file-movie-o"></i>
+                                                <i v-else-if="file.fileType.startsWith('audio/')" class="fa fa-file-audio-o"></i>
+                                                <i v-else-if="file.fileType.includes('compressed')" class="fa fa-file-archive-o"></i>
+                                                <i v-else class="fa fa-file-o"></i>
+                                                <a v-if="!this.isTrash" @click="collectionFile(file.fileId)">&nbsp;<i class="fa"
+                                                    :class="fileCollectionStatus[file.fileId] ? 'fa-star' : 'fa-star-o'"></i></a>
+                                            </td>
                                             <td>{{ file.fileName }}</td>
                                             <td v-if="!this.isTrash"><a class="" @click="renameFile(file)"><i
                                                         class="fa fa-edit"></i></a></td>
@@ -243,6 +257,8 @@
                                             <td>{{ new Date(file.uploadTime).toLocaleString() }}</td>
                                             <td>
                                                 <div class="btn-group">
+                                                    <a v-if="!this.isTrash" @click="shareFile(file)">
+                                                            <i class="fa fa-share-alt"></i>&nbsp;</a>
                                                     <a v-if="!this.isTrash" @click="">
                                                         <i class="fa fa-share-alt"></i>&nbsp;</a>
                                                     <a v-if="!this.isTrash" @click="downloadFile(file)"><i
@@ -331,6 +347,8 @@ import 'viewerjs/dist/viewer.css'
 import VueViewer from 'v-viewer'
 import { defineComponent } from 'vue'
 import { VideoPlayer } from '@videojs-player/vue'
+import videojs from 'video.js';
+import { ref } from 'vue';
 import toastr from "../assets/js/plugins/toastr/toastr.min.js"
 import TopBar from '@/components/TopBar.vue'
 import FileDropzone from '../components/FileDropzone.vue'
@@ -375,6 +393,28 @@ export default {
                 userData: JSON.parse(sessionStorage.getItem('userData')) || {},
                 folderCollectionStatus: {},
                 fileCollectionStatus: {},
+                audio_videoTitle: null,
+                showPlayer: true,
+                audioOptions: {
+                    autoplay: false,
+                    controls: true,
+                    bigPlayButton: true,
+                    sources: 
+                    {
+                        src: 'api/downloadFile?fileID=35',
+                        type: 'audio/mpeg',
+                    },
+                },
+                videoOptions: {
+                    autoplay: false,
+                    controls: true,
+                    bigPlayButton: true,
+                    sources:
+                    {
+                        src: 'api/downloadFile?fileID=34',
+                        type: 'video/mp4',
+                    },
+                },
             };
         },
         created() {
@@ -449,8 +489,6 @@ export default {
             async filePreview(file){
                 if(this.isTrash) return;
                 if(file.fileType.startsWith('image/')){
-                    const responseFiles = await axios.get(`/api/findImagesByParentId?parentId=${this.currentFolder.folderId}`);
-                    this.images = responseFiles.data.data.imageList  // 更新图片列表
                     const imageDivs = this.$el.querySelector('.images')
                     const viewer = imageDivs.$viewer
                     let key = 0
@@ -463,18 +501,26 @@ export default {
                     viewer.show()
                 }
                 else if(file.fileType.startsWith('audio/')){
-                    const responseFiles = await axios.get(`/api/findAudioByParentId?parentId=${this.currentFolder.folderId}`);
-                    this.audios = responseFiles.data.data.audioList  // 更新列表
-                    let key = 0
-                    this.audios.forEach((src, index) => {  // 匹配选中
-                        if (src.split('=')[1] == file.fileId) {
-                            key = index;
-                        }
-                    })
+                    this.audio_videoTitle = file.fileName;
+                    this.changeAudioSource(file.fileId);
+                    $('#audioModal').modal('show');
                 }
-                else if(file.fileType.startsWith('video/')){
-
+                else if(file.fileType.startsWith('video/')){ 
+                    this.audio_videoTitle = file.fileName;
+                    this.changeVideoSource(file.fileId);
+                    $('#videoModal').modal('show');
                 }
+            },
+            changeAudioSource(fileId){
+                this.showPlayer = true;
+                this.audioOptions.sources.src = 'api/downloadFile?fileID='+fileId;
+            },
+            changeVideoSource(fileId){
+                this.showPlayer = true;
+                this.videoOptions.sources.src = 'api/downloadFile?fileID='+fileId;
+            },
+            closePlayer(){
+                this.showPlayer = false;
             },
             handleFileUploadSuccess() {  // 成功弹窗
                 toastr.success("上传文件成功！", "成功");
@@ -494,10 +540,9 @@ export default {
                 sessionStorage.setItem("currentFFsCount",currentFFsCount.data);
             },
             async findFFsByParentId(id){  // 寻找文件和文件夹
-                const responseFolders = await axios.get('/api/findFoldersByParentId?parentId='+id);
-                this.folders = responseFolders.data;
-                const responseFiles = await axios.get('/api/findFilesByParentId?parentId='+id);
-                this.files = responseFiles.data;
+                const response = await axios.get('/api/findFFsByParentId?parentId='+id);
+                this.folders = response.data.data.folders;
+                this.files = response.data.data.files;
             },
             async enterPath(id){  // 按下文件夹->改变路径
                 if(this.isTrash) return;
@@ -509,87 +554,98 @@ export default {
                 await this.findFFsByParentId(id);
                 await this.findFolderById(id);
                 await this.countFFsByParentId(id);
-                await this.checkAllFFsCollectionStatus();
-                await this.findTags();
-            this.currentFolder = JSON.parse(sessionStorage.getItem("currentFolder"));  // 更新 currentFolder
-            this.currentFFsCount = sessionStorage.getItem("currentFFsCount");  // 更新 currentFFsCount
-            // 发送文件夹更新信号
-            const event = new CustomEvent('update-path', {
-                detail: {
-                    newFolderId: this.currentFolder.folderId
-                }
-            });
-            document.dispatchEvent(event);
-            this.hideLoading();  // 隐藏加载页面
-        },
-        async findFFsByTag(tag) {
-            this.showLoading();  // 显示加载页面
-            const response = await axios.get('/api/findFFsByTag?tag=' + tag);
-            this.files = response.data.data.files;
-            this.folders = response.data.data.folders;
-            this.hideLoading();  // 隐藏加载页面
-        },
-        async findFilesByCategory(category){
-            this.showLoading();  // 显示加载页面
-            this.folders=[];
-            const response = await axios.get('/api/findFilesByCategory?category=' + category);
-            this.files = response.data.data.files;
-            this.hideLoading();  // 隐藏加载页面
-        },
-        async enterPathTrash() {
-            // 隐藏或disable上传和创建文件夹按钮，阻止用户进入和点击文件，重命名下载剪切和删除
-            this.showLoading();  // 显示加载页面
-            await this.findFFsByDelete();
-            await this.findTags();
-            const event = new CustomEvent('isTrash', {
-                detail: {
-                    status: true
-                }
-            });
-            document.dispatchEvent(event);
-            this.hideLoading();  // 隐藏加载页面
-        },
-        async findFFsByDelete(){
-            const responseFiles = await axios.post('/api/findFileByDelete',{"status":1});
-            this.files = responseFiles.data;
-            const responseFolders = await axios.post('/api/findFolderByDelete',{"status":1});
-            this.folders = responseFolders.data;
-        },
-        async backPath() {  //返回上一级
-            await this.enterPath(this.currentFolder.parentId);
-        },
-        async findTags() {
-            const responseTags = await axios.get('/api/findTags');
-            this.tags = responseTags.data;
-        },
-        async renameFile(fileId) {
-            const { value: newName } = await this.$swal.fire({
-                title: '重命名文件',
-                input: 'text',
-                inputLabel: '请输入新的文件名',
-                inputValue: this.currentFileName, // 当前文件名，可以作为默认值显示在输入框中
-                showCancelButton: true,
-                confirmButtonText: '确定',
-                cancelButtonText: '取消',
-                inputValidator: (value) => {
-                    if (!value) {
-                        return '文件名不能为空！'
+                const imageFiles = await axios.get(`/api/findImagesByParentId?parentId=${this.currentFolder.folderId}`);
+                this.images = imageFiles.data.data.imageList  // 更新图片列表
+                this.checkAllFFsCollectionStatus();
+                this.findTags();
+                this.queryCategoryCapacity();
+                this.currentFolder = JSON.parse(sessionStorage.getItem("currentFolder"));  // 更新 currentFolder
+                this.currentFFsCount = sessionStorage.getItem("currentFFsCount");  // 更新 currentFFsCount
+                // 发送文件夹更新信号
+                const event = new CustomEvent('update-path', {
+                    detail: {
+                        newFolderId: this.currentFolder.folderId
                     }
+                });
+                document.dispatchEvent(event);
+                this.hideLoading();  // 隐藏加载页面
+            },
+            async findFFsByTag(tag) {
+                if(this.isTrash) return;
+                this.showLoading();  // 显示加载页面
+                const response = await axios.get('/api/findFFsByTag?tag=' + tag);
+                this.files = response.data.data.files;
+                this.folders = response.data.data.folders;
+                this.hideLoading();  // 隐藏加载页面
+            },
+            async findFilesByCategory(category){
+                if(this.isTrash) return;
+                this.showLoading();  // 显示加载页面
+                this.folders=[];
+                const response = await axios.get('/api/findFilesByCategory?category=' + category);
+                this.files = response.data.data.files;
+                if(category===0){
+                    const imagesRes = await axios.get('/api/findImages');
+                    this.images = imagesRes.data.data.imageList;
                 }
-            });
-            // 如果用户点击了确定按钮，并且提供了新的文件名
-            if (newName) {
-                // 调用 API 来更新文件名
-                await axios.post('/api/renameFile', { "fileId": fileId, "fileName": newName });
-                this.$swal.fire('文件名已更新', `文件名已更新为:${newName}`, 'success');
-                this.enterPath(this.currentFolder.folderId);
-            }
-            else {
-                this.$swal.fire('操作取消', '文件名未更新', 'info');
-            }
-        },
-        async renameFolder(folderId) {
-            const { value: newName } = await this.$swal.fire({
+                this.hideLoading();  // 隐藏加载页面
+            },
+            async enterPathTrash() {
+                // 隐藏或disable上传和创建文件夹按钮，阻止用户进入和点击文件，重命名下载剪切和删除
+                this.showLoading();  // 显示加载页面
+                await this.findFFsByDelete();
+                await this.findTags();
+                this.queryCategoryCapacity();
+                const event = new CustomEvent('isTrash', {
+                    detail: {
+                        status: true
+                    }
+                });
+                document.dispatchEvent(event);
+                this.hideLoading();  // 隐藏加载页面
+            },
+            async findFFsByDelete(){
+                const responseFiles = await axios.post('/api/findFileByDelete',{"status":1});
+                this.files = responseFiles.data;
+                const responseFolders = await axios.post('/api/findFolderByDelete',{"status":1});
+                this.folders = responseFolders.data;
+            },
+            async backPath() {  //返回上一级
+                if(this.isTrash) return;
+                await this.enterPath(this.currentFolder.parentId);
+            },
+            async findTags() {
+                const responseTags = await axios.get('/api/findTags');
+                this.tags = responseTags.data;
+            },
+            async renameFile(fileId) {
+                const { value: newName } = await this.$swal.fire({
+                    title: '重命名文件',
+                    input: 'text',
+                    inputLabel: '请输入新的文件名',
+                    inputValue: this.currentFileName, // 当前文件名，可以作为默认值显示在输入框中
+                    showCancelButton: true,
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    inputValidator: (value) => {
+                        if (!value) {
+                            return '文件名不能为空！'
+                        }
+                    }
+                });
+                // 如果用户点击了确定按钮，并且提供了新的文件名
+                if (newName) {
+                    // 调用 API 来更新文件名
+                    await axios.post('/api/renameFile', { "fileId": fileId, "fileName": newName });
+                    this.$swal.fire('文件名已更新', `文件名已更新为:${newName}`, 'success');
+                    this.enterPath(this.currentFolder.folderId);
+                }
+                else {
+                    this.$swal.fire('操作取消', '文件名未更新', 'info');
+                }
+            },
+            async renameFolder(folderId) {
+                const { value: newName } = await this.$swal.fire({
                 title: '重命名文件夹',
                 input: 'text',
                 inputLabel: '请输入新的文件夹名',
@@ -612,6 +668,54 @@ export default {
                 }
                 else{
                     this.$swal.fire('操作取消', '文件夹名未更新', 'info');
+                }
+            },
+            async renameFileTag(file){
+                const { value: newName } = await this.$swal.fire({
+                    title: '重命名标签',
+                    input: 'text',
+                    inputLabel: '请输入新的标签',
+                    inputValue: file.tag, // 当前文件名，可以作为默认值显示在输入框中
+                    showCancelButton: true,
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    inputValidator: (value) => {
+                        if (!value) {
+                            return '标签名不能为空！'
+                        }
+                    }
+                });
+                if (newName) {
+                    await axios.post('/api/renameFileTag', { "fileId": file.fileId, "tag": newName });
+                    this.$swal.fire('标签已更改', `标签已更改为:${newName}`, 'success');
+                    this.enterPath(this.currentFolder.folderId);
+                }
+                else {
+                    this.$swal.fire('操作取消', '标签未更改', 'info');
+                }
+            },
+            async renameFolderTag(folder){
+                const { value: newName } = await this.$swal.fire({
+                    title: '重命名标签',
+                    input: 'text',
+                    inputLabel: '请输入新的标签',
+                    inputValue: folder.tag,
+                    showCancelButton: true,
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    inputValidator: (value) => {
+                        if (!value) {
+                            return '标签名不能为空！'
+                        }
+                    }
+                });
+                if (newName) {
+                        await axios.post('/api/renameFolderTag', { "folderId": folder.folderId, "tag": newName });
+                        this.$swal.fire('标签已更改', `标签已更改为:${newName}`, 'success');
+                        this.enterPath(this.currentFolder.folderId);
+                    }
+                else{
+                    this.$swal.fire('操作取消', '标签未更改', 'info');
                 }
             },
             async recycleBinFile(fileId){
@@ -761,6 +865,56 @@ export default {
                     await axios.post('api/CollectionsInsertFolder',{"folderId":folderId,"userId":this.userData.userId});
                 }
                 this.enterPath(this.currentFolder.folderId)
+            },
+            async shareFile(file){
+                // TODO
+                const { value: newName } = await this.$swal.fire({
+                    title: '重命名标签',
+                    input: 'text',
+                    inputLabel: '请输入新的标签',
+                    inputValue: file.tag, // 当前文件名，可以作为默认值显示在输入框中
+                    showCancelButton: true,
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    inputValidator: (value) => {
+                        if (!value) {
+                            return '标签名不能为空！'
+                        }
+                    }
+                });
+                if (newName) {
+                    await axios.post('/api/renameFileTag', { "fileId": file.fileId, "tag": newName });
+                    this.$swal.fire('标签已更改', `标签已更改为:${newName}`, 'success');
+                    this.enterPath(this.currentFolder.folderId);
+                }
+                else {
+                    this.$swal.fire('操作取消', '标签未更改', 'info');
+                }
+            },
+            async shareFolder(folder){
+                // TODO
+                const { value: newName } = await this.$swal.fire({
+                    title: '重命名标签',
+                    input: 'text',
+                    inputLabel: '请输入新的标签',
+                    inputValue: folder.tag,
+                    showCancelButton: true,
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    inputValidator: (value) => {
+                        if (!value) {
+                            return '标签名不能为空！'
+                        }
+                    }
+                });
+                if (newName) {
+                        await axios.post('/api/renameFolderTag', { "folderId": folder.folderId, "tag": newName });
+                        this.$swal.fire('标签已更改', `标签已更改为:${newName}`, 'success');
+                        this.enterPath(this.currentFolder.folderId);
+                    }
+                else{
+                    this.$swal.fire('操作取消', '标签未更改', 'info');
+                }
             },
             async checkAllFFsCollectionStatus() {
                 const response=await axios.post('/api/findCollectionFFs?userId='+this.userData.userId);
