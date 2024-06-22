@@ -387,15 +387,15 @@ export default {
                 folderCollectionStatus: {},
                 fileCollectionStatus: {},
                 audio_videoTitle: null,
-                showPlayer: true,
+                showPlayer: false,
                 audioOptions: {
                     autoplay: false,
                     controls: true,
                     bigPlayButton: true,
                     sources: 
                     {
-                        src: 'api/downloadFile?fileID=35',
-                        type: 'audio/mpeg',
+                        src: '',
+                        type: '',
                     },
                 },
                 videoOptions: {
@@ -404,8 +404,8 @@ export default {
                     bigPlayButton: true,
                     sources:
                     {
-                        src: 'api/downloadFile?fileID=34',
-                        type: 'video/mp4',
+                        src: '',
+                        type: '',
                     },
                 },
             };
@@ -500,22 +500,18 @@ export default {
                 }
                 else if(file.fileType.startsWith('audio/')){
                     this.audio_videoTitle = file.fileName;
-                    this.changeAudioSource(file.fileId);
+                    this.audioOptions.sources.src = 'api/downloadFile?fileID='+file.fileId;
+                    this.audioOptions.sources.type = file.fileType;
+                    this.showPlayer = true;
                     $('#audioModal').modal('show');
                 }
                 else if(file.fileType.startsWith('video/')){ 
                     this.audio_videoTitle = file.fileName;
-                    this.changeVideoSource(file.fileId);
+                    this.videoOptions.sources.src = 'api/downloadFile?fileID='+file.fileId;
+                    this.videoOptions.sources.type = file.fileType;
+                    this.showPlayer = true;
                     $('#videoModal').modal('show');
                 }
-            },
-            changeAudioSource(fileId){
-                this.showPlayer = true;
-                this.audioOptions.sources.src = 'api/downloadFile?fileID='+fileId;
-            },
-            changeVideoSource(fileId){
-                this.showPlayer = true;
-                this.videoOptions.sources.src = 'api/downloadFile?fileID='+fileId;
             },
             closePlayer(){
                 this.showPlayer = false;
