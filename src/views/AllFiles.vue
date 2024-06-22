@@ -348,7 +348,6 @@ import VueViewer from 'v-viewer'
 import { defineComponent } from 'vue'
 import { VideoPlayer } from '@videojs-player/vue'
 import videojs from 'video.js';
-import { ref } from 'vue';
 import toastr from "../assets/js/plugins/toastr/toastr.min.js"
 import TopBar from '@/components/TopBar.vue'
 import FileDropzone from '../components/FileDropzone.vue'
