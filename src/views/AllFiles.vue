@@ -331,7 +331,6 @@ import 'viewerjs/dist/viewer.css'
 import VueViewer from 'v-viewer'
 import { defineComponent } from 'vue'
 import { VideoPlayer } from '@videojs-player/vue'
-import { ref } from 'vue';
 import toastr from "../assets/js/plugins/toastr/toastr.min.js"
 import TopBar from '@/components/TopBar.vue'
 import FileDropzone from '../components/FileDropzone.vue'
@@ -360,12 +359,13 @@ export default {
     name: 'Profile',
     data() {
         return {
-                categoryCapacity:{},
                 folders: [],
                 files: [],
                 tags: [],
                 viewerOptions: {},
                 images: [],
+                audios: [],
+                videos: [],
                 currentFolder: JSON.parse(sessionStorage.getItem("currentFolder")) || {},
                 currentFFsCount: sessionStorage.getItem("currentFFsCount") || {},
                 loading: false,
@@ -375,29 +375,6 @@ export default {
                 userData: JSON.parse(sessionStorage.getItem('userData')) || {},
                 folderCollectionStatus: {},
                 fileCollectionStatus: {},
-                audio_videoTitle: null,
-                audioOptions: {
-                    autoplay: false,
-                    controls: true,
-                    bigPlayButton: true,
-                    sources: 
-                    {
-                        src: 'api/downloadFile?fileID=35',
-                        type: 'audio/mpeg',
-                    },
-                    showPlayer: true,
-                },
-                videoOptions: {
-                    autoplay: false,
-                    controls: true,
-                    bigPlayButton: true,
-                    sources:
-                    {
-                        src: 'api/downloadFile?fileID=34',
-                        type: 'video/mp4',
-                    },
-                    showPlayer: true,
-                },
             };
         },
         created() {
@@ -408,12 +385,9 @@ export default {
             else{
                 this.enterPath(0);
             }
-        },
-        methods: {
-            async queryCategoryCapacity(){
-                const responseTags = await axios.get('/api/queryCategoryCapacity');
-                this.categoryCapacity = responseTags.data.data;
             },
+
+        methods: {
             checkRoute() {
                 if (this.$route.name === 'allfiles') {
                     this.isTrash = false;
@@ -457,7 +431,6 @@ export default {
                 toastr.success(`成功剪切文件:${file.fileName ? file.fileName : file.folderName}`, "成功");
             },
             async pasteFile(){
-                if(this.isTrash) return;
                 if(this.currentCutFF != null && this.currentCutFF != undefined){
                     let FFName = this.currentCutFF.fileName ? this.currentCutFF.fileName : this.currentCutFF.folderName;
                     if(this.currentCutFF.fileName != null && this.currentCutFF.fileName != undefined){
@@ -486,40 +459,22 @@ export default {
                             key = index;
                         }
                     })
-                    console.log(this.images);
                     viewer.index = key
                     viewer.show()
                 }
                 else if(file.fileType.startsWith('audio/')){
-                    this.audio_videoTitle = file.fileName;
-                    this.changeAudioSource(file.fileId);
-                    this.enterPath(this.currentFolder.folderId);
-                    $('#myModal5').modal('show');
+                    const responseFiles = await axios.get(`/api/findAudioByParentId?parentId=${this.currentFolder.folderId}`);
+                    this.audios = responseFiles.data.data.audioList  // 更新列表
+                    let key = 0
+                    this.audios.forEach((src, index) => {  // 匹配选中
+                        if (src.split('=')[1] == file.fileId) {
+                            key = index;
+                        }
+                    })
                 }
-                else if(file.fileType.startsWith('video/')){ 
-                    this.audio_videoTitle = file.fileName;
-                    this.changeVideoSource(file.fileId);
-                    this.enterPath(this.currentFolder.folderId);
-                    $('#myModal6').modal('show');
+                else if(file.fileType.startsWith('video/')){
+
                 }
-            },
-            changeAudioSource(fileId){
-                this.audioOptions.sources.src = 'api/downloadFile?fileID='+fileId;
-                this.showPlayer = false;
-                this.$nextTick(() => {
-                    this.showPlayer = true;
-                });
-            },
-            changeVideoSource(fileId){
-                this.videoOptions.sources.src = 'api/downloadFile?fileID='+fileId;
-                this.showPlayer = false;
-                this.$nextTick(() => {
-                    this.showPlayer = true;
-                });
-            },
-            closeModal(){
-                this.showPlayer = false;
-                this.enterPath(this.currentFolder.folderId);
             },
             handleFileUploadSuccess() {  // 成功弹窗
                 toastr.success("上传文件成功！", "成功");
@@ -554,92 +509,87 @@ export default {
                 await this.findFFsByParentId(id);
                 await this.findFolderById(id);
                 await this.countFFsByParentId(id);
-                this.checkAllFFsCollectionStatus();
-                this.findTags();
-                this.queryCategoryCapacity();
-                this.currentFolder = JSON.parse(sessionStorage.getItem("currentFolder"));  // 更新 currentFolder
-                this.currentFFsCount = sessionStorage.getItem("currentFFsCount");  // 更新 currentFFsCount
-                // 发送文件夹更新信号
-                const event = new CustomEvent('update-path', {
-                    detail: {
-                        newFolderId: this.currentFolder.folderId
-                    }
-                });
-                document.dispatchEvent(event);
-                this.hideLoading();  // 隐藏加载页面
-            },
-            async findFFsByTag(tag) {
-                if(this.isTrash) return;
-                this.showLoading();  // 显示加载页面
-                const response = await axios.get('/api/findFFsByTag?tag=' + tag);
-                this.files = response.data.data.files;
-                this.folders = response.data.data.folders;
-                this.hideLoading();  // 隐藏加载页面
-            },
-            async findFilesByCategory(category){
-                if(this.isTrash) return;
-                this.showLoading();  // 显示加载页面
-                this.folders=[];
-                const response = await axios.get('/api/findFilesByCategory?category=' + category);
-                this.files = response.data.data.files;
-                this.hideLoading();  // 隐藏加载页面
-            },
-            async enterPathTrash() {
-                // 隐藏或disable上传和创建文件夹按钮，阻止用户进入和点击文件，重命名下载剪切和删除
-                this.showLoading();  // 显示加载页面
-                await this.findFFsByDelete();
+                await this.checkAllFFsCollectionStatus();
                 await this.findTags();
-                this.queryCategoryCapacity();
-                const event = new CustomEvent('isTrash', {
-                    detail: {
-                        status: true
-                    }
-                });
-                document.dispatchEvent(event);
-                this.hideLoading();  // 隐藏加载页面
-            },
-            async findFFsByDelete(){
-                const responseFiles = await axios.post('/api/findFileByDelete',{"status":1});
-                this.files = responseFiles.data;
-                const responseFolders = await axios.post('/api/findFolderByDelete',{"status":1});
-                this.folders = responseFolders.data;
-            },
-            async backPath() {  //返回上一级
-                if(this.isTrash) return;
-                await this.enterPath(this.currentFolder.parentId);
-            },
-            async findTags() {
-                const responseTags = await axios.get('/api/findTags');
-                this.tags = responseTags.data;
-            },
-            async renameFile(fileId) {
-                const { value: newName } = await this.$swal.fire({
-                    title: '重命名文件',
-                    input: 'text',
-                    inputLabel: '请输入新的文件名',
-                    inputValue: this.currentFileName, // 当前文件名，可以作为默认值显示在输入框中
-                    showCancelButton: true,
-                    confirmButtonText: '确定',
-                    cancelButtonText: '取消',
-                    inputValidator: (value) => {
-                        if (!value) {
-                            return '文件名不能为空！'
-                        }
-                    }
-                });
-                // 如果用户点击了确定按钮，并且提供了新的文件名
-                if (newName) {
-                    // 调用 API 来更新文件名
-                    await axios.post('/api/renameFile', { "fileId": fileId, "fileName": newName });
-                    this.$swal.fire('文件名已更新', `文件名已更新为:${newName}`, 'success');
-                    this.enterPath(this.currentFolder.folderId);
+            this.currentFolder = JSON.parse(sessionStorage.getItem("currentFolder"));  // 更新 currentFolder
+            this.currentFFsCount = sessionStorage.getItem("currentFFsCount");  // 更新 currentFFsCount
+            // 发送文件夹更新信号
+            const event = new CustomEvent('update-path', {
+                detail: {
+                    newFolderId: this.currentFolder.folderId
                 }
-                else {
-                    this.$swal.fire('操作取消', '文件名未更新', 'info');
+            });
+            document.dispatchEvent(event);
+            this.hideLoading();  // 隐藏加载页面
+        },
+        async findFFsByTag(tag) {
+            this.showLoading();  // 显示加载页面
+            const response = await axios.get('/api/findFFsByTag?tag=' + tag);
+            this.files = response.data.data.files;
+            this.folders = response.data.data.folders;
+            this.hideLoading();  // 隐藏加载页面
+        },
+        async findFilesByCategory(category){
+            this.showLoading();  // 显示加载页面
+            this.folders=[];
+            const response = await axios.get('/api/findFilesByCategory?category=' + category);
+            this.files = response.data.data.files;
+            this.hideLoading();  // 隐藏加载页面
+        },
+        async enterPathTrash() {
+            // 隐藏或disable上传和创建文件夹按钮，阻止用户进入和点击文件，重命名下载剪切和删除
+            this.showLoading();  // 显示加载页面
+            await this.findFFsByDelete();
+            await this.findTags();
+            const event = new CustomEvent('isTrash', {
+                detail: {
+                    status: true
                 }
-            },
-            async renameFolder(folderId) {
-                const { value: newName } = await this.$swal.fire({
+            });
+            document.dispatchEvent(event);
+            this.hideLoading();  // 隐藏加载页面
+        },
+        async findFFsByDelete(){
+            const responseFiles = await axios.post('/api/findFileByDelete',{"status":1});
+            this.files = responseFiles.data;
+            const responseFolders = await axios.post('/api/findFolderByDelete',{"status":1});
+            this.folders = responseFolders.data;
+        },
+        async backPath() {  //返回上一级
+            await this.enterPath(this.currentFolder.parentId);
+        },
+        async findTags() {
+            const responseTags = await axios.get('/api/findTags');
+            this.tags = responseTags.data;
+        },
+        async renameFile(fileId) {
+            const { value: newName } = await this.$swal.fire({
+                title: '重命名文件',
+                input: 'text',
+                inputLabel: '请输入新的文件名',
+                inputValue: this.currentFileName, // 当前文件名，可以作为默认值显示在输入框中
+                showCancelButton: true,
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                inputValidator: (value) => {
+                    if (!value) {
+                        return '文件名不能为空！'
+                    }
+                }
+            });
+            // 如果用户点击了确定按钮，并且提供了新的文件名
+            if (newName) {
+                // 调用 API 来更新文件名
+                await axios.post('/api/renameFile', { "fileId": fileId, "fileName": newName });
+                this.$swal.fire('文件名已更新', `文件名已更新为:${newName}`, 'success');
+                this.enterPath(this.currentFolder.folderId);
+            }
+            else {
+                this.$swal.fire('操作取消', '文件名未更新', 'info');
+            }
+        },
+        async renameFolder(folderId) {
+            const { value: newName } = await this.$swal.fire({
                 title: '重命名文件夹',
                 input: 'text',
                 inputLabel: '请输入新的文件夹名',
@@ -663,54 +613,6 @@ export default {
                 else{
                     this.$swal.fire('操作取消', '文件夹名未更新', 'info');
                 }
-            },
-            async renameFileTag(file){
-                const { value: newName } = await this.$swal.fire({
-                    title: '重命名标签',
-                    input: 'text',
-                    inputLabel: '请输入新的标签',
-                    inputValue: file.tag, // 当前文件名，可以作为默认值显示在输入框中
-                    showCancelButton: true,
-                    confirmButtonText: '确定',
-                    cancelButtonText: '取消',
-                    inputValidator: (value) => {
-                        if (!value) {
-                            return '标签名不能为空！'
-                        }
-                    }
-                });
-                if (newName) {
-                    await axios.post('/api/renameFileTag', { "fileId": file.fileId, "tag": newName });
-                    this.$swal.fire('标签已更改', `标签已更改为:${newName}`, 'success');
-                    this.enterPath(this.currentFolder.folderId);
-                }
-                else {
-                    this.$swal.fire('操作取消', '标签未更改', 'info');
-                }
-            },
-            async renameFolderTag(folder){
-                const { value: newName } = await this.$swal.fire({
-                title: '重命名标签',
-                input: 'text',
-                inputLabel: '请输入新的标签',
-                inputValue: folder.tag,
-                showCancelButton: true,
-                confirmButtonText: '确定',
-                cancelButtonText: '取消',
-                inputValidator: (value) => {
-                    if (!value) {
-                        return '标签名不能为空！'
-                    }
-                }
-            });
-            if (newName) {
-                    await axios.post('/api/renameFolderTag', { "folderId": folder.folderId, "tag": newName });
-                    this.$swal.fire('标签已更改', `标签已更改为:${newName}`, 'success');
-                    this.enterPath(this.currentFolder.folderId);
-                }
-            else{
-                this.$swal.fire('操作取消', '标签未更改', 'info');
-            }
             },
             async recycleBinFile(fileId){
                 const result = await this.$swal.fire({
