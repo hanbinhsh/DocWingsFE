@@ -29,14 +29,13 @@
                             <a href="trash"><i class="fa fa-trash-o"></i> <span
                                     class="nav-label">回收站</span></a>
                         </li>
-                        <li>
-                            <a v-if="isAdmin()" href="usergroupediting"><i class="fa fa-group"></i> <span
-                                    class="nav-label">用户组编辑</span></a>
+                        <li class="active">
+                            <a v-if="isAdmin()" href="usergroupediting"><i class="fa fa-group"></i> <span class="nav-label">用户组编辑</span></a>
                         </li>
                         <li>
                             <a href="log"><i class="fa fa-file-text-o"></i> <span class="nav-label">日志</span></a>
                         </li>
-                        <li class="active">
+                        <li >
                             <a href="profile"><i class="fa fa-diamond"></i> <span class="nav-label">个人资料</span></a>
                         </li>
                     </ul>
@@ -88,35 +87,20 @@
                         <div class="col-md-4">
                             <div class="ibox float-e-margins">
                                 <div class="ibox-title">
-                                    <h5>更改个人资料</h5>
+                                    <h5>编辑用户信息</h5>
                                 </div>
                                 <div class="ibox-content">
                                     <div>
                                         <div class="feed-activity-list">
                                             <form class="m-t" role="form" action="ChangePassword" method="post">
                                                 <div class="form-group">
-                                                    <input autocomplete="off" type="input" id="newPhone" class="form-control"
-                                                        placeholder="请输入新电话号码">
+                                                    <input autocomplete="off" type="input" id="userId" class="form-control"
+                                                        placeholder="请输入需要操作的用户ID">
                                                 </div>
-                                                <div class="form-group">
-                                                    <input autocomplete="off" type="input" id="newEmail" class="form-control"
-                                                        placeholder="请输入新邮箱">
-                                                </div>
-                                                <div class="form-group">
-                                                    <input type="password"  id="oldPassword" class="form-control"
-                                                        placeholder="请输入旧密码" >
-                                                </div>
-                                                <div class="form-group">
-                                                    <input type="password"  id="newpassword" class="form-control"
-                                                        placeholder="请输入新密码" >
-                                                </div>
-                                                <div class="form-group">
-                                                    <input type="password"  id="twicePassword" class="form-control"
-                                                        placeholder="请再次输入密码" >
-                                                </div>  
-                                                <a type="submit" @click="modify()"
-                                                    class="btn btn-primary block full-width m-b">提交</a>
-                                                <a @click="unsubscibe()" class="btn btn-danger block full-width m-b">注销</a>
+                                                <a type="submit" @click="resetPsw()" class="btn btn-primary block full-width m-b">重置密码</a>  
+                                                <a type="submit" @click="freeze()" class="btn btn-primary block full-width m-b">冻结</a>
+                                                <a type="submit" @click="defrost()" class="btn btn-primary block full-width m-b">解冻</a>
+                                                <a type="submit" @click="unsubscibe()" class="btn btn-danger block full-width m-b">注销</a>
                                             </form>
                                         </div>
                                     </div>
@@ -145,7 +129,7 @@
     import UserItem from '@/components/UserItem.vue'
     import FootBar from '@/components/FootBar.vue'
     export default {
-		name: 'Profile',
+		name: 'UserGroupEditing',
         data(){
             return {
                 userData: JSON.parse(sessionStorage.getItem('userData')) || {},
@@ -159,7 +143,7 @@
 		methods: {
             async unsubscibe(){
                 const { value: password } = await this.$swal.fire({
-                    title: '注销账户',
+                    title: '用户验证',
                     input: 'password',
                     inputLabel: '请输入密码',
                     showCancelButton: true,
@@ -182,48 +166,102 @@
                 else{
                     // 删除用户，并删除其收藏
                     // BUG 文件夹/文件/日志等外键依赖
-                    await axios.post('/api/UserCollectionDelete', { "userId":this.userData.userId });   
-                    await axios.post('/api/UserDelete', { "userId":this.userData.userId });
-                    window.sessionStorage.clear();
-                    this.$router.push('/login');
+                    await axios.post('/api/UserCollectionDelete', { "userId":userId.value });   
+                    await axios.post('/api/UserDelete', { "userId":userId.value });
+                    alert('该用户已注销！');
                 }
             },
-            async modify(){
-                const response = await axios.post('/api/login', { "userName": this.userData.userName, "password": oldPassword.value });
-                if(oldPassword.value==""){
-                    this.$swal.fire('密码未输入','','error');
+            async resetPsw(){
+                const { value: password } = await this.$swal.fire({
+                    title: '用户验证',
+                    input: 'password',
+                    inputLabel: '请输入密码',
+                    showCancelButton: true,
+                    confirmButtonText: '确定',  
+                    cancelButtonText: '取消',
+                    inputValidator: (value) => {
+                        if (!value) {
+                            return '未输入密码！'
+                        }
+                    }
+                });
+                if (!password) {
+                    return; // 用户取消了，不做任何操作
                 }
-                else if(response.data.accountLocked==true){
-                    this.$swal.fire('用户已冻结,请稍后再试','','error');
-                }
-                else if (response.data == null||response.data=="") {
+                const response = await axios.post('/api/login', { "userName": this.userData.userName, "password": password });
+                // 如果用户点击了确定按钮，并且提供正确密码
+                if (response.data == null||response.data=="") {
                     this.$swal.fire('密码错误','','error');
                 }
                 else{
-                    if(newPhone.value!=""){
-                    await axios.post('/api/UpdatePhone',{"userId": this.userData.userId,"newPhone":newPhone.value});
-                    alert('您的电话号码已更改！');
+                    //重置该用户密码
+                    const response=await axios.post('/api/resetPsw', { "userId":userId.value }); 
+                    if(response.data!=null) 
+                    alert('已重置该用户密码！');
+                    else
+                    alert('该用户不存在！');
+                }
+            },
+            async freeze(){
+                const { value: password } = await this.$swal.fire({
+                    title: '用户验证',
+                    input: 'password',
+                    inputLabel: '请输入密码',
+                    showCancelButton: true,
+                    confirmButtonText: '确定',  
+                    cancelButtonText: '取消',
+                    inputValidator: (value) => {
+                        if (!value) {
+                            return '未输入密码！'
+                        }
                     }
-                    if(newEmail.value!=""){
-                    await axios.post('/api/UpdateEmail',{"userId": this.userData.userId,"newEmail":newEmail.value});
-                    alert('您的邮箱已更改！');
+                });
+                if (!password) {
+                    return; // 用户取消了，不做任何操作
+                }
+                const response = await axios.post('/api/login', { "userName": this.userData.userName, "password": password });
+                // 如果用户点击了确定按钮，并且提供正确密码
+                if (response.data == null||response.data=="") {
+                    this.$swal.fire('密码错误','','error');
+                }
+                else{
+                    // 用户存在冻结
+                    const response=await axios.post('/api/freeze', { "userId":userId.value }); 
+                    if(response.data!=null)  
+                    alert('该用户已冻结！');
+                    else
+                    alert('该用户不存在！');
+                }
+            },
+            async defrost(){
+                const { value: password } = await this.$swal.fire({
+                    title: '用户验证',
+                    input: 'password',
+                    inputLabel: '请输入密码',
+                    showCancelButton: true,
+                    confirmButtonText: '确定',  
+                    cancelButtonText: '取消',
+                    inputValidator: (value) => {
+                        if (!value) {
+                            return '未输入密码！'
+                        }
                     }
-                    if(twicePassword.value==newpassword.value&&twicePassword.value!=""){
-                    await axios.post('/api/UpdatePassword',{"userId": this.userData.userId,"newPassword":newpassword.value});
-                    const response1 = await axios.post('/api/login', { userName: this.userData.userName, password: newpassword.value });
-                    sessionStorage.setItem('userData', JSON.stringify(response1.data));
-                    alert('您的密码已更改！');
-                    window.location.reload();
-                    }else if(twicePassword.value!=newpassword.value&&twicePassword.value!=""){
-                    this.$swal.fire('两次密码不一样','','error');
-                    const response2 = await axios.post('/api/login', { userName: this.userData.userName, password: oldPassword.value });
-                    sessionStorage.setItem('userData', JSON.stringify(response2.data));
-                    window.location.reload();
-                    }else{
-                        const response3 = await axios.post('/api/login', { userName: this.userData.userName, password: oldPassword.value });
-                        sessionStorage.setItem('userData', JSON.stringify(response3.data));
-                        window.location.reload();
-                    }       
+                });
+                if (!password) {
+                    return; // 用户取消了，不做任何操作
+                }
+                const response = await axios.post('/api/login', { "userName": this.userData.userName, "password": password });
+                // 如果用户点击了确定按钮，并且提供正确密码
+                if (response.data == null||response.data=="") {
+                    this.$swal.fire('密码错误','','error');
+                }
+                else{
+                    //解冻用户
+                    const response=await axios.post('/api/defrost', { "userId":userId.value }); 
+                    if(response.data!=null)  
+                    alert('已解冻该用户！');
+                    else
+                    alert('该用户不存在！');
                 }
             },
             isAdmin() {
