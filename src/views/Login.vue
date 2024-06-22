@@ -92,6 +92,7 @@ async function login() {
 				sessionStorage.setItem('userData', JSON.stringify(response.data));
 				console.log(sessionStorage.getItem('userData'));
 				toastr.clear();  // 清空错误信息
+				// BUG 防止出错
 				router.replace('/userhome').then(() => {  // 跳转后强制刷新
 					window.location.reload();
 				});
