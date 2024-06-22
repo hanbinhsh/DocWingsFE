@@ -32,8 +32,7 @@
                             <a href="trash"><i class="fa fa-trash-o"></i> <span class="nav-label">回收站</span></a>
                         </li>
                         <li>
-                            <a href="searchAllServlet"><i class="fa fa-group"></i> <span
-                                    class="nav-label">用户组编辑</span></a>
+                            <a v-if="isAdmin()" href="usergroupediting"><i class="fa fa-group"></i> <span class="nav-label">用户组编辑</span></a>
                         </li>
                         <li>
                             <a href="log"><i class="fa fa-file-text-o"></i> <span class="nav-label">日志</span></a>
@@ -410,6 +409,9 @@ export default {
             this.folders = response.data.data.folders;
             this.hideLoading();  // 隐藏加载页面
         },
+        isAdmin() {
+            return this.userData.isAdmin; // 检查is_admin属性是否为true
+        }
     },
     mounted() {}
 }

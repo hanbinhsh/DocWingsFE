@@ -83,7 +83,7 @@
           },
           { label: '分享', link: '/share', icon: 'fa fa-share-square-o' },
           { label: '回收站', link: '/recycle', icon: 'fa fa-trash-o' },
-          { label: '用户组编辑', link: '/user-groups', icon: 'fa fa-group' },
+          { label: '用户组编辑', link: '/usergroupediting', icon: 'fa fa-group' },
           { label: '日志', link: '/log', icon: 'fa fa-file-text-o' },
           { label: '个人资料', link: '/profile', icon: 'fa fa-diamond' }
         ])
