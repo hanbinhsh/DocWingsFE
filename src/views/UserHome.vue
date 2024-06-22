@@ -58,29 +58,39 @@
                                 <div class="ibox-content">
                                     <div class="file-manager">
                                         <h5>查看:</h5>
-                                        <a href="file_manager#" class="file-control active">Ale</a>
-                                        <a href="file_manager#" class="file-control">Documents</a>
-                                        <a href="file_manager#" class="file-control">Audio</a>
-                                        <a href="file_manager#" class="file-control">Images</a>
+                                        <a @click="enterPath()" class="file-control active">收藏</a>
+                                        <a @click="" class="file-control">最近访问</a>
+                                        <a @click="" class="file-control">所有文件</a>
                                         <div class="hr-line-dashed"></div>
-                                        <button class="btn btn-primary btn-block">上传文件</button>
+                                        <a class="btn btn-primary btn-block" href="allfiles">上传文件</a>
                                         <div class="hr-line-dashed"></div>
                                         <div class="row">
                                             <div class="col-lg-6" id="file-trash-donut" style="height: 180px;padding:0"></div>
                                             <div class="col-lg-6" id="category-donut" style="height: 180px;padding:0"></div>
                                         </div>
                                         <div class="hr-line-dashed"></div>
-                                        <h5>Folders</h5>
-                                        <ul class="folder-list" style="padding: 0">
-                                            <li><a href="file_manager"><i class="fa fa-folder"></i> Files</a></li>
-                                            <li><a href="file_manager"><i class="fa fa-folder"></i> Pictures</a>
+                                        <h5>类别</h5>
+                                        <ul class="category-list folder-list m-b-md" style="padding: 0">
+                                            <li>
+                                                <a @click="findFilesByCategory(0)"> <i class="fa fa-circle text-navy"></i> 图片
+                                                <span class="label label-primary pull-right">{{ this.categoryCapacity.imageCapacity }}GB</span></a>
                                             </li>
-                                            <li><a href="file_manager"><i class="fa fa-folder"></i> Web pages</a>
+                                            <li>
+                                                <a @click="findFilesByCategory(1)"> <i class="fa fa-circle text-danger"></i> 文档
+                                                <span class="label label-primary pull-right">{{ this.categoryCapacity.documentCapacity }}GB</span></a>
                                             </li>
-                                            <li><a href="file_manager"><i class="fa fa-folder"></i>
-                                                    Illustrations</a></li>
-                                            <li><a href="file_manager"><i class="fa fa-folder"></i> Films</a></li>
-                                            <li><a href="file_manager"><i class="fa fa-folder"></i> Books</a></li>
+                                            <li>
+                                                <a @click="findFilesByCategory(3)"> <i class="fa fa-circle text-primary"></i> 视频
+                                                <span class="label label-primary pull-right">{{ this.categoryCapacity.videoCapacity }}GB</span></a>
+                                            </li>
+                                            <li>
+                                                <a @click="findFilesByCategory(2)"> <i class="fa fa-circle text-info"></i> 音乐
+                                                <span class="label label-primary pull-right">{{ this.categoryCapacity.audioCapacity }}GB</span></a>
+                                            </li>
+                                            <li>
+                                                <a @click="findFilesByCategory(4)"> <i class="fa fa-circle text-warning"></i> 其他
+                                                <span class="label label-primary pull-right">{{ this.categoryCapacity.otherCapacity }}GB</span></a>
+                                            </li>
                                         </ul>
                                         <h5 class="tag-title">标签</h5>
                                         <ul class="tag-list" style="padding: 0">
@@ -123,7 +133,17 @@
                                             <a>
                                                 <span class="corner"></span>
                                                 <div v-if="!file.fileType.startsWith('image/')" class="icon">
-                                                    <i class="fa fa-file"></i>
+                                                    <i v-if="file.fileType.startsWith('image/')" class="fa fa-file-image-o"></i>
+                                                    <i v-else-if="file.fileType.includes('pdf')" class="fa fa-file-pdf-o"></i>
+                                                    <i v-else-if="file.fileType.includes('word')" class="fa fa-file-word-o"></i>
+                                                    <i v-else-if="file.fileType.includes('excel')" class="fa fa-file-excel-o"></i>
+                                                    <i v-else-if="file.fileType.includes('sheet')" class="fa fa-file-excel-o"></i>
+                                                    <i v-else-if="file.fileType.includes('powerpoint')" class="fa fa-file-powerpoint-o"></i>
+                                                    <i v-else-if="file.fileType.includes('presentation')" class="fa fa-file-powerpoint-o"></i>
+                                                    <i v-else-if="file.fileType.startsWith('video/')" class="fa fa-file-movie-o"></i>
+                                                    <i v-else-if="file.fileType.startsWith('audio/')" class="fa fa-file-audio-o"></i>
+                                                    <i v-else-if="file.fileType.includes('compressed')" class="fa fa-file-archive-o"></i>
+                                                    <i v-else class="fa fa-file-o"></i>
                                                 </div>
                                                 <div v-if="file.fileType.startsWith('image/')" class="image">
                                                     <img alt="image" class="img-responsive"
@@ -211,6 +231,18 @@ export default {
         this.enterPath();
     },
     methods: {
+        async findFilesByCategory(category){
+            if(this.isTrash) return;
+            this.showLoading();  // 显示加载页面
+            this.folders=[];
+            const response = await axios.get('/api/findFilesByCategory?category=' + category);
+            this.files = response.data.data.files;
+            if(category===0){
+                const imagesRes = await axios.get('/api/findImages');
+                this.images = imagesRes.data.data.imageList;
+            }
+            this.hideLoading();  // 隐藏加载页面
+        },
         async queryCategoryCapacity(){
             const responseTags = await axios.get('/api/queryCategoryCapacity');
             this.categoryCapacity = responseTags.data.data;
@@ -247,7 +279,8 @@ export default {
             this.tags = responseTags.data;
         },
         getImageUrl(fileId) {
-            const imageUrl = this.images.find(url => url.includes(`fileID=${fileId}`));
+            // const imageUrl = this.images.find(url => url.includes(`fileID=${fileId}`));
+            let imageUrl = "api/downloadFile?fileID="+fileId;
             return imageUrl || '';
         },
         async updateFilePreview() {
@@ -256,7 +289,6 @@ export default {
         },
         async filePreview(file) {
             if (file.fileType.startsWith('image/')) {
-                this.updateFilePreview()
                 const imageDivs = this.$el.querySelector('.images')
                 const viewer = imageDivs.$viewer
                 let key = 0
@@ -273,7 +305,7 @@ export default {
             this.showLoading();  // 显示加载页面
             await this.findCollectionFFsByUserId();
             await this.checkAllFFsCollectionStatus();
-            await this.checkAllFFsCollectionStatus();
+            await this.updateFilePreview()
             await this.findTags();
             this.hideLoading();  // 隐藏加载页面
         },
@@ -378,19 +410,6 @@ export default {
             this.folders = response.data.data.folders;
             this.hideLoading();  // 隐藏加载页面
         },
-        async checkAllFFsCollectionStatus() {
-            const response=await axios.post('/api/findCollectionFFs?userId='+this.userData.userId);
-            const data = response.data
-            this.folderCollectionStatus = {}
-            this.fileCollectionStatus = {}
-            data.forEach(item => {
-                if (item.isFolder) {
-                    this.folderCollectionStatus[item.folderId] = true;
-                } else {
-                    this.fileCollectionStatus[item.fileId] = true;
-                }
-            });
-        }
     },
     mounted() {}
 }
