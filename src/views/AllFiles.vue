@@ -5,31 +5,35 @@
                 <img v-for="(src, index) in images" class="images" :key="index" :src="src">
             </div>
         </div>
-        <div class="modal inmodal fade in" id="myModal5" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal inmodal fade in" id="audioModal" tabindex="-1" role="dialog" aria-hidden="true">
             <div class="modal-dialog modal-lg">
                 <div class="modal-content">
                     <div class="modal-header">
                         {{this.audio_videoTitle}}
-                        <button @click="closeModal" type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                        <button @click="closePlayer" type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
                     </div>
                     <div class="modal-body">
                         <div class="text-center">
-                            <VideoPlayer v-if="showPlayer" :options="this.audioOptions" class="video-js-a vjs-big-play-centered"/>
+                            <VideoPlayer v-if="showPlayer" :options="this.audioOptions" 
+                            :key="new Date().getTime()"
+                            class="video-js-a vjs-big-play-centered"/>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="modal inmodal fade in" id="myModal6" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal inmodal fade in" id="videoModal" tabindex="-1" role="dialog" aria-hidden="true">
             <div class="modal-dialog modal-lg">
                 <div class="modal-content">
                     <div class="modal-header">
                         {{this.audio_videoTitle}}
-                        <button @click="closeModal" type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                        <button @click="closePlayer" type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
                     </div>
                     <div class="modal-body">
                         <div class="text-center">
-                            <VideoPlayer v-if="showPlayer" :options="this.videoOptions" class="video-js-v vjs-big-play-centered"/>
+                            <VideoPlayer v-if="showPlayer" :options="this.videoOptions" 
+                            :key="new Date().getTime()"
+                            class="video-js-v vjs-big-play-centered"/>
                         </div>
                     </div>
                 </div>
@@ -330,6 +334,7 @@ import 'viewerjs/dist/viewer.css'
 import VueViewer from 'v-viewer'
 import { defineComponent } from 'vue'
 import { VideoPlayer } from '@videojs-player/vue'
+import videojs from 'video.js';
 import { ref } from 'vue';
 import toastr from "../assets/js/plugins/toastr/toastr.min.js"
 import TopBar from '@/components/TopBar.vue'
@@ -372,6 +377,7 @@ export default {
                 folderCollectionStatus: {},
                 fileCollectionStatus: {},
                 audio_videoTitle: null,
+                showPlayer: true,
                 audioOptions: {
                     autoplay: false,
                     controls: true,
@@ -381,7 +387,6 @@ export default {
                         src: 'api/downloadFile?fileID=35',
                         type: 'audio/mpeg',
                     },
-                    showPlayer: true,
                 },
                 videoOptions: {
                     autoplay: false,
@@ -392,7 +397,6 @@ export default {
                         src: 'api/downloadFile?fileID=34',
                         type: 'video/mp4',
                     },
-                    showPlayer: true,
                 },
             };
         },
@@ -489,33 +493,24 @@ export default {
                 else if(file.fileType.startsWith('audio/')){
                     this.audio_videoTitle = file.fileName;
                     this.changeAudioSource(file.fileId);
-                    this.enterPath(this.currentFolder.folderId);
-                    $('#myModal5').modal('show');
+                    $('#audioModal').modal('show');
                 }
                 else if(file.fileType.startsWith('video/')){ 
                     this.audio_videoTitle = file.fileName;
                     this.changeVideoSource(file.fileId);
-                    this.enterPath(this.currentFolder.folderId);
-                    $('#myModal6').modal('show');
+                    $('#videoModal').modal('show');
                 }
             },
             changeAudioSource(fileId){
+                this.showPlayer = true;
                 this.audioOptions.sources.src = 'api/downloadFile?fileID='+fileId;
-                this.showPlayer = false;
-                this.$nextTick(() => {
-                    this.showPlayer = true;
-                });
             },
             changeVideoSource(fileId){
+                this.showPlayer = true;
                 this.videoOptions.sources.src = 'api/downloadFile?fileID='+fileId;
-                this.showPlayer = false;
-                this.$nextTick(() => {
-                    this.showPlayer = true;
-                });
             },
-            closeModal(){
+            closePlayer(){
                 this.showPlayer = false;
-                this.enterPath(this.currentFolder.folderId);
             },
             handleFileUploadSuccess() {  // 成功弹窗
                 toastr.success("上传文件成功！", "成功");
