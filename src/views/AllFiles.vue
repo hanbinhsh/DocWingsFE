@@ -552,7 +552,7 @@ export default {
                 await this.findFFsByParentId(id);
                 await this.findFolderById(id);
                 await this.countFFsByParentId(id);
-                const imageFiles = await axios.get(`/api/findImagesByParentId?parentId=${this.currentFolder.folderId}`);
+                const imageFiles = await axios.get(`/api/findImagesByParentId?parentId=${this.currentFolder.folderId??0}`);
                 this.images = imageFiles.data.data.imageList  // 更新图片列表
                 this.checkAllFFsCollectionStatus();
                 this.findTags();
