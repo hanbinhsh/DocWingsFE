@@ -5,6 +5,40 @@
                 <img v-for="(src, index) in images" class="images" :key="index" :src="src">
             </div>
         </div>
+        <div class="modal inmodal fade in" id="audioModal" tabindex="-1" role="dialog" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        {{this.audio_videoTitle}}
+                        <button @click="closePlayer" type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="text-center">
+                            <VideoPlayer v-if="showPlayer" :options="this.audioOptions" 
+                            :key="new Date().getTime()"
+                            class="video-js-a vjs-big-play-centered"/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal inmodal fade in" id="videoModal" tabindex="-1" role="dialog" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        {{this.audio_videoTitle}}
+                        <button @click="closePlayer" type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="text-center">
+                            <VideoPlayer v-if="showPlayer" :options="this.videoOptions" 
+                            :key="new Date().getTime()"
+                            class="video-js-v vjs-big-play-centered"/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
         <div id="wrapper">
             <nav class="navbar-default navbar-static-side" role="navigation">
                 <div class="sidebar-collapse">
@@ -205,12 +239,14 @@ import TopBar from '@/components/TopBar.vue'
 import UserItem from '@/components/UserItem.vue'
 import FootBar from '@/components/FootBar.vue'
 import VueViewer from 'v-viewer'
+import { VideoPlayer } from '@videojs-player/vue'
 export default {
     name: 'UserHome',
     components: {
         TopBar,
         UserItem,
-        FootBar
+        FootBar,
+        VideoPlayer,
     },
     data() {
         return {
@@ -223,6 +259,28 @@ export default {
             folderCollectionStatus: {},
             fileCollectionStatus: {},
             categoryCapacity:{},
+            audio_videoTitle: null,
+            showPlayer: true,
+            audioOptions: {
+                autoplay: false,
+                controls: true,
+                bigPlayButton: true,
+                sources: 
+                {
+                    src: 'api/downloadFile?fileID=35',
+                    type: 'audio/mpeg',
+                },
+            },
+            videoOptions: {
+                autoplay: false,
+                controls: true,
+                bigPlayButton: true,
+                sources:
+                {
+                    src: 'api/downloadFile?fileID=34',
+                    type: 'video/mp4',
+                },
+            },
         };
     },
     created() {
@@ -300,6 +358,27 @@ export default {
                 viewer.index = key
                 viewer.show()
             }
+            else if(file.fileType.startsWith('audio/')){
+                this.audio_videoTitle = file.fileName;
+                this.changeAudioSource(file.fileId);
+                $('#audioModal').modal('show');
+            }
+            else if(file.fileType.startsWith('video/')){ 
+                this.audio_videoTitle = file.fileName;
+                this.changeVideoSource(file.fileId);
+                $('#videoModal').modal('show');
+            }
+        },
+        changeAudioSource(fileId){
+            this.showPlayer = true;
+            this.audioOptions.sources.src = 'api/downloadFile?fileID='+fileId;
+        },
+        changeVideoSource(fileId){
+            this.showPlayer = true;
+            this.videoOptions.sources.src = 'api/downloadFile?fileID='+fileId;
+        },
+        closePlayer(){
+            this.showPlayer = false;
         },
         async enterPath() {
             this.showLoading();  // 显示加载页面
