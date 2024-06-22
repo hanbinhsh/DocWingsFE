@@ -41,7 +41,7 @@
             </nav>
 
             <div id="page-wrapper" class="gray-bg">
-                <TopBar/>
+                <TopBar />
                 <div class="row wrapper border-bottom white-bg page-heading">
                     <div class="col-lg-10">
                         <h2>分享</h2>
@@ -54,7 +54,7 @@
                                 <div class="ibox-title">
                                     <h5>分享列表</h5>
                                     <div class="ibox-tools">
-                                        <a href="issue_tracker.html" class="btn btn-primary btn-xs">Add new issue</a>
+                                        <a href="issue_tracker.html" class="btn btn-primary btn-xs">新建分享</a>
                                     </div>
                                 </div>
                                 <div class="ibox-content">
@@ -62,10 +62,10 @@
                                     <div class="m-b-lg">
 
                                         <div class="input-group">
-                                            <input type="text" placeholder="Search issue by name..."
+                                            <input type="text" placeholder="输入要查找的分享......"
                                                 class=" form-control">
                                             <span class="input-group-btn">
-                                                <button type="button" class="btn btn-white"> Search</button>
+                                                <button type="button" class="btn btn-white"> 查找</button>
                                             </span>
                                         </div>
                                         <div class="m-t-md">
@@ -84,106 +84,50 @@
                                                 <button type="button" class="btn btn-sm btn-white"> <i
                                                         class="fa fa-cogs"></i> </button>
                                             </div>
-                                            <strong>共XXX条分享</strong>
+                                            <strong>共{{this.shareCount}}条分享</strong>
                                         </div>
                                     </div>
                                     <div class="table-responsive">
                                         <table class="table table-hover issue-tracker">
                                             <thead>
                                                 <td>状态</td>
+                                                <td></td><!--图标-->
                                                 <td>名称</td>
                                                 <td>权限</td>
+                                                <td></td><!--更改权限-->
                                                 <td>接收者</td>
                                                 <td>分享时间</td>
                                                 <td>到期时间</td>
+                                                <td></td><!--更改到期时间-->
                                                 <td>操作</td>
                                             </thead>
                                             <tbody>
-                                                <tr>
+                                                <tr v-for="(share, index) in shares" :key="index" @dblclick="">
                                                     <td>
-                                                        <span class="label label-primary">Added</span>
-                                                    </td>
-                                                    <td class="issue-info">
-                                                        <a href="issue_tracker.html#">
-                                                            ISSUE-23
-                                                        </a>
-
-                                                        <small>
-                                                            This is issue with the coresponding note
-                                                        </small>
+                                                        <span v-if="share.validate==0" class="label label-danger">已过期</span>
+                                                        <span v-if="share.validate==1" class="label label-primary">正常</span>
+                                                        <span v-if="share.validate==2" class="label label-info">无限</span>
                                                     </td>
                                                     <td>
-                                                        Adrian Novak
+                                                        <i v-if="share.isFolder==1" class="fa fa-folder-o"></i>
+                                                        <i v-if="share.isFolder==0" class="fa fa-file-o"></i>
                                                     </td>
+                                                    <td v-if="share.isFolder==0">{{share.fileName}}</td>
+                                                    <td v-if="share.isFolder==1">{{share.folderName}}</td>
+                                                    <td>{{share.auth}}</td>
+                                                    <td><a @click=""><i class="fa fa-edit"></i></a></td>
+                                                    <td>{{share.accepterName}}</td>
+                                                    <td>{{new Date(share.shareTime).toLocaleString()}}</td>
+                                                    <td v-if="share.dueTime==null">无限</td>
+                                                    <td v-if="share.dueTime!=null">
+                                                        {{new Date(share.dueTime).toLocaleString()}}
+                                                        <span class="pie">{{ share.lastRatio }}/1</span>
+                                                    </td>
+                                                    <td><a @click=""><i class="fa fa-edit"></i></a></td>
                                                     <td>
-                                                        12.02.2015 10:00 am
-                                                    </td>
-                                                    <td>
-                                                        <span class="pie">0.52,1.041</span>
-                                                        2d
-                                                    </td>
-                                                    <td class="text-right">
-                                                        <button class="btn btn-white btn-xs"> Tag</button>
-                                                        <button class="btn btn-white btn-xs"> Mag</button>
-                                                        <button class="btn btn-white btn-xs"> Rag</button>
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <td>
-                                                        <span class="label label-warning">Fixed</span>
-                                                    </td>
-                                                    <td class="issue-info">
-                                                        <a href="issue_tracker.html#">
-                                                            ISSUE-07
-                                                        </a>
-
-                                                        <small>
-                                                            Always free from repetition, injected humour, or
-                                                            non-characteristic words etc.
-                                                        </small>
-                                                    </td>
-                                                    <td>
-                                                        Alex Ferguson
-                                                    </td>
-                                                    <td>
-                                                        28.11.2015 05:10 pm
-                                                    </td>
-                                                    <td>
-                                                        <span class="pie">1,2</span>
-                                                        2d
-                                                    </td>
-                                                    <td class="text-right">
-                                                        <button class="btn btn-white btn-xs"> Tag</button>
-                                                        <button class="btn btn-white btn-xs"> Dag</button>
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <td>
-                                                        <span class="label label-danger">Bug</span>
-                                                    </td>
-                                                    <td class="issue-info">
-                                                        <a href="issue_tracker.html#">
-                                                            ISSUE-44
-                                                        </a>
-
-                                                        <small>
-                                                            This is issue with the coresponding note
-                                                        </small>
-                                                    </td>
-                                                    <td>
-                                                        Adrian Novak
-                                                    </td>
-                                                    <td>
-                                                        12.02.2015 10:00 am
-                                                    </td>
-                                                    <td>
-                                                        <span class="pie">0.52,1.041</span>
-                                                        2d
-                                                    </td>
-                                                    <td class="text-right">
-                                                        <button class="btn btn-white btn-xs"> Tag</button>
-                                                        <button class="btn btn-white btn-xs"> Mag</button>
-                                                        <button class="btn btn-white btn-xs"> Rag</button>
+                                                        <div class="btn-group">
+                                                            <a @click=""><i class="fa fa-trash-o"></i></a>
+                                                        </div>
                                                     </td>
                                                 </tr>
                                             </tbody>
@@ -194,22 +138,19 @@
                         </div>
                     </div>
                 </div>
-                <FootBar/>
+                <FootBar />
             </div>
         </div>
     </div>
 </template>
 
-<style scoped>
-
-</style>
+<style scoped></style>
 
 <script>
 import $ from 'jquery'
 import "../assets/js/plugins/metisMenu/jquery.metisMenu.js"
 import "../assets/js/plugins/slimscroll/jquery.slimscroll.min.js"
 import "../assets/js/plugins/peity/jquery.peity.min.js"
-import "../assets/js/demo/peity-demo.js"
 import "../assets/js/inspinia.js"
 import "../assets/js/plugins/pace/pace.min.js"
 import axios from "axios";
@@ -218,9 +159,64 @@ import UserItem from '@/components/UserItem.vue'
 import FootBar from '@/components/FootBar.vue'
 
 export default {
-	name: 'Share',
-	methods: {
-	},
+    name: 'Share',
+    data() {
+        return {
+            userData: JSON.parse(sessionStorage.getItem('userData')) || {},
+            shares: {},
+            shareCount: 0
+        }
+    },
+    created() {
+        this.getShares()
+    },
+    methods: {
+        async getShares() {
+            const res = await axios.get("api/getSharesByUserId?userId=" + this.userData.userId);
+            this.shares = res.data.data.shares;
+            this.shareCount = res.data.data.shareCount;
+            this.$nextTick(() => {
+                this.initializePeity();
+            });
+        },
+        initializePeity() {
+            $('span.pie').peity('pie', {
+                fill: ['#1ab394', '#d7d7d7', '#ffffff']
+            });
+
+            $('.line').peity('line', {
+                fill: '#1ab394',
+                stroke: '#169c81'
+            });
+
+            $('.bar').peity('bar', {
+                fill: ['#1ab394', '#d7d7d7']
+            });
+
+            $('.bar_dashboard').peity('bar', {
+                fill: ['#1ab394', '#d7d7d7'],
+                width: 100
+            });
+
+            const updatingChart = $('.updating-chart').peity('line', { fill: '#1ab394', stroke: '#169c81', width: 64 });
+
+            setInterval(() => {
+                const random = Math.round(Math.random() * 10);
+                const values = updatingChart.text().split(',');
+                values.shift();
+                values.push(random);
+
+                updatingChart.text(values.join(',')).change();
+            }, 1000);
+        }
+    },
+    watch: {
+        shares() {
+        this.$nextTick(() => {
+            this.initializePeity();
+        });
+        }
+    },
     components: {
         TopBar,
         UserItem,

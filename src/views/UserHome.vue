@@ -57,15 +57,18 @@
                             <div class="ibox float-e-margins">
                                 <div class="ibox-content">
                                     <div class="file-manager">
-                                        <h5>Show:</h5>
+                                        <h5>查看:</h5>
                                         <a href="file_manager#" class="file-control active">Ale</a>
                                         <a href="file_manager#" class="file-control">Documents</a>
                                         <a href="file_manager#" class="file-control">Audio</a>
                                         <a href="file_manager#" class="file-control">Images</a>
                                         <div class="hr-line-dashed"></div>
-                                        <button class="btn btn-primary btn-block">Upload Files</button>
+                                        <button class="btn btn-primary btn-block">上传文件</button>
                                         <div class="hr-line-dashed"></div>
-                                        <div id="morris-donut-chart"></div>
+                                        <div class="row">
+                                            <div class="col-lg-6" id="file-trash-donut" style="height: 180px;padding:0"></div>
+                                            <div class="col-lg-6" id="category-donut" style="height: 180px;padding:0"></div>
+                                        </div>
                                         <div class="hr-line-dashed"></div>
                                         <h5>Folders</h5>
                                         <ul class="folder-list" style="padding: 0">
@@ -136,7 +139,7 @@
                                                 </div>
                                                 <div class="file-name">
                                                     <a>{{ file.fileName }}</a>
-                                                    <br />
+                                                    <br/>
                                                     <small>{{ new Date(file.uploadTime).toLocaleString() }}</small>
                                                 </div>
                                             </a>
@@ -199,24 +202,46 @@ export default {
             userData: JSON.parse(sessionStorage.getItem('userData')) || {},
             folderCollectionStatus: {},
             fileCollectionStatus: {},
+            categoryCapacity:{},
         };
     },
     created() {
+        this.queryCategoryCapacity();
         this.updateFilePreview();
         this.enterPath();
-        $(function () {// 图表使用
-            Morris.Donut({
-                element: 'morris-donut-chart',
-                data: [{ label: "剩余空间", value: 12 },
-                { label: "文档", value: 30 },
-                { label: "其他", value: 20 }],
-                resize: true,
-                colors: ['#87d6c6', '#54cdb4', '#1ab394'],
-                formatter: function (y, data) { return y + '%' },
-            });
-        });
     },
     methods: {
+        async queryCategoryCapacity(){
+            const responseTags = await axios.get('/api/queryCategoryCapacity');
+            this.categoryCapacity = responseTags.data.data;
+            const self = this;  // 保存对 this 的引用
+            $(function () {// 图表使用
+                Morris.Donut({
+                    element: 'file-trash-donut',
+                    data: [
+                        { label: "剩余空间", value: self.categoryCapacity.leftCapacity },
+                        { label: "回收站", value: self.categoryCapacity.trashFilesCapacity },
+                        { label: "已用空间", value: self.categoryCapacity.filesCapacity },
+                    ],
+                    resize: true,
+                    colors: ['#87d6c6', '#54cdb4', '#1ab394'],
+                    formatter: function (y, data) { return y + 'GB' },
+                });
+                Morris.Donut({
+                    element: 'category-donut',
+                    data: [
+                        { label: "图片", value: self.categoryCapacity.imageCapacity },
+                        { label: "文档", value: self.categoryCapacity.documentCapacity },
+                        { label: "视频", value: self.categoryCapacity.videoCapacity },
+                        { label: "音乐", value: self.categoryCapacity.audioCapacity },
+                        { label: "其他", value: self.categoryCapacity.otherCapacity },
+                    ],
+                    resize: true,
+                    colors: ['#a1e4d9', '#87d6c6', '#54cdb4', '#1ab394', '#34a386'],
+                    formatter: function (y, data) { return y + 'GB' },
+                });
+            });
+        },
         async findTags() {
             const responseTags = await axios.get('/api/findTags');
             this.tags = responseTags.data;
@@ -259,13 +284,25 @@ export default {
             this.files = response.data.data.files;
             this.folders = response.data.data.folders;
         },
-        async collectionFile(fileId) {
-            await axios.post('api/CollectionsDeleteFile', { "fileId": fileId, "userId": this.userData.userId });
-            this.enterPath()
+        async collectionFile(fileId){
+            const exist = this.fileCollectionStatus[fileId]//判断是否被收藏
+            if(exist){//被收藏删除
+                await axios.post('api/CollectionsDeleteFile',{"fileId":fileId,"userId":this.userData.userId});
+            }
+            else{//没被收藏插入
+                await axios.post('api/CollectionsInsertFile',{"fileId":fileId,"userId":this.userData.userId});
+            }
+            this.enterPath(this.currentFolder.folderId)
         },
-        async collectionFolder(folderId) {
-            await axios.post('api/CollectionsDeleteFolder', { "folderId": folderId, "userId": this.userData.userId });
-            this.enterPath()
+        async collectionFolder(folderId){
+            const exist = this.folderCollectionStatus[folderId]//判断是否被收藏
+            if(exist){//被收藏删除
+                await axios.post('api/CollectionsDeleteFolder',{"folderId":folderId,"userId":this.userData.userId});
+            }
+            else{//没被收藏插入
+                await axios.post('api/CollectionsInsertFolder',{"folderId":folderId,"userId":this.userData.userId});
+            }
+            this.enterPath(this.currentFolder.folderId)
         },
         async checkAllFFsCollectionStatus() {
             const response = await axios.post('/api/findCollectionFFs?userId=' + this.userData.userId);
