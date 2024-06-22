@@ -27,7 +27,7 @@
                             <a href="trash"><i class="fa fa-trash-o"></i> <span class="nav-label">回收站</span></a>
                         </li>
                         <li>
-                            <a href="searchAllServlet"><i class="fa fa-group"></i> <span
+                            <a v-if="isAdmin()" href="usergroupediting"><i class="fa fa-group"></i> <span
                                     class="nav-label">用户组编辑</span></a>
                         </li>
                         <li>
@@ -209,7 +209,10 @@ export default {
                 values.push(random);
                 updatingChart.text(values.join(',')).change();
             }, 1000);
-        }
+        },
+        isAdmin() {
+                return this.userData.isAdmin; // 检查is_admin属性是否为true
+            },
     },
     watch: {
         shares() {

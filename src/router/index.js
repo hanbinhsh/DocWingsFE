@@ -6,6 +6,7 @@ import AllFiles from '../views/AllFiles.vue';
 import Log from '../views/Log.vue';
 import Share from '../views/Share.vue';
 import ShareAccept from '../views/ShareAccept.vue';
+import UserGroupEditing from '../views/UserGroupEditing.vue';
 import toastr from "../assets/js/plugins/toastr/toastr.min.js";
 toastr.options = {
 	"closeButton": true,
@@ -109,6 +110,15 @@ const routes = [
     component: ShareAccept,
     meta: {
       title: '查看分享',
+      requiresAuth: true,
+    }
+  },
+  {
+    path: '/usergroupediting',
+    name: 'usergroupediting',
+    component: UserGroupEditing,
+    meta: {
+      title: '用户组编辑',
       requiresAuth: true,
     }
   }
