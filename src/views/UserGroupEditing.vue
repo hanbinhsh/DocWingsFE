@@ -29,13 +29,13 @@
                             <a href="trash"><i class="fa fa-trash-o"></i> <span
                                     class="nav-label">回收站</span></a>
                         </li>
-                        <li>
+                        <li class="active">
                             <a v-if="isAdmin()" href="usergroupediting"><i class="fa fa-group"></i> <span class="nav-label">用户组编辑</span></a>
                         </li>
                         <li>
                             <a href="log"><i class="fa fa-file-text-o"></i> <span class="nav-label">日志</span></a>
                         </li>
-                        <li class="active">
+                        <li >
                             <a href="profile"><i class="fa fa-diamond"></i> <span class="nav-label">个人资料</span></a>
                         </li>
                     </ul>
