@@ -7,15 +7,14 @@
         </div>
         <div class="modal inmodal fade in" id="audioModal" tabindex="-1" role="dialog" aria-hidden="true">
             <div class="modal-dialog modal-lg">
-                <div class="modal-content" style="width: 1400px">
+                <div class="modal-content">
                     <div class="modal-header">
-                        {{ this.audio_videoTitle }}
-                        <button @click="closePlayer" type="button" class="close" data-dismiss="modal"><span
-                                aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                        {{this.audio_videoTitle}}
+                        <button @click="closePlayer" type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
                     </div>
                     <div class="modal-body">
                         <div class="text-center">
-                            <VideoPlayer v-if="showPlayer" :options="audioOptions" 
+                            <VideoPlayer v-if="showPlayer" :options="this.audioOptions" 
                             :key="new Date().getTime()"
                             class="video-js-a vjs-big-play-centered"/>
                         </div>
@@ -27,13 +26,12 @@
             <div class="modal-dialog modal-lg">
                 <div class="modal-content">
                     <div class="modal-header">
-                        {{ this.audio_videoTitle }}
-                        <button @click="closePlayer" type="button" class="close" data-dismiss="modal"><span
-                                aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                        {{this.audio_videoTitle}}
+                        <button @click="closePlayer" type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
                     </div>
                     <div class="modal-body">
                         <div class="text-center">
-                            <VideoPlayer v-if="showPlayer" :options="videoOptions" 
+                            <VideoPlayer v-if="showPlayer" :options="this.videoOptions" 
                             :key="new Date().getTime()"
                             class="video-js-v vjs-big-play-centered"/>
                         </div>
@@ -97,34 +95,24 @@
                                         <h5>类别</h5>
                                         <ul class="category-list folder-list m-b-md" style="padding: 0">
                                             <li>
-                                                <a @click="findFilesByCategory(0)"> <i
-                                                        class="fa fa-circle text-navy"></i> 图片
-                                                    <span class="label label-primary pull-right">{{
-                                                        this.categoryCapacity.imageCapacity }}GB</span></a>
+                                                <a @click="findFilesByCategory(0)"> <i class="fa fa-circle text-navy"></i> 图片
+                                                <span class="label label-primary pull-right">{{ this.categoryCapacity.imageCapacity }}GB</span></a>
                                             </li>
                                             <li>
-                                                <a @click="findFilesByCategory(1)"> <i
-                                                        class="fa fa-circle text-danger"></i> 文档
-                                                    <span class="label label-primary pull-right">{{
-                                                        this.categoryCapacity.documentCapacity }}GB</span></a>
+                                                <a @click="findFilesByCategory(1)"> <i class="fa fa-circle text-danger"></i> 文档
+                                                <span class="label label-primary pull-right">{{ this.categoryCapacity.documentCapacity }}GB</span></a>
                                             </li>
                                             <li>
-                                                <a @click="findFilesByCategory(3)"> <i
-                                                        class="fa fa-circle text-primary"></i> 视频
-                                                    <span class="label label-primary pull-right">{{
-                                                        this.categoryCapacity.videoCapacity }}GB</span></a>
+                                                <a @click="findFilesByCategory(3)"> <i class="fa fa-circle text-primary"></i> 视频
+                                                <span class="label label-primary pull-right">{{ this.categoryCapacity.videoCapacity }}GB</span></a>
                                             </li>
                                             <li>
-                                                <a @click="findFilesByCategory(2)"> <i
-                                                        class="fa fa-circle text-info"></i> 音乐
-                                                    <span class="label label-primary pull-right">{{
-                                                        this.categoryCapacity.audioCapacity }}GB</span></a>
+                                                <a @click="findFilesByCategory(2)"> <i class="fa fa-circle text-info"></i> 音乐
+                                                <span class="label label-primary pull-right">{{ this.categoryCapacity.audioCapacity }}GB</span></a>
                                             </li>
                                             <li>
-                                                <a @click="findFilesByCategory(4)"> <i
-                                                        class="fa fa-circle text-warning"></i> 其他
-                                                    <span class="label label-primary pull-right">{{
-                                                        this.categoryCapacity.otherCapacity }}GB</span></a>
+                                                <a @click="findFilesByCategory(4)"> <i class="fa fa-circle text-warning"></i> 其他
+                                                <span class="label label-primary pull-right">{{ this.categoryCapacity.otherCapacity }}GB</span></a>
                                             </li>
                                         </ul>
                                         <h5 class="tag-title">标签</h5>
@@ -158,10 +146,10 @@
                                 </h2>
                                 <div class="mail-tools tooltip-demo m-t-md">
                                     <div class="btn-group pull-right">
-                                        <button :class="{ 'disabled': isTrash }" class="btn btn-white btn-sm"
-                                            @click="backPath()"><i class="fa fa-arrow-left"></i></button>
-                                        <button :class="{ 'disabled': isTrash }" class="btn btn-white btn-sm"
-                                            @click="enterPath(0)"><i class="fa fa-home"></i></button>
+                                        <button :class="{ 'disabled': isTrash }" class="btn btn-white btn-sm" @click="backPath()"><i
+                                                class="fa fa-arrow-left"></i></button>
+                                        <button :class="{ 'disabled': isTrash }" class="btn btn-white btn-sm" @click="enterPath(0)"><i
+                                                class="fa fa-home"></i></button>
                                     </div>
                                     <button class="btn btn-white btn-sm" data-toggle="tooltip" data-placement="bottom"
                                         title="刷新页面" @click="isTrash ? this.enterPathTrash() : this.enterPath(currentFolder.folderId)">
@@ -257,7 +245,7 @@
                                                         class="fa fa-edit"></i></a></td>
                                             <td>{{ folder.tag }}</td>
                                             <td v-if="!this.isTrash"><a @click="renameFolderTag(folder)"><i
-                                                        class="fa fa-edit"></i></a></td>
+                                                class="fa fa-edit"></i></a></td>
                                             <td></td>
                                             <td>{{ folder.lastModifierName }}</td>
                                             <td>{{ new Date(folder.lastModifyTime).toLocaleString() }}</td>
@@ -266,7 +254,7 @@
                                             <td>
                                                 <div class="btn-group">
                                                     <a v-if="!this.isTrash" @click="shareFolder(folder)">
-                                                        <i class="fa fa-share-alt"></i>&nbsp;</a>
+                                                            <i class="fa fa-share-alt"></i>&nbsp;</a>
                                                     <a v-if="!this.isTrash" @click="recycleBinFolder(folder.folderId)">
                                                         <i class="fa fa-trash-o"></i>&nbsp;</a>
                                                     <a v-if="!this.isTrash" @click="cutFF(folder)"><i
@@ -313,7 +301,7 @@
                                                         class="fa fa-edit"></i></a></td>
                                             <td>{{ file.tag }}</td>
                                             <td v-if="!this.isTrash"><a @click="renameFileTag(file)"><i
-                                                        class="fa fa-edit"></i></a></td>
+                                                class="fa fa-edit"></i></a></td>
                                             <td>{{ file.fileSize }}MB</td>
                                             <!-- <td>{{ file.fileType }}</td> -->
                                             <td>{{ file.lastModifierName }}</td>
@@ -323,7 +311,7 @@
                                             <td>
                                                 <div class="btn-group">
                                                     <a v-if="!this.isTrash" @click="shareFile(file)">
-                                                        <i class="fa fa-share-alt"></i>&nbsp;</a>
+                                                            <i class="fa fa-share-alt"></i>&nbsp;</a>
                                                     <a v-if="!this.isTrash" @click="downloadFile(file)"><i
                                                             class="fa fa-download"></i>&nbsp;</a>
                                                     <a v-if="!this.isTrash" @click="recycleBinFile(file.fileId)"><i
@@ -344,7 +332,7 @@
                         </div>
                     </div>
                 </div>
-                <FootBar />
+                <FootBar/>
             </div>
         </div>
     </div>
@@ -360,53 +348,42 @@ div:where(.swal2-container) div:where(.swal2-popup) {
 }
 
 .modal-lg {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 80vh;
-    /* 或者设置一个具体的像素高度 */
-    width: 300px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 80vh; /* 或者设置一个具体的像素高度 */
+  width: 300px;
 }
-
-.modal-content {
+.modal-content{
     align-items: center;
     height: 600px;
     width: 900px;
 }
-
-.modal-header {
+.modal-header{
     height: 50px;
 }
-
-.modal-body {
+.modal-body{
     height: 550px;
 }
-
-.text-center {
+.text-center{
     align-items: center;
-    height: 100%;
+    height: 100%; 
 }
-
-.video-js-a {
+.video-js-a{
     background-image: url('../assets/music.jpg');
-    background-size: cover;
-    /* 背景图片覆盖整个容器 */
-    background-position: center;
-    /* 背景图片居中 */
-    background-repeat: no-repeat;
-    /* 不重复背景图片 */
+    background-size: cover; /* 背景图片覆盖整个容器 */
+    background-position: center; /* 背景图片居中 */
+    background-repeat: no-repeat; /* 不重复背景图片 */
     align-items: center;
     width: 100%;
-    height: 100%;
+    height: 100%; 
 }
-
-.video-js-v {
+.video-js-v{
     align-items: center;
     width: 100%;
-    height: 100%;
+    height: 100%; 
 }
-
-.vjs-tech {
+.vjs-tech{
     width: 100%;
     height: 100%;
 }
@@ -1244,7 +1221,7 @@ export default {
         UserItem,
         VideoPlayer,
         FootBar
-    },
-    mounted() {},
-}
+        },
+		mounted() {},
+	}
 </script>
