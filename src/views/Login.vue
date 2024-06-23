@@ -81,10 +81,16 @@ async function login() {
 			const response = await axios.post('/api/login', { userName: username.value, password: password.value });
 			console.log(response.data);
 			if(response.data.accountLocked==true){
-				toastr.error("账户已冻结！请稍后再试！", "错误");
+				toastr.error("账户已冻结！请两个小时后再试！", "错误");
 			}
 			else if (response.data == null||response.data=="") {  // 登陆失败
-				toastr.error("用户名或密码错误！请重新登录！", "错误");
+				const response1=await axios.post('/api/findUserByName', { userName: username.value});
+				if(response1.data== null||response1.data==""){
+					toastr.error("用户名错误！请重新登录！", "错误");
+				}else{
+					var remainingAttempts =5- response1.data.failedAttempts;
+					toastr.error("密码错误！请重新登录！您还有"+remainingAttempts+"次机会!", "错误");
+				}
 				username.value = '';
 				password.value = '';
 				document.getElementById('username').focus();  // 光标移至用户名输入
@@ -92,6 +98,7 @@ async function login() {
 				sessionStorage.setItem('userData', JSON.stringify(response.data));
 				console.log(sessionStorage.getItem('userData'));
 				toastr.clear();  // 清空错误信息
+				// BUG 防止出错
 				router.replace('/userhome').then(() => {  // 跳转后强制刷新
 					window.location.reload();
 				});
