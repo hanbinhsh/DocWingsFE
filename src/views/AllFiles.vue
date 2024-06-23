@@ -579,7 +579,6 @@ export default {
                         key = index;
                     }
                 })
-                console.log(this.images);
                 viewer.index = key
                 viewer.show()
             }
@@ -835,7 +834,7 @@ export default {
                 }
             },
             downloadFile(file){
-                axios.post('/api/downloadFile?fileID='+file.fileId, {responseType: 'blob'}).then(res => {
+                axios.post('/api/downloadFile?fileID='+file.fileId, {}, {responseType: 'blob'}).then(res => {
                     let blob = new Blob([res.data])
                     let fileName = file.fileName
                     if (blob.size > 0) {
