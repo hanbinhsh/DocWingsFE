@@ -177,40 +177,35 @@
                                             {{ currentCuttingSelectFiles.length+currentCuttingSelectFolders.length }}个文件
                                         </span>
                                     </button>&nbsp;
-                                    <button
-                                        class="btn btn-white btn-sm" data-toggle="tooltip" @click="allCheckbox()">
+                                    <button class="btn btn-white btn-sm" @click="allCheckbox()">
                                         <i class="fa fa-check-square"></i> 全选
                                     </button>&nbsp;
-                                    <button v-if="this.selectedFiles.length+this.selectedFolders.length>0" 
-                                        class="btn btn-white btn-sm" data-toggle="tooltip" @click="cancelCheckbox()">
+                                    <button v-if="this.selectedFiles.length+this.selectedFolders.length>0"
+                                        class="btn btn-white btn-sm" @click="cancelCheckbox()">
                                         <i class="fa fa-square-o"></i> 取消多选
                                     </button>&nbsp;
-                                    <button v-if="this.selectedFiles.length+this.selectedFolders.length>0" 
-                                        class="btn btn-white btn-sm" data-toggle="tooltip" @click="collectSelections()">
-                                        <i class="fa fa-star"></i> 收藏
-                                    </button>&nbsp;
-                                    <button v-if="this.selectedFiles.length+this.selectedFolders.length>0" 
-                                        class="btn btn-white btn-sm" data-toggle="tooltip" @click="cancelCollectSelections()">
-                                        <i class="fa fa-star-o"></i> 取消收藏
-                                    </button>&nbsp;
-                                    <button v-if="this.selectedFiles.length+this.selectedFolders.length>0" 
-                                        class="btn btn-white btn-sm" data-toggle="tooltip" @click="shareSelections()">
-                                        <i class="fa fa-share-alt"></i> 分享
-                                    </button>&nbsp;
-                                    <button v-if="this.selectedFiles.length+this.selectedFolders.length>0" 
-                                        class="btn btn-white btn-sm" data-toggle="tooltip" @click="downloadSelections()">
-                                        <i class="fa fa-download"></i> 下载
-                                    </button>&nbsp;
-                                    <button v-if="this.selectedFiles.length+this.selectedFolders.length>0" 
-                                        class="btn btn-white btn-sm" data-toggle="tooltip" @click="recycleSelections()">
-                                        <i class="fa fa-trash-o"></i> 放入回收站
-                                    </button>&nbsp;
-                                    <button v-if="this.selectedFiles.length+this.selectedFolders.length>0" 
-                                        class="btn btn-white btn-sm" data-toggle="tooltip" @click="cutSelections()">
-                                        <i class="fa fa-scissors"></i> 剪切
-                                    </button>&nbsp;
+                                    <span v-if="this.selectedFiles.length+this.selectedFolders.length>0 && !this.isTrash">
+                                        <button class="btn btn-white btn-sm" @click="collectSelections()">
+                                            <i class="fa fa-star"></i> 收藏
+                                        </button>&nbsp;
+                                        <button class="btn btn-white btn-sm" @click="cancelCollectSelections()">
+                                            <i class="fa fa-star-o"></i> 取消收藏
+                                        </button>&nbsp;
+                                        <button class="btn btn-white btn-sm" @click="shareSelections()">
+                                            <i class="fa fa-share-alt"></i> 分享
+                                        </button>&nbsp;
+                                        <button class="btn btn-white btn-sm" @click="downloadSelections()">
+                                            <i class="fa fa-download"></i> 下载
+                                        </button>&nbsp;
+                                        <button class="btn btn-white btn-sm" @click="recycleSelections()">
+                                            <i class="fa fa-trash-o"></i> 放入回收站
+                                        </button>&nbsp;
+                                        <button class="btn btn-white btn-sm" @click="cutSelections()">
+                                            <i class="fa fa-scissors"></i> 剪切
+                                        </button>&nbsp;
+                                    </span>
                                     <button v-if="this.selectedFiles.length+this.selectedFolders.length>0 && this.isTrash" 
-                                        class="btn btn-white btn-sm" data-toggle="tooltip" @click="replyTrashSelections()">
+                                        class="btn btn-white btn-sm" @click="replyTrashSelections()">
                                         <i class="fa fa-reply"></i> 恢复
                                     </button>&nbsp;
                                 </div>
@@ -618,9 +613,6 @@ export default {
             const responseFiles = await axios.get('/api/findFolderById?id=' + id);
             sessionStorage.setItem("currentFolder", JSON.stringify(responseFiles.data.data.folder));
         },
-        async countFFsByParentId(id) {
-            this.currentFFsCount = this.folders.length + this.files.length;
-        },
         async findFFsByParentId(id) {  // 寻找文件和文件夹
             const response = await axios.get('/api/findFFsByParentId?parentId=' + id);
             this.folders = response.data.data.folders;
@@ -640,7 +632,7 @@ export default {
             this.cancelCheckbox();
             await this.findFFsByParentId(id);
             await this.findFolderById(id);
-            await this.countFFsByParentId(id);
+            this.currentFFsCount = this.folders.length + this.files.length;
             const imageFiles = await axios.get(`/api/findImagesByParentId?parentId=${this.currentFolder.folderId ?? 0}`);
             this.images = imageFiles.data.data.imageList  // 更新图片列表
             this.checkAllFFsCollectionStatus();
