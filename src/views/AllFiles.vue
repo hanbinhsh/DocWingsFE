@@ -174,7 +174,12 @@
                                             {{ this.currentCutFF.fileName ? this.currentCutFF.fileName : this.currentCutFF.folderName ?? "" }}
                                         </span>
                                     </button>&nbsp;
-                                    <button v-if="this.selectedFiles.length+this.selectedFolders.length>0&&isTrash==0" 
+                                    <button
+                                        class="btn btn-white btn-sm" data-toggle="tooltip" data-placement="bottom"
+                                        title="取消多选" @click="allCheckbox()">
+                                        <i class="fa fa-check-square"></i> 全选
+                                    </button>&nbsp;
+                                    <button v-if="this.selectedFiles.length+this.selectedFolders.length>0" 
                                         class="btn btn-white btn-sm" data-toggle="tooltip" data-placement="bottom"
                                         title="取消多选" @click="cancleCheckbox()">
                                         <i class="fa fa-square-o"></i> 取消多选
@@ -582,8 +587,7 @@ export default {
             sessionStorage.setItem("currentFolder", JSON.stringify(responseFiles.data.data.folder));
         },
         async countFFsByParentId(id) {
-            const currentFFsCount = await axios.get('/api/countFFsByParentId?parentId=' + id);
-            sessionStorage.setItem("currentFFsCount", currentFFsCount.data);
+            this.currentFFsCount = this.folders.length + this.files.length;
         },
         async findFFsByParentId(id) {  // 寻找文件和文件夹
             const response = await axios.get('/api/findFFsByParentId?parentId=' + id);
@@ -597,6 +601,7 @@ export default {
                 return
             }
             this.showLoading();  // 显示加载页面
+            this.cancleCheckbox();
             await this.findFFsByParentId(id);
             await this.findFolderById(id);
             await this.countFFsByParentId(id);
@@ -606,7 +611,6 @@ export default {
             this.findTags();
             this.queryCategoryCapacity();
             this.currentFolder = JSON.parse(sessionStorage.getItem("currentFolder"));  // 更新 currentFolder
-            this.currentFFsCount = sessionStorage.getItem("currentFFsCount");  // 更新 currentFFsCount
             // 发送文件夹更新信号
             const event = new CustomEvent('update-path', {
                 detail: {
@@ -1106,6 +1110,10 @@ export default {
                 this.selectedFiles = [];
                 this.selectedFolders = [];
             },
+            allCheckbox(){
+                this.selectedFiles = this.files.slice();
+                this.selectedFolders = this.folders.slice();
+            }
     },
     components: {
         TopBar,
