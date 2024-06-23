@@ -371,6 +371,9 @@ export default {
                 this.showPlayer = true;
                 $('#videoModal').modal('show');
             }
+            else if (file.fileType.includes('wordprocessingml') || file.fileType.includes('pdf') || file.fileType.includes('spreadsheetml')) {
+                window.open('/preview?fileID=' + file.fileId + '&&fileType=' + file.fileType, '_blank');
+            }
         },
         closePlayer(){
             this.showPlayer = false;
