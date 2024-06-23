@@ -8,6 +8,7 @@
                 </div>
             </div>
         </div>
+        <Vcode :show="isShow" @success="onSuccess" :key="new Date()"/>
         <div class="text-center loginscreen animated fadeInDown" style="max-width: 600px;margin: 0 auto;">
             <div class="ibox">
                 <div class="ibox-content">
@@ -77,7 +78,7 @@
                         </fieldset>
                         <h1>提交注册</h1>
                         <fieldset>
-                            <div class="text-center" style="margin-top: 120px;margin-left: 30px;">
+                            <div class="text-center" style="margin-top: 120px;margin-left: 30px;">  
                                 <h2>提交注册</h2>
                             </div>
                         </fieldset>
@@ -100,6 +101,18 @@
 @import '../assets/css/plugins/iCheck/custom.css';
 @import '../assets/css/plugins/steps/jquery.steps.css';
 </style>
+
+<script setup>
+import { ref } from 'vue';
+import Vcode from "vue3-puzzle-vcode";
+const isShow = ref(true);
+const onClose = () => {
+    isShow.value = false;
+};
+const onSuccess = () => {
+    onClose(); 
+};
+</script>
 
 <script>
 import $ from 'jquery'
@@ -133,7 +146,7 @@ export default {
             userName: '',
             name:'',
             phone:'',
-            email:''
+            email:'',
         }
     },
     mounted() {
