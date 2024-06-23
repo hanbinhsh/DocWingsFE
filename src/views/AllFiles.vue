@@ -152,8 +152,9 @@
                                     </div>
                                 </form>
                                 <h2>
-                                    <!-- {{currentFolder.folderName}} ({{ this.currentFFsCount }}) -->
-                                    {{ isTrash ? '回收站' : currentFolder.folderName + ' (' + this.currentFFsCount + ')' }}
+                                    {{ isTrash ? '回收站' : currentFolder.folderName + ' (' + 
+                                    (this.selectedFiles.length+this.selectedFolders.length<=0 ? '' : this.selectedFiles.length+this.selectedFolders.length + '/')
+                                     + this.currentFFsCount + ')' }}
                                 </h2>
                                 <div class="mail-tools tooltip-demo m-t-md">
                                     <div class="btn-group pull-right">
@@ -163,17 +164,44 @@
                                             @click="enterPath(0)"><i class="fa fa-home"></i></button>
                                     </div>
                                     <button class="btn btn-white btn-sm" data-toggle="tooltip" data-placement="bottom"
-                                        title="刷新页面"
-                                        @click="isTrash ? this.enterPathTrash() : this.enterPath(currentFolder.folderId)"><i
-                                            class="fa fa-refresh"></i> 刷新</button>&nbsp;
+                                        title="刷新页面" @click="isTrash ? this.enterPathTrash() : this.enterPath(currentFolder.folderId)">
+                                        <i class="fa fa-refresh"></i> 刷新
+                                    </button>&nbsp;
                                     <button class="btn btn-white btn-sm" data-toggle="tooltip" data-placement="bottom"
                                         title="粘贴文件" @click="this.pasteFile()" :class="{ 'disabled': isTrash }">
                                         <i class="fa fa-paste"></i> 粘贴
-                                        <span v-if="this.isCutting" class="">
-                                            {{ this.currentCutFF.fileName ? this.currentCutFF.fileName :
-                                                this.currentCutFF.folderName ?? "" }}
+                                        <span v-if="this.isCutting">
+                                            {{ this.currentCutFF.fileName ? this.currentCutFF.fileName : this.currentCutFF.folderName ?? "" }}
                                         </span>
-                                    </button>
+                                    </button>&nbsp;
+                                    <button
+                                        class="btn btn-white btn-sm" data-toggle="tooltip" @click="allCheckbox()">
+                                        <i class="fa fa-check-square"></i> 全选
+                                    </button>&nbsp;
+                                    <button v-if="this.selectedFiles.length+this.selectedFolders.length>0" 
+                                        class="btn btn-white btn-sm" data-toggle="tooltip" @click="cancleCheckbox()">
+                                        <i class="fa fa-square-o"></i> 取消多选
+                                    </button>&nbsp;
+                                    <button v-if="this.selectedFiles.length+this.selectedFolders.length>0" 
+                                        class="btn btn-white btn-sm" data-toggle="tooltip" @click="collectSelections()">
+                                        <i class="fa fa-star"></i> 收藏
+                                    </button>&nbsp;
+                                    <button v-if="this.selectedFiles.length+this.selectedFolders.length>0" 
+                                        class="btn btn-white btn-sm" data-toggle="tooltip" @click="shareSelections()">
+                                        <i class="fa fa-share-alt"></i> 分享
+                                    </button>&nbsp;
+                                    <button v-if="this.selectedFiles.length+this.selectedFolders.length>0" 
+                                        class="btn btn-white btn-sm" data-toggle="tooltip" @click="downloadSelections()">
+                                        <i class="fa fa-download"></i> 下载
+                                    </button>&nbsp;
+                                    <button v-if="this.selectedFiles.length+this.selectedFolders.length>0" 
+                                        class="btn btn-white btn-sm" data-toggle="tooltip" @click="deleteSelections()">
+                                        <i class="fa fa-trash-o"></i> 删除
+                                    </button>&nbsp;
+                                    <button v-if="this.selectedFiles.length+this.selectedFolders.length>0" 
+                                        class="btn btn-white btn-sm" data-toggle="tooltip" @click="cutSelections()">
+                                        <i class="fa fa-scissors"></i> 剪切
+                                    </button>&nbsp;
                                 </div>
                             </div>
                             <div class="mail-box ibox table-responsive">
@@ -203,17 +231,18 @@
                                             <th>创建者</th>
                                             <th>创建日期</th>
                                             <th>操作</th>
+                                            <th>多选</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         <tr v-for="(folder, index) in folders" :key="index" class="read"
                                             @dblclick="enterPath(folder.folderId, folder.parentId)">
-                                            <td><i class="fa fa-folder-o"></i>
-                                                <a v-if="!this.isTrash"
-                                                    @click="collectionFolder(folder.folderId)">&nbsp;<i class="fa"
-                                                        :class="folderCollectionStatus[folder.folderId] ? 'fa-star' : 'fa-star-o'"></i>&nbsp;</a>
+                                            <td>
+                                                <a v-if="!this.isTrash" @click="collectionFolder(folder.folderId)">
+                                                <i class="fa" :class="folderCollectionStatus[folder.folderId] ? 'fa-star' : 'fa-star-o'">
+                                                </i></a>
                                             </td>
-                                            <td>{{ folder.folderName }}</td>
+                                            <td><i class="fa fa-folder-o"></i> {{ folder.folderName }}</td>
                                             <td v-if="!this.isTrash"><a @click="renameFolder(folder)"><i
                                                         class="fa fa-edit"></i></a></td>
                                             <td>{{ folder.tag }}</td>
@@ -238,9 +267,15 @@
                                                             class="fa fa-reply"></i>&nbsp;</a>
                                                 </div>
                                             </td>
+                                            <td><input type="checkbox" v-model="selectedFolders" :value="folder" style="height: 11px;"></td>
                                         </tr>
                                         <tr v-for="(file, index) in files" :key="index" class="read"
                                             @dblclick="filePreview(file)">
+                                            <td>
+                                                <a v-if="!this.isTrash" @click="collectionFile(file.fileId)">
+                                                <i class="fa" :class="fileCollectionStatus[file.fileId] ? 'fa-star' : 'fa-star-o'">
+                                                </i></a>
+                                            </td>
                                             <td>
                                                 <i v-if="file.fileType.startsWith('image/')"
                                                     class="fa fa-file-image-o"></i>
@@ -262,12 +297,8 @@
                                                     class="fa fa-file-audio-o"></i>
                                                 <i v-else-if="file.fileType.includes('compressed')"
                                                     class="fa fa-file-archive-o"></i>
-                                                <i v-else class="fa fa-file-o"></i>
-                                                <a v-if="!this.isTrash" @click="collectionFile(file.fileId)">&nbsp;<i
-                                                        class="fa"
-                                                        :class="fileCollectionStatus[file.fileId] ? 'fa-star' : 'fa-star-o'"></i></a>
+                                                <i v-else class="fa fa-file-o"></i> {{ file.fileName }}
                                             </td>
-                                            <td>{{ file.fileName }}</td>
                                             <td v-if="!this.isTrash"><a class="" @click="renameFile(file)"><i
                                                         class="fa fa-edit"></i></a></td>
                                             <td>{{ file.tag }}</td>
@@ -295,6 +326,7 @@
                                                             class="fa fa-reply"></i>&nbsp;</a>
                                                 </div>
                                             </td>
+                                            <td><input type="checkbox" v-model="selectedFiles" :value="file" style="height: 11px;"></td>
                                         </tr>
                                     </tbody>
                                 </table>
@@ -426,6 +458,8 @@ export default {
             audio_videoTitle: null,
             officeFileName: '',
             showPlayer: false,
+            selectedFiles: [],
+            selectedFolders: [],
             audioOptions: {
                 autoplay: false,
                 controls: true,
@@ -571,8 +605,7 @@ export default {
             sessionStorage.setItem("currentFolder", JSON.stringify(responseFiles.data.data.folder));
         },
         async countFFsByParentId(id) {
-            const currentFFsCount = await axios.get('/api/countFFsByParentId?parentId=' + id);
-            sessionStorage.setItem("currentFFsCount", currentFFsCount.data);
+            this.currentFFsCount = this.folders.length + this.files.length;
         },
         async findFFsByParentId(id) {  // 寻找文件和文件夹
             const response = await axios.get('/api/findFFsByParentId?parentId=' + id);
@@ -586,6 +619,7 @@ export default {
                 return
             }
             this.showLoading();  // 显示加载页面
+            this.cancleCheckbox();
             await this.findFFsByParentId(id);
             await this.findFolderById(id);
             await this.countFFsByParentId(id);
@@ -595,7 +629,6 @@ export default {
             this.findTags();
             this.queryCategoryCapacity();
             this.currentFolder = JSON.parse(sessionStorage.getItem("currentFolder"));  // 更新 currentFolder
-            this.currentFFsCount = sessionStorage.getItem("currentFFsCount");  // 更新 currentFFsCount
             // 发送文件夹更新信号
             const event = new CustomEvent('update-path', {
                 detail: {
@@ -1089,8 +1122,16 @@ export default {
                 });
             },
             isAdmin() {
-            return this.userData.isAdmin; // 检查is_admin属性是否为true
-        }
+                return this.userData.isAdmin; // 检查is_admin属性是否为true
+            },
+            cancleCheckbox(){
+                this.selectedFiles = [];
+                this.selectedFolders = [];
+            },
+            allCheckbox(){
+                this.selectedFiles = this.files.slice();
+                this.selectedFolders = this.folders.slice();
+            }
     },
     components: {
         TopBar,
