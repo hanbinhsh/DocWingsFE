@@ -270,10 +270,26 @@ import "../assets/js/plugins/slimscroll/jquery.slimscroll.min.js"
 import animationHover from "../assets/js/inspinia.js"
 import "../assets/js/plugins/pace/pace.min.js"
 import axios from "axios";
-
 import TopBar from '@/components/TopBar.vue'
 import UserItem from '@/components/UserItem.vue'
 import FootBar from '@/components/FootBar.vue'
+import toastr from "../assets/js/plugins/toastr/toastr.min.js"
+toastr.options = {
+    "closeButton": true,
+    "debug": false,
+    "progressBar": true,
+    "preventDuplicates": true,
+    "positionClass": "toast-bottom-center",
+    "onclick": null,
+    "showDuration": "400",
+    "hideDuration": "1000",
+    "timeOut": "3000",
+    "extendedTimeOut": "1000",
+    "showEasing": "swing",
+    "hideEasing": "linear",
+    "showMethod": "fadeIn",
+    "hideMethod": "fadeOut"
+}
 export default {
     name: 'Log',
     components: {
@@ -310,127 +326,122 @@ export default {
         },
         async Validate(){
             const { value: password } = await this.$swal.fire({
-                    title: '用户验证',
-                    input: 'password',
-                    inputLabel: '请输入密码',
-                    showCancelButton: true,
-                    confirmButtonText: '确定',  
-                    cancelButtonText: '取消',
-                    inputValidator: (value) => {
-                        if (!value) {
-                            return false;
-                        }
+                title: '用户验证',
+                input: 'password',
+                inputLabel: '请输入密码',
+                showCancelButton: true,
+                confirmButtonText: '确定',  
+                cancelButtonText: '取消',
+                inputValidator: (value) => {
+                    if (!value) {
+                        return false;
                     }
-                });
-                if (!password) {
-                    return false; // 用户取消了，不做任何操作
                 }
-                const response = await axios.post('/api/login', { "userName": this.userData.userName, "password": password });
-                if(response.data.accountLocked==true){
-                    this.$swal.fire('用户已冻结,请两小时后再试','','error');
-                    window.sessionStorage.clear();
-                    this.$router.push('/login');
-                }
-                else if (response.data == null||response.data=="") {
-                    const response1=await axios.post('/api/findUserByName', { "userName": this.userData.userName});
-                    var remainingAttempts =5- response1.data.failedAttempts;
-                    this.$swal.fire('密码错误您还有'+remainingAttempts+'次机会！','','error');
-                    return false;
-                }
-                return true;
-            },
-            async unsubscibe(userId){
-                    // 删除用户，并删除其收藏
-                    // BUG 文件夹/文件/日志等外键依赖
-                    await axios.post('/api/UserCollectionDelete', { "userId":userId });   
-                    await axios.post('/api/UserDelete', { "userId":userId.value });
-                    const response = await axios.get('/api/findAllUsers');
-                    this.users = response.data;
-                    alert('该用户已注销！');
-                    //window.location.reload(); 
-            },
-            async resetPsw(userId){
-                    //重置该用户密码
-                    const response=await axios.post('/api/resetPsw', { "userId":userId });
-                    const response1 = await axios.get('/api/findAllUsers');
-                    this.users = response1.data; 
-                    if(response.data!=null) 
-                    alert('已重置该用户密码！');
-                    else
-                    alert('该用户不存在！');
-                    //window.location.reload(); 
-            },
-            async freeze(userId){
-                    // 用户存在冻结
-                    const response=await axios.post('/api/freeze', { "userId":userId });
-                    const response1 = await axios.get('/api/findAllUsers');
-                    this.users = response1.data; 
-                    if(response.data!=null)  
-                    alert('该用户已冻结！');
-                    else
-                    alert('该用户不存在！');
-                    //window.location.reload(); 
-            },
-            async defrost(userId){
-                    //解冻用户
-                    const response=await axios.post('/api/defrost', { "userId":userId });
-                    const response1 = await axios.get('/api/findAllUsers');
-                    this.users = response1.data;
-                    if(response.data!=null)  
-                    alert('已解冻该用户！');
-                    else
-                    alert('该用户不存在！');
-                    //window.location.reload(); 
-            },
-            async updateGroup(userId){
-                const { value: groupId } = await this.$swal.fire({
-                    title: '用户组更改',
-                    input: 'text',
-                    inputLabel: '请输入用户组ID',
-                    showCancelButton: true,
-                    confirmButtonText: '确定',  
-                    cancelButtonText: '取消',
-                    inputValidator: (groupId) => {
-                        if (!groupId) {
-                            return '未输入用户组ID！'
-                        }
-                    }
-                });
-                if (!groupId) {
-                    return; // 用户取消了，不做任何操作
-                }
-                await axios.post('/api/updateGroup', { "userId":userId ,"groupId":groupId});
-                const response1 = await axios.get('/api/findAllUsers');
-                this.users = response1.data;
-                //window.location.reload(); 
-            },
-            async insertGroup(){
-                const { value: groupName } = await this.$swal.fire({
-                    title: '增加用户组',
-                    input: 'text',
-                    inputLabel: '请输入用户组名字',
-                    showCancelButton: true,
-                    confirmButtonText: '确定',  
-                    cancelButtonText: '取消',
-                    inputValidator: (groupName) => {
-                        if (!groupName) {
-                            return '未输入用户组名字！'
-                        }
-                    }
-                });
-                if (!groupName) {
-                    return; // 用户取消了，不做任何操作
-                }
-                await axios.post('/api/insertGroup', { "groupName":groupName});
-                const response1 = await axios.get('/api/findAllUsers');
-                this.users = response1.data;
-                //window.location.reload();
-            },
-            async findGroupNameByUserId(userId){
-                const response = await axios.post('/api/findGroupNameByUserId',{"userId":userId});
-                // console.log(response.data);
-                return response.data;
+            });
+            if (!password) {
+                return false; // 用户取消了，不做任何操作
             }
+            const response = await axios.post('/api/login', { "userName": this.userData.userName, "password": password });
+            if(response.data.accountLocked==true){
+                this.$swal.fire('用户已冻结,请两小时后再试','','error');
+                window.sessionStorage.clear();
+                this.$router.push('/login');
+            }
+            else if (response.data == null||response.data=="") {
+                const response1=await axios.post('/api/findUserByName', { "userName": this.userData.userName});
+                var remainingAttempts =5- response1.data.failedAttempts;
+                this.$swal.fire('密码错误！您还有'+remainingAttempts+'次机会！','','error');
+                return false;
+            }
+            return true;
+        },
+        async unsubscibe(userId){
+            // 删除用户，并删除其收藏
+            // BUG 文件夹/文件/日志等外键依赖
+            await axios.post('/api/UserCollectionDelete', { "userId":userId });   
+            await axios.post('/api/UserDelete', { "userId":userId.value });
+            const response = await axios.get('/api/findAllUsers');
+            this.users = response.data;
+            toastr.success(`已注销账户`, "成功");
+        },
+        async resetPsw(userId){
+            //重置该用户密码
+            const response=await axios.post('/api/resetPsw', { "userId":userId });
+            const response1 = await axios.get('/api/findAllUsers');
+            this.users = response1.data; 
+            if(response.data!=null) 
+                toastr.success(`已重置该用户密码为123456！`, "成功");
+            else
+                toastr.error(`该用户不存在！`, "错误");
+        },
+        async freeze(userId){
+            // 用户存在冻结
+            const response=await axios.post('/api/freeze', { "userId":userId });
+            const response1 = await axios.get('/api/findAllUsers');
+            this.users = response1.data; 
+            if(response.data!=null)  
+                toastr.success(`成功冻结该用户！`, "成功");
+            else
+                toastr.error(`该用户不存在！`, "错误");
+        },
+        async defrost(userId){
+            //解冻用户
+            const response=await axios.post('/api/defrost', { "userId":userId });
+            const response1 = await axios.get('/api/findAllUsers');
+            this.users = response1.data;
+            if(response.data!=null)  
+                toastr.success(`已解冻该用户！`, "成功");
+            else
+                toastr.error(`该用户不存在！`, "错误");
+        },
+        async updateGroup(userId){
+            const { value: groupId } = await this.$swal.fire({
+                title: '用户组更改',
+                input: 'text',
+                inputLabel: '请输入用户组ID',
+                showCancelButton: true,
+                confirmButtonText: '确定',  
+                cancelButtonText: '取消',
+                inputValidator: (groupId) => {
+                    if (!groupId) {
+                        return '未输入用户组ID！'
+                    }
+                }
+            });
+            if (!groupId) {
+                return; // 用户取消了，不做任何操作
+            }
+            await axios.post('/api/updateGroup', { "userId":userId ,"groupId":groupId});
+            const response1 = await axios.get('/api/findAllUsers');
+            this.users = response1.data;
+        },
+        async insertGroup(){
+            const { value: groupName } = await this.$swal.fire({
+                title: '增加用户组',
+                input: 'text',
+                inputLabel: '请输入用户组名字',
+                showCancelButton: true,
+                confirmButtonText: '确定',  
+                cancelButtonText: '取消',
+                inputValidator: (groupName) => {
+                    if (!groupName) {
+                        return '未输入用户组名字！'
+                    }
+                }
+            });
+            if (!groupName) {
+                return; // 用户取消了，不做任何操作
+            }
+            await axios.post('/api/insertGroup', { "groupName":groupName});
+            const response1 = await axios.get('/api/findAllUsers');
+            this.users = response1.data;
+            //window.location.reload();
+        },
+        async findGroupNameByUserId(userId){
+            const response = await axios.post('/api/findGroupNameByUserId',{"userId":userId});
+            // console.log(response.data);
+            return response.data;
+        }
     },
     mounted() {
         $(document).ready(function () {
