@@ -1,7 +1,7 @@
 <template>
     <vue-office-docx v-if="docxUrl" :src="docxUrl" @rendered="rendered" />
-    <vue-office-excel v-if="excelUrl" :src="excelUrl" />
-    <vue-office-pdf v-if="pdfUrl" :src="pdfUrl" />
+    <vue-office-excel style="height: 1100px" v-if="excelUrl" :src="excelUrl" @rendered="rendered"/>
+    <vue-office-pdf v-if="pdfUrl" :src="pdfUrl"  @rendered="rendered"/>
 </template>
 
 <script>
