@@ -203,6 +203,7 @@
                                             <th>创建者</th>
                                             <th>创建日期</th>
                                             <th>操作</th>
+                                            <th>多选</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -238,6 +239,7 @@
                                                             class="fa fa-reply"></i>&nbsp;</a>
                                                 </div>
                                             </td>
+                                            <td><input type="checkbox" style="height: 11px;"></td>
                                         </tr>
                                         <tr v-for="(file, index) in files" :key="index" class="read"
                                             @dblclick="filePreview(file)">
@@ -295,6 +297,7 @@
                                                             class="fa fa-reply"></i>&nbsp;</a>
                                                 </div>
                                             </td>
+                                            <td><input type="checkbox" style="height: 11px;"></td>
                                         </tr>
                                     </tbody>
                                 </table>
