@@ -82,6 +82,15 @@ const routes = [
     }
   },
   {
+    path: '/preview',
+    name: 'preview',
+    component: () => import('../views/preview.vue'),
+    meta: {
+      title: '查看分享',
+      requiresAuth: true,
+    }
+  },
+  {
     path: '/trash',
     name: 'trash',
     component: AllFiles,
