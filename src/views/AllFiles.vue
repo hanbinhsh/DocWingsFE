@@ -774,468 +774,465 @@ export default {
                 }
         },
         async renameFolderTag(folder){
-                const { value: newName } = await this.$swal.fire({
-                    title: '重命名标签',
-                    input: 'text',
-                    inputLabel: '请输入新的标签',
-                    inputValue: folder.tag,
-                    showCancelButton: true,
-                    confirmButtonText: '确定',
-                    cancelButtonText: '取消',
-                    inputValidator: (value) => {
-                        if (!value) {
-                            return '标签名不能为空！'
-                        }
+            const { value: newName } = await this.$swal.fire({
+                title: '重命名标签',
+                input: 'text',
+                inputLabel: '请输入新的标签',
+                inputValue: folder.tag,
+                showCancelButton: true,
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                inputValidator: (value) => {
+                    if (!value) {
+                        return '标签名不能为空！'
                     }
-                });
-                if (newName) {
-                        await axios.post('/api/renameFolderTag', { "folderId": folder.folderId, "tag": newName });
-                        this.$swal.fire('标签已更改', `标签已更改为:${newName}`, 'success');
-                        this.enterPath(this.currentFolder.folderId);
-                    }
-                else{
-                    this.$swal.fire('操作取消', '标签未更改', 'info');
                 }
+            });
+            if (newName) {
+                    await axios.post('/api/renameFolderTag', { "folderId": folder.folderId, "tag": newName });
+                    this.$swal.fire('标签已更改', `标签已更改为:${newName}`, 'success');
+                    this.enterPath(this.currentFolder.folderId);
+                }
+            else{
+                this.$swal.fire('操作取消', '标签未更改', 'info');
+            }
         },
         async recycleBinFile(fileId){
-                const result = await this.$swal.fire({
-                    title: '是否将文件放入回收站',
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonText: '确定',  
-                    cancelButtonText: '取消',
-                });
-                if (result.isConfirmed) {
-                    await axios.post('/api/recycleBinFile', { "fileId": fileId, "status": 1 });
-                    this.$swal.fire('操作成功', '文件已放入回收站', 'success');
-                    this.enterPath(this.currentFolder.folderId);
-                }
-                else{
-                    this.$swal.fire('操作取消', '文件未放入回收站', 'info');
-                }
+            const result = await this.$swal.fire({
+                title: '是否将文件放入回收站',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: '确定',  
+                cancelButtonText: '取消',
+            });
+            if (result.isConfirmed) {
+                await axios.post('/api/recycleBinFile', { "fileId": fileId, "status": 1 });
+                this.$swal.fire('操作成功', '文件已放入回收站', 'success');
+                this.enterPath(this.currentFolder.folderId);
+            }
+            else{
+                this.$swal.fire('操作取消', '文件未放入回收站', 'info');
+            }
         },
         async recycleBinFolder(folderId){
-                const result = await this.$swal.fire({
-                    title: '是否将文件夹放入回收站',
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonText: '确定',  
-                    cancelButtonText: '取消',
-                });
-                if (result.isConfirmed) {
-                    await axios.post('/api/recycleBinFolder', { "folderId": folderId, "status": 1 });
-                    this.$swal.fire('操作成功', '文件夹已放入回收站', 'success');
-                    this.enterPath(this.currentFolder.folderId);
-                }
-                else{
-                    this.$swal.fire('操作取消', '文件夹未放入回收站', 'info');
-                }
+            const result = await this.$swal.fire({
+                title: '是否将文件夹放入回收站',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: '确定',  
+                cancelButtonText: '取消',
+            });
+            if (result.isConfirmed) {
+                await axios.post('/api/recycleBinFolder', { "folderId": folderId, "status": 1 });
+                this.$swal.fire('操作成功', '文件夹已放入回收站', 'success');
+                this.enterPath(this.currentFolder.folderId);
+            }
+            else{
+                this.$swal.fire('操作取消', '文件夹未放入回收站', 'info');
+            }
         },
         downloadFile(file){
-                axios.post('/api/downloadFile?fileID='+file.fileId, {}, {responseType: 'blob'}).then(res => {
-                    let blob = new Blob([res.data])
-                    let fileName = file.fileName
-                    if (blob.size > 0) {
-                        const elink = document.createElement('a');
-                        elink.style.display = 'none';
-                        elink.href = URL.createObjectURL(blob);
-                        // 类似a标签下载
-                        // 自定义文件名称和导出类型。最好和后台保持一致
-                        elink.download = `${fileName}`; //模版字符串
-                        document.body.appendChild(elink);
-                        elink.click();//触发click事件 下载
-                        // 释放URL 对象
-                        URL.revokeObjectURL(elink.href);
-                        // 删除创建的 a 标签      
-                        document.body.removeChild(elink);
-                    }
-                })
+            axios.post('/api/downloadFile?fileID='+file.fileId, {}, {responseType: 'blob'}).then(res => {
+                let blob = new Blob([res.data])
+                let fileName = file.fileName
+                if (blob.size > 0) {
+                    const elink = document.createElement('a');
+                    elink.style.display = 'none';
+                    elink.href = URL.createObjectURL(blob);
+                    // 类似a标签下载
+                    // 自定义文件名称和导出类型。最好和后台保持一致
+                    elink.download = `${fileName}`; //模版字符串
+                    document.body.appendChild(elink);
+                    elink.click();//触发click事件 下载
+                    // 释放URL 对象
+                    URL.revokeObjectURL(elink.href);
+                    // 删除创建的 a 标签      
+                    document.body.removeChild(elink);
+                }
+            })
         },
         async replyTrashFile(fileId){
-                const result = await this.$swal.fire({
-                    title: '是否将文件还原',
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonText: '确定',  
-                    cancelButtonText: '取消',
-                });
-                if (result.isConfirmed) {
-                    await axios.post('/api/recycleBinFile', { "fileId": fileId, "status": 0 });
-                    this.$swal.fire('操作成功', '文件已还原', 'success');
-                    this.enterPathTrash();
-                }
-                else{
-                    this.$swal.fire('操作取消', '文件未还原', 'info');
-                }
+            const result = await this.$swal.fire({
+                title: '是否将文件还原',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: '确定',  
+                cancelButtonText: '取消',
+            });
+            if (result.isConfirmed) {
+                await axios.post('/api/recycleBinFile', { "fileId": fileId, "status": 0 });
+                this.$swal.fire('操作成功', '文件已还原', 'success');
+                this.enterPathTrash();
+            }
+            else{
+                this.$swal.fire('操作取消', '文件未还原', 'info');
+            }
         },
         async replyTrashFolder(folderId){
-                const result = await this.$swal.fire({
-                    title: '是否将文件夹还原',
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonText: '确定',  
-                    cancelButtonText: '取消',
-                });
-                if (result.isConfirmed) {
-                    await axios.post('/api/recycleBinFolder', { "folderId": folderId, "status": 0 });
-                    this.$swal.fire('操作成功', '文件夹已还原', 'success');
-                    this.enterPathTrash();
-                }
-                else{
-                    this.$swal.fire('操作取消', '文件夹未还原', 'info');
-                }
+            const result = await this.$swal.fire({
+                title: '是否将文件夹还原',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: '确定',  
+                cancelButtonText: '取消',
+            });
+            if (result.isConfirmed) {
+                await axios.post('/api/recycleBinFolder', { "folderId": folderId, "status": 0 });
+                this.$swal.fire('操作成功', '文件夹已还原', 'success');
+                this.enterPathTrash();
+            }
+            else{
+                this.$swal.fire('操作取消', '文件夹未还原', 'info');
+            }
         },
         async replyTrashSelections(){
-                console.log(this.selectedFiles);
-                console.log(this.selectedFolders);
-                console.log(this.selectedFolders[0]);
-                const result = await this.$swal.fire({
-                    title: '是否将所选文件和文件夹还原',
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonText: '确定',  
-                    cancelButtonText: '取消',
-                });
-                if (result.isConfirmed) {
-                    for(const folder of this.selectedFolders){
-                        await axios.post('/api/recycleBinFolder', { "folderId": folder.folderId, "status": 0 });
-                    }
-                    for(const file of this.selectedFiles){
-                        await axios.post('/api/recycleBinFile', { "fileId": file.fileId, "status": 0 });
-                    }
-                    this.$swal.fire('操作成功', '文件和文件夹已还原', 'success');
-                    this.enterPathTrash();
+            const result = await this.$swal.fire({
+                title: '是否将所选文件和文件夹还原',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: '确定',  
+                cancelButtonText: '取消',
+            });
+            if (result.isConfirmed) {
+                for(const folder of this.selectedFolders){
+                    await axios.post('/api/recycleBinFolder', { "folderId": folder.folderId, "status": 0 });
                 }
-                else{
-                    this.$swal.fire('操作取消', '文件和文件夹未还原', 'info');
+                for(const file of this.selectedFiles){
+                    await axios.post('/api/recycleBinFile', { "fileId": file.fileId, "status": 0 });
                 }
+                this.$swal.fire('操作成功', '文件和文件夹已还原', 'success');
+                this.enterPathTrash();
+            }
+            else{
+                this.$swal.fire('操作取消', '文件和文件夹未还原', 'info');
+            }
         },
         async deleteFile(fileId){
-                const result = await this.$swal.fire({
-                    title: '是否将文件删除',
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonText: '确定',  
-                    cancelButtonText: '取消',
-                });
-                if (result.isConfirmed) {
-                    await axios.post('/api/deleteFile', { "fileId": fileId });
-                    this.$swal.fire('操作成功', '文件已删除', 'success');
-                    //更新容量
-                    const event = new CustomEvent('update-capacity', {});
-                    document.dispatchEvent(event);
-                    this.enterPathTrash();
-                }
-                else{
-                    this.$swal.fire('操作取消', '文件未删除', 'info');
-                }
+            const result = await this.$swal.fire({
+                title: '是否将文件删除',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: '确定',  
+                cancelButtonText: '取消',
+            });
+            if (result.isConfirmed) {
+                await axios.post('/api/deleteFile', { "fileId": fileId });
+                this.$swal.fire('操作成功', '文件已删除', 'success');
+                //更新容量
+                const event = new CustomEvent('update-capacity', {});
+                document.dispatchEvent(event);
+                this.enterPathTrash();
+            }
+            else{
+                this.$swal.fire('操作取消', '文件未删除', 'info');
+            }
         },
         async deleteFolder(folderId){
-                const result = await this.$swal.fire({
-                    title: '是否将文件夹删除',
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonText: '确定',  
-                    cancelButtonText: '取消',
-                });
-                if (result.isConfirmed) {
-                    await axios.post('/api/deleteFolder', { "folderId": folderId });
-                    this.$swal.fire('操作成功', '文件夹已删除', 'success');
-                    //更新容量
-                    const event = new CustomEvent('update-capacity', {});
-                    document.dispatchEvent(event);
-                    this.enterPathTrash();
-                }
-                else{
-                    this.$swal.fire('操作取消', '文件夹未删除', 'info');
-                }
+            const result = await this.$swal.fire({
+                title: '是否将文件夹删除',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: '确定',  
+                cancelButtonText: '取消',
+            });
+            if (result.isConfirmed) {
+                await axios.post('/api/deleteFolder', { "folderId": folderId });
+                this.$swal.fire('操作成功', '文件夹已删除', 'success');
+                //更新容量
+                const event = new CustomEvent('update-capacity', {});
+                document.dispatchEvent(event);
+                this.enterPathTrash();
+            }
+            else{
+                this.$swal.fire('操作取消', '文件夹未删除', 'info');
+            }
         },
         async collectionFile(fileId){
-                const exist = this.fileCollectionStatus[fileId]//判断是否被收藏
-                if(exist){//被收藏删除
-                    await axios.post('api/CollectionsDeleteFile',{"fileId":fileId,"userId":this.userData.userId});
-                }
-                else{//没被收藏插入
-                    await axios.post('api/CollectionsInsertFile',{"fileId":fileId,"userId":this.userData.userId});
-                }
-                this.enterPath(this.currentFolder.folderId)
+            const exist = this.fileCollectionStatus[fileId]//判断是否被收藏
+            if(exist){//被收藏删除
+                await axios.post('api/CollectionsDeleteFile',{"fileId":fileId,"userId":this.userData.userId});
+            }
+            else{//没被收藏插入
+                await axios.post('api/CollectionsInsertFile',{"fileId":fileId,"userId":this.userData.userId});
+            }
+            this.enterPath(this.currentFolder.folderId)
         },
         async collectionFolder(folderId){
-                const exist = this.folderCollectionStatus[folderId]//判断是否被收藏
-                if(exist){//被收藏删除
-                    await axios.post('api/CollectionsDeleteFolder',{"folderId":folderId,"userId":this.userData.userId});
-                }
-                else{//没被收藏插入
-                    await axios.post('api/CollectionsInsertFolder',{"folderId":folderId,"userId":this.userData.userId});
-                }
-                this.enterPath(this.currentFolder.folderId)
+            const exist = this.folderCollectionStatus[folderId]//判断是否被收藏
+            if(exist){//被收藏删除
+                await axios.post('api/CollectionsDeleteFolder',{"folderId":folderId,"userId":this.userData.userId});
+            }
+            else{//没被收藏插入
+                await axios.post('api/CollectionsInsertFolder',{"folderId":folderId,"userId":this.userData.userId});
+            }
+            this.enterPath(this.currentFolder.folderId)
         },
         async shareFile(file){
-                const { value: formValues } = await this.$swal.fire({
-                    title: '创建分享',
-                    html: `
-                        <label class="control-label">权限</label>
-                        <div class="form-group">
-                            <select id="share_select" class="form-control">
-                                <option value="1">A</option>
-                                <option value="2">B</option>
-                                <option value="3">C</option>
-                                <option value="4">D</option>
-                                <option value="5">E</option>
-                            </select></div>
+            const { value: formValues } = await this.$swal.fire({
+                title: '创建分享',
+                html: `
+                    <label class="control-label">权限</label>
+                    <div class="form-group">
+                        <select id="share_select" class="form-control">
+                            <option value="1">A</option>
+                            <option value="2">B</option>
+                            <option value="3">C</option>
+                            <option value="4">D</option>
+                            <option value="5">E</option>
+                        </select></div>
+                    </div>
+                    <label class="control-label">有效时间(为空表示永久有效)</label>
+                    <div>
+                        <div class="col-md-4">
+                            <input type="text" id="share_day" class="form-control" placeholder="0" style="text-align: center;">
+                            <span>天</span>
                         </div>
-                        <label class="control-label">有效时间(为空表示永久有效)</label>
-                        <div>
-                            <div class="col-md-4">
-                                <input type="text" id="share_day" class="form-control" placeholder="0" style="text-align: center;">
-                                <span>天</span>
-                            </div>
-                            <div class="col-md-4">
-                                <input type="text" id="share_hour" class="form-control" placeholder="0" style="text-align: center;">
-                                <span>时</span>
-                            </div>
-                            <div class="col-md-4">
-                                <input type="text" id="share_minute" class="form-control" placeholder="0" style="text-align: center;">
-                                <span>分</span>
-                            </div>
+                        <div class="col-md-4">
+                            <input type="text" id="share_hour" class="form-control" placeholder="0" style="text-align: center;">
+                            <span>时</span>
                         </div>
-                        <label class="control-label">接收者</label>
-                        <div class="form-group">
-                            <input type="text" id="share_accepter" class="form-control" placeholder="接收者用户名(为空表示所有用户)" style="text-align: center;">
+                        <div class="col-md-4">
+                            <input type="text" id="share_minute" class="form-control" placeholder="0" style="text-align: center;">
+                            <span>分</span>
                         </div>
-                    `,
-                    showCancelButton: true,
-                    confirmButtonText: '确定',
-                    cancelButtonText: '取消',
-                    preConfirm: () => {
-                        return {
-                            permission: document.getElementById('share_select').value,
-                            day: document.getElementById('share_day').value || 0,
-                            hour: document.getElementById('share_hour').value || 0,
-                            minute: document.getElementById('share_minute').value || 0,
-                            accepter: document.getElementById('share_accepter').value,
-                        }
+                    </div>
+                    <label class="control-label">接收者</label>
+                    <div class="form-group">
+                        <input type="text" id="share_accepter" class="form-control" placeholder="接收者用户名(为空表示所有用户)" style="text-align: center;">
+                    </div>
+                `,
+                showCancelButton: true,
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                preConfirm: () => {
+                    return {
+                        permission: document.getElementById('share_select').value,
+                        day: document.getElementById('share_day').value || 0,
+                        hour: document.getElementById('share_hour').value || 0,
+                        minute: document.getElementById('share_minute').value || 0,
+                        accepter: document.getElementById('share_accepter').value,
                     }
-                });
-                if (formValues) {
-                    let userId = null
-                    if(formValues.day<0||formValues.hour<0||formValues.minute<0){
-                        this.$swal.fire('时间不能为负数', '请重新输入', 'error');
-                        return;
-                    }
-                    // 判断输入是否是数字
-                    if(isNaN(formValues.day)||isNaN(formValues.hour)||isNaN(formValues.minute)){
-                        this.$swal.fire('时间必须为数字', '请重新输入', 'error');
-                        return;
-                    }
-                    if(formValues.accepter){
-                        if(formValues.accepter==this.userData.userName){
-                            this.$swal.fire('不能分享给自己', '请重新输入', 'error');
-                            return;
-                        }
-                        const response=await axios.post('/api/queryIfExistsUserByUserName?userName='+formValues.accepter);
-                        const data = response.data.data
-                        if(data.state==0){
-                            this.$swal.fire('用户不存在', '请重新输入', 'error');
-                            return;
-                        }
-                        userId = data.userId
-                    }
-                    const shareTime = new Date();
-                    const dueTime = new Date(shareTime.getTime() + formValues.day * 24 * 60 * 60 * 1000 + formValues.hour * 60 * 60 * 1000 + formValues.minute * 60 * 1000);
-                    const shareData = {
-                        fileId: file.fileId,
-                        folderId:-2,
-                        sharerId: this.userData.userId,
-                        auth: formValues.permission,
-                        shareTime: shareTime,
-                        dueTime: dueTime,
-                        accepterId: userId ?? -2,
-                        isFolder: 0
-                    };
-                    await axios.post('api/insertShare', [shareData])
-                    this.$swal.fire('分享成功', '', 'success');
                 }
+            });
+            if (formValues) {
+                let userId = null
+                if(formValues.day<0||formValues.hour<0||formValues.minute<0){
+                    this.$swal.fire('时间不能为负数', '请重新输入', 'error');
+                    return;
+                }
+                // 判断输入是否是数字
+                if(isNaN(formValues.day)||isNaN(formValues.hour)||isNaN(formValues.minute)){
+                    this.$swal.fire('时间必须为数字', '请重新输入', 'error');
+                    return;
+                }
+                if(formValues.accepter){
+                    if(formValues.accepter==this.userData.userName){
+                        this.$swal.fire('不能分享给自己', '请重新输入', 'error');
+                        return;
+                    }
+                    const response=await axios.post('/api/queryIfExistsUserByUserName?userName='+formValues.accepter);
+                    const data = response.data.data
+                    if(data.state==0){
+                        this.$swal.fire('用户不存在', '请重新输入', 'error');
+                        return;
+                    }
+                    userId = data.userId
+                }
+                const shareTime = new Date();
+                const dueTime = new Date(shareTime.getTime() + formValues.day * 24 * 60 * 60 * 1000 + formValues.hour * 60 * 60 * 1000 + formValues.minute * 60 * 1000);
+                const shareData = {
+                    fileId: file.fileId,
+                    folderId:-2,
+                    sharerId: this.userData.userId,
+                    auth: formValues.permission,
+                    shareTime: shareTime,
+                    dueTime: dueTime,
+                    accepterId: userId ?? -2,
+                    isFolder: 0
+                };
+                await axios.post('api/insertShare', [shareData])
+                this.$swal.fire('分享成功', '', 'success');
+            }
         },
         async shareFolder(folder){
-                const { value: formValues } = await this.$swal.fire({
-                    title: '创建分享',
-                    html: `
-                        <label class="control-label">权限</label>
-                        <div class="form-group">
-                            <select id="share_select" class="form-control">
-                                <option value="1">A</option>
-                                <option value="2">B</option>
-                                <option value="3">C</option>
-                                <option value="4">D</option>
-                                <option value="5">E</option>
-                            </select></div>
+            const { value: formValues } = await this.$swal.fire({
+                title: '创建分享',
+                html: `
+                    <label class="control-label">权限</label>
+                    <div class="form-group">
+                        <select id="share_select" class="form-control">
+                            <option value="1">A</option>
+                            <option value="2">B</option>
+                            <option value="3">C</option>
+                            <option value="4">D</option>
+                            <option value="5">E</option>
+                        </select></div>
+                    </div>
+                    <label class="control-label">有效时间(为空表示永久有效)</label>
+                    <div>
+                        <div class="col-md-4">
+                            <input type="text" id="share_day" class="form-control" placeholder="0" style="text-align: center;">
+                            <span>天</span>
                         </div>
-                        <label class="control-label">有效时间(为空表示永久有效)</label>
-                        <div>
-                            <div class="col-md-4">
-                                <input type="text" id="share_day" class="form-control" placeholder="0" style="text-align: center;">
-                                <span>天</span>
-                            </div>
-                            <div class="col-md-4">
-                                <input type="text" id="share_hour" class="form-control" placeholder="0" style="text-align: center;">
-                                <span>时</span>
-                            </div>
-                            <div class="col-md-4">
-                                <input type="text" id="share_minute" class="form-control" placeholder="0" style="text-align: center;">
-                                <span>分</span>
-                            </div>
+                        <div class="col-md-4">
+                            <input type="text" id="share_hour" class="form-control" placeholder="0" style="text-align: center;">
+                            <span>时</span>
                         </div>
-                        <label class="control-label">接收者</label>
-                        <div class="form-group">
-                            <input type="text" id="share_accepter" class="form-control" placeholder="接收者用户名(为空表示所有用户)" style="text-align: center;">
+                        <div class="col-md-4">
+                            <input type="text" id="share_minute" class="form-control" placeholder="0" style="text-align: center;">
+                            <span>分</span>
                         </div>
-                    `,
-                    showCancelButton: true,
-                    confirmButtonText: '确定',
-                    cancelButtonText: '取消',
-                    preConfirm: () => {
-                        return {
-                            permission: document.getElementById('share_select').value,
-                            day: document.getElementById('share_day').value || 0,
-                            hour: document.getElementById('share_hour').value || 0,
-                            minute: document.getElementById('share_minute').value || 0,
-                            accepter: document.getElementById('share_accepter').value,
-                        }
+                    </div>
+                    <label class="control-label">接收者</label>
+                    <div class="form-group">
+                        <input type="text" id="share_accepter" class="form-control" placeholder="接收者用户名(为空表示所有用户)" style="text-align: center;">
+                    </div>
+                `,
+                showCancelButton: true,
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                preConfirm: () => {
+                    return {
+                        permission: document.getElementById('share_select').value,
+                        day: document.getElementById('share_day').value || 0,
+                        hour: document.getElementById('share_hour').value || 0,
+                        minute: document.getElementById('share_minute').value || 0,
+                        accepter: document.getElementById('share_accepter').value,
                     }
-                });
-                if (formValues) {
-                    let userId = null
-                    if(formValues.day<0||formValues.hour<0||formValues.minute<0){
-                        this.$swal.fire('时间不能为负数', '请重新输入', 'error');
-                        return;
-                    }
-                    // 判断输入是否是数字
-                    if(isNaN(formValues.day)||isNaN(formValues.hour)||isNaN(formValues.minute)){
-                        this.$swal.fire('时间必须为数字', '请重新输入', 'error');
-                        return;
-                    }
-                    if(formValues.accepter){
-                        if(formValues.accepter==this.userData.userName){
-                            this.$swal.fire('不能分享给自己', '请重新输入', 'error');
-                            return;
-                        }
-                        const response=await axios.post('/api/queryIfExistsUserByUserName?userName='+formValues.accepter);
-                        const data = response.data.data
-                        if(data.state==0){
-                            this.$swal.fire('用户不存在', '请重新输入', 'error');
-                            return;
-                        }
-                        userId = data.userId
-                    }
-                    const shareTime = new Date();
-                    const dueTime = new Date(shareTime.getTime() + formValues.day * 24 * 60 * 60 * 1000 + formValues.hour * 60 * 60 * 1000 + formValues.minute * 60 * 1000);
-                    const shareData = {
-                        fileId: -2,
-                        folderId: folder.folderId,
-                        sharerId: this.userData.userId,
-                        auth: formValues.permission,
-                        shareTime: shareTime,
-                        dueTime: dueTime,
-                        accepterId: userId ?? -2,
-                        isFolder: 1
-                    };
-                    await axios.post('api/insertShare', [shareData])
-                    this.$swal.fire('分享成功', '', 'success');
                 }
+            });
+            if (formValues) {
+                let userId = null
+                if(formValues.day<0||formValues.hour<0||formValues.minute<0){
+                    this.$swal.fire('时间不能为负数', '请重新输入', 'error');
+                    return;
+                }
+                // 判断输入是否是数字
+                if(isNaN(formValues.day)||isNaN(formValues.hour)||isNaN(formValues.minute)){
+                    this.$swal.fire('时间必须为数字', '请重新输入', 'error');
+                    return;
+                }
+                if(formValues.accepter){
+                    if(formValues.accepter==this.userData.userName){
+                        this.$swal.fire('不能分享给自己', '请重新输入', 'error');
+                        return;
+                    }
+                    const response=await axios.post('/api/queryIfExistsUserByUserName?userName='+formValues.accepter);
+                    const data = response.data.data
+                    if(data.state==0){
+                        this.$swal.fire('用户不存在', '请重新输入', 'error');
+                        return;
+                    }
+                    userId = data.userId
+                }
+                const shareTime = new Date();
+                const dueTime = new Date(shareTime.getTime() + formValues.day * 24 * 60 * 60 * 1000 + formValues.hour * 60 * 60 * 1000 + formValues.minute * 60 * 1000);
+                const shareData = {
+                    fileId: -2,
+                    folderId: folder.folderId,
+                    sharerId: this.userData.userId,
+                    auth: formValues.permission,
+                    shareTime: shareTime,
+                    dueTime: dueTime,
+                    accepterId: userId ?? -2,
+                    isFolder: 1
+                };
+                await axios.post('api/insertShare', [shareData])
+                this.$swal.fire('分享成功', '', 'success');
+            }
         },
         async checkAllFFsCollectionStatus() {
-                const response=await axios.post('/api/findCollectionFFs?userId='+this.userData.userId);
-                const data = response.data
-                this.folderCollectionStatus = {}
-                this.fileCollectionStatus = {}
-                data.forEach(item => {
-                    if (item.isFolder) {
-                        this.folderCollectionStatus[item.folderId] = true;
-                    } else {
-                        this.fileCollectionStatus[item.fileId] = true;
-                    }
-                });
+            const response=await axios.post('/api/findCollectionFFs?userId='+this.userData.userId);
+            const data = response.data
+            this.folderCollectionStatus = {}
+            this.fileCollectionStatus = {}
+            data.forEach(item => {
+                if (item.isFolder) {
+                    this.folderCollectionStatus[item.folderId] = true;
+                } else {
+                    this.fileCollectionStatus[item.fileId] = true;
+                }
+            });
         },
         isAdmin() {
-                return this.userData.isAdmin; // 检查is_admin属性是否为true
+            return this.userData.isAdmin; // 检查is_admin属性是否为true
         },
         cancelCheckbox(){
-                this.selectedFiles = [];
-                this.selectedFolders = [];
+            this.selectedFiles = [];
+            this.selectedFolders = [];
         },
         shareSelections(){
 
         },
         collectSelections(){
-                this.selectedFiles.forEach(element => {
-                    axios.post('api/CollectionsInsertFile',{"fileId":element.fileId,"userId":this.userData.userId});
-                });
-                this.selectedFolders.forEach(element => {
-                    axios.post('api/CollectionsInsertFolder',{"folderId":element.folderId,"userId":this.userData.userId});
-                });
-                this.$swal.fire('收藏成功', '', 'success');
-                this.enterPath(this.currentFolder.folderId)
+            this.selectedFiles.forEach(element => {
+                axios.post('api/CollectionsInsertFile',{"fileId":element.fileId,"userId":this.userData.userId});
+            });
+            this.selectedFolders.forEach(element => {
+                axios.post('api/CollectionsInsertFolder',{"folderId":element.folderId,"userId":this.userData.userId});
+            });
+            this.$swal.fire('收藏成功', '', 'success');
+            this.enterPath(this.currentFolder.folderId)
         },
         cancelCollectSelections(){
-                this.selectedFiles.forEach(element => {
-                    axios.post('api/CollectionsDeleteFile',{"fileId":element.fileId,"userId":this.userData.userId});
-                });
-                this.selectedFolders.forEach(element => {
-                    axios.post('api/CollectionsDeleteFolder',{"folderId":element.folderId,"userId":this.userData.userId});
-                });
-                this.$swal.fire('取消收藏成功', '', 'success');
-                this.enterPath(this.currentFolder.folderId)
+            this.selectedFiles.forEach(element => {
+                axios.post('api/CollectionsDeleteFile',{"fileId":element.fileId,"userId":this.userData.userId});
+            });
+            this.selectedFolders.forEach(element => {
+                axios.post('api/CollectionsDeleteFolder',{"folderId":element.folderId,"userId":this.userData.userId});
+            });
+            this.$swal.fire('取消收藏成功', '', 'success');
+            this.enterPath(this.currentFolder.folderId)
         },
         async recycleSelections(){
-                const result = await this.$swal.fire({
-                    title: '是否将所选文件及文件夹放入回收站',
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonText: '确定',  
-                    cancelButtonText: '取消',
+            const result = await this.$swal.fire({
+                title: '是否将所选文件及文件夹放入回收站',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: '确定',  
+                cancelButtonText: '取消',
+            });
+            if (result.isConfirmed) {
+                this.selectedFiles.forEach(element => {
+                    axios.post('api/recycleBinFile',{"fileId":element.fileId, "status": 1 });
                 });
-                if (result.isConfirmed) {
-                    this.selectedFiles.forEach(element => {
-                        axios.post('api/recycleBinFile',{"fileId":element.fileId, "status": 1 });
-                    });
-                    this.selectedFolders.forEach(element => {
-                        axios.post('api/recycleBinFolder',{"folderId":element.folderId, "status": 1 });
-                    });
-                    this.$swal.fire('操作成功', '所选文件和文件夹已放入回收站', 'success');
-                    this.enterPath(this.currentFolder.folderId);
-                }
-                else{
-                    this.$swal.fire('操作取消', '删除操作取消', 'info');
-                }
+                this.selectedFolders.forEach(element => {
+                    axios.post('api/recycleBinFolder',{"folderId":element.folderId, "status": 1 });
+                });
+                this.$swal.fire('操作成功', '所选文件和文件夹已放入回收站', 'success');
+                this.enterPath(this.currentFolder.folderId);
+            }
+            else{
+                this.$swal.fire('操作取消', '删除操作取消', 'info');
+            }
         },
         downloadSelections(){
-                this.selectedFiles.forEach(element => {
-                    this.downloadFile(element)
-                });
+            this.selectedFiles.forEach(element => {
+                this.downloadFile(element)
+            });
         },
         cutSelections(){
-                this.currentCuttingSelectFiles = this.selectedFiles;
-                this.currentCuttingSelectFolders = this.selectedFolders;
-                this.isCuttingSeletion = true;
-                toastr.success(`成功剪切${this.currentCuttingSelectFiles.length+this.currentCuttingSelectFolders.length}个文件`, "成功");
+            this.currentCuttingSelectFiles = this.selectedFiles;
+            this.currentCuttingSelectFolders = this.selectedFolders;
+            this.isCuttingSeletion = true;
+            toastr.success(`成功剪切${this.currentCuttingSelectFiles.length+this.currentCuttingSelectFolders.length}个文件`, "成功");
         },
         pasteSelections(){
-                this.currentCuttingSelectFiles.forEach(element => {
-                    axios.post(`/api/changeFileRouteById?id=${element.fileId}&parentId=${this.currentFolder.folderId}`);
-                });
-                this.currentCuttingSelectFolders.forEach(element => {
-                    axios.post(`/api/changeFolderRouteById?id=${element.folderId}&parentId=${this.currentFolder.folderId}`);
-                });
-                this.currentCuttingSelectFiles = [];
-                this.currentCuttingSelectFolders = [];
-                this.isCuttingSeletion = false;
-                toastr.success(`成功粘贴${this.currentCuttingSelectFiles.length+this.currentCuttingSelectFolders.length}个文件`, "成功");
-                this.enterPath(this.currentFolder.folderId)
+            this.currentCuttingSelectFiles.forEach(element => {
+                axios.post(`/api/changeFileRouteById?id=${element.fileId}&parentId=${this.currentFolder.folderId}`);
+            });
+            this.currentCuttingSelectFolders.forEach(element => {
+                axios.post(`/api/changeFolderRouteById?id=${element.folderId}&parentId=${this.currentFolder.folderId}`);
+            });
+            this.currentCuttingSelectFiles = [];
+            this.currentCuttingSelectFolders = [];
+            this.isCuttingSeletion = false;
+            toastr.success(`成功粘贴${this.currentCuttingSelectFiles.length+this.currentCuttingSelectFolders.length}个文件`, "成功");
+            this.enterPath(this.currentFolder.folderId)
         },
         allCheckbox(){
-                this.selectedFiles = this.files.slice();
-                this.selectedFolders = this.folders.slice();
+            this.selectedFiles = this.files.slice();
+            this.selectedFolders = this.folders.slice();
         }
     },
     components: {
