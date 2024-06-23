@@ -175,14 +175,32 @@
                                         </span>
                                     </button>&nbsp;
                                     <button
-                                        class="btn btn-white btn-sm" data-toggle="tooltip" data-placement="bottom"
-                                        title="取消多选" @click="allCheckbox()">
+                                        class="btn btn-white btn-sm" data-toggle="tooltip" @click="allCheckbox()">
                                         <i class="fa fa-check-square"></i> 全选
                                     </button>&nbsp;
                                     <button v-if="this.selectedFiles.length+this.selectedFolders.length>0" 
-                                        class="btn btn-white btn-sm" data-toggle="tooltip" data-placement="bottom"
-                                        title="取消多选" @click="cancleCheckbox()">
+                                        class="btn btn-white btn-sm" data-toggle="tooltip" @click="cancleCheckbox()">
                                         <i class="fa fa-square-o"></i> 取消多选
+                                    </button>&nbsp;
+                                    <button v-if="this.selectedFiles.length+this.selectedFolders.length>0" 
+                                        class="btn btn-white btn-sm" data-toggle="tooltip" @click="collectSelections()">
+                                        <i class="fa fa-star"></i> 收藏
+                                    </button>&nbsp;
+                                    <button v-if="this.selectedFiles.length+this.selectedFolders.length>0" 
+                                        class="btn btn-white btn-sm" data-toggle="tooltip" @click="shareSelections()">
+                                        <i class="fa fa-share-alt"></i> 分享
+                                    </button>&nbsp;
+                                    <button v-if="this.selectedFiles.length+this.selectedFolders.length>0" 
+                                        class="btn btn-white btn-sm" data-toggle="tooltip" @click="downloadSelections()">
+                                        <i class="fa fa-download"></i> 下载
+                                    </button>&nbsp;
+                                    <button v-if="this.selectedFiles.length+this.selectedFolders.length>0" 
+                                        class="btn btn-white btn-sm" data-toggle="tooltip" @click="deleteSelections()">
+                                        <i class="fa fa-trash-o"></i> 删除
+                                    </button>&nbsp;
+                                    <button v-if="this.selectedFiles.length+this.selectedFolders.length>0" 
+                                        class="btn btn-white btn-sm" data-toggle="tooltip" @click="cutSelections()">
+                                        <i class="fa fa-scissors"></i> 剪切
                                     </button>&nbsp;
                                 </div>
                             </div>
