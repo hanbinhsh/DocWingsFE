@@ -208,6 +208,10 @@
                                         class="btn btn-white btn-sm" @click="replyTrashSelections()">
                                         <i class="fa fa-reply"></i> 恢复
                                     </button>&nbsp;
+                                    <button v-if="this.selectedFiles.length+this.selectedFolders.length>0 && this.isTrash" 
+                                        class="btn btn-white btn-sm" @click="deleteSelections()">
+                                        <i class="fa fa-trash-o"></i> 删除
+                                    </button>&nbsp;
                                 </div>
                             </div>
                             <div class="mail-box ibox table-responsive">
