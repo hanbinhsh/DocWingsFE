@@ -204,14 +204,14 @@
                                             <i class="fa fa-scissors"></i> 剪切
                                         </button>&nbsp;
                                     </span>
-                                    <button v-if="this.selectedFiles.length+this.selectedFolders.length>0 && this.isTrash" 
-                                        class="btn btn-white btn-sm" @click="replyTrashSelections()">
-                                        <i class="fa fa-reply"></i> 恢复
-                                    </button>&nbsp;
-                                    <button v-if="this.selectedFiles.length+this.selectedFolders.length>0 && this.isTrash" 
-                                        class="btn btn-white btn-sm" @click="deleteSelections()">
-                                        <i class="fa fa-trash-o"></i> 删除
-                                    </button>&nbsp;
+                                    <span v-if="this.selectedFiles.length+this.selectedFolders.length>0 && this.isTrash" >
+                                        <button class="btn btn-white btn-sm" @click="replyTrashSelections()">
+                                            <i class="fa fa-reply"></i> 恢复
+                                        </button>&nbsp;
+                                        <button class="btn btn-white btn-sm" @click="deleteSelections()">
+                                            <i class="fa fa-trash-o"></i> 删除
+                                        </button>&nbsp;
+                                    </span>
                                 </div>
                             </div>
                             <div class="mail-box ibox table-responsive">
