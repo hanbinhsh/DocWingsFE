@@ -152,7 +152,9 @@
                                     </div>
                                 </form>
                                 <h2>
-                                    {{ isTrash ? '回收站' : currentFolder.folderName + ' (' + this.currentFFsCount + ')' }}
+                                    {{ isTrash ? '回收站' : currentFolder.folderName + ' (' + 
+                                    (this.selectedFiles.length+this.selectedFolders.length<=0 ? '' : this.selectedFiles.length+this.selectedFolders.length + '/')
+                                     + this.currentFFsCount + ')' }}
                                 </h2>
                                 <div class="mail-tools tooltip-demo m-t-md">
                                     <div class="btn-group pull-right">
@@ -162,17 +164,21 @@
                                             @click="enterPath(0)"><i class="fa fa-home"></i></button>
                                     </div>
                                     <button class="btn btn-white btn-sm" data-toggle="tooltip" data-placement="bottom"
-                                        title="刷新页面"
-                                        @click="isTrash ? this.enterPathTrash() : this.enterPath(currentFolder.folderId)"><i
-                                            class="fa fa-refresh"></i> 刷新</button>&nbsp;
+                                        title="刷新页面" @click="isTrash ? this.enterPathTrash() : this.enterPath(currentFolder.folderId)">
+                                        <i class="fa fa-refresh"></i> 刷新
+                                    </button>&nbsp;
                                     <button class="btn btn-white btn-sm" data-toggle="tooltip" data-placement="bottom"
                                         title="粘贴文件" @click="this.pasteFile()" :class="{ 'disabled': isTrash }">
                                         <i class="fa fa-paste"></i> 粘贴
-                                        <span v-if="this.isCutting" class="">
-                                            {{ this.currentCutFF.fileName ? this.currentCutFF.fileName :
-                                                this.currentCutFF.folderName ?? "" }}
+                                        <span v-if="this.isCutting">
+                                            {{ this.currentCutFF.fileName ? this.currentCutFF.fileName : this.currentCutFF.folderName ?? "" }}
                                         </span>
-                                    </button>
+                                    </button>&nbsp;
+                                    <button v-if="this.selectedFiles.length+this.selectedFolders.length>0&&isTrash==0" 
+                                        class="btn btn-white btn-sm" data-toggle="tooltip" data-placement="bottom"
+                                        title="取消多选" @click="cancleCheckbox()">
+                                        <i class="fa fa-square-o"></i> 取消多选
+                                    </button>&nbsp;
                                 </div>
                             </div>
                             <div class="mail-box ibox table-responsive">
@@ -238,7 +244,7 @@
                                                             class="fa fa-reply"></i>&nbsp;</a>
                                                 </div>
                                             </td>
-                                            <td><input type="checkbox" style="height: 11px;"></td>
+                                            <td><input type="checkbox" v-model="selectedFolders" :value="folder" style="height: 11px;"></td>
                                         </tr>
                                         <tr v-for="(file, index) in files" :key="index" class="read"
                                             @dblclick="filePreview(file)">
@@ -297,7 +303,7 @@
                                                             class="fa fa-reply"></i>&nbsp;</a>
                                                 </div>
                                             </td>
-                                            <td><input type="checkbox" style="height: 11px;"></td>
+                                            <td><input type="checkbox" v-model="selectedFiles" :value="file" style="height: 11px;"></td>
                                         </tr>
                                     </tbody>
                                 </table>
@@ -429,6 +435,8 @@ export default {
             audio_videoTitle: null,
             officeFileName: '',
             showPlayer: false,
+            selectedFiles: [],
+            selectedFolders: [],
             audioOptions: {
                 autoplay: false,
                 controls: true,
@@ -1092,8 +1100,12 @@ export default {
                 });
             },
             isAdmin() {
-            return this.userData.isAdmin; // 检查is_admin属性是否为true
-        }
+                return this.userData.isAdmin; // 检查is_admin属性是否为true
+            },
+            cancleCheckbox(){
+                this.selectedFiles = [];
+                this.selectedFolders = [];
+            },
     },
     components: {
         TopBar,
