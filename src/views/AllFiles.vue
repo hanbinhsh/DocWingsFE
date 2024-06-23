@@ -168,10 +168,13 @@
                                         <i class="fa fa-refresh"></i> 刷新
                                     </button>&nbsp;
                                     <button class="btn btn-white btn-sm" data-toggle="tooltip" data-placement="bottom"
-                                        title="粘贴文件" @click="this.pasteFile()" :class="{ 'disabled': isTrash }">
+                                        title="粘贴文件" @click="isCuttingSeletion ? pasteSelections() : pasteFile()" :class="{ 'disabled': isTrash }">
                                         <i class="fa fa-paste"></i> 粘贴
-                                        <span v-if="this.isCutting">
+                                        <span v-if="isCutting">
                                             {{ this.currentCutFF.fileName ? this.currentCutFF.fileName : this.currentCutFF.folderName ?? "" }}
+                                        </span>
+                                        <span v-if="isCuttingSeletion">
+                                            {{ currentCuttingSelectFiles.length+currentCuttingSelectFolders.length }}个文件
                                         </span>
                                     </button>&nbsp;
                                     <button
@@ -199,8 +202,8 @@
                                         <i class="fa fa-download"></i> 下载
                                     </button>&nbsp;
                                     <button v-if="this.selectedFiles.length+this.selectedFolders.length>0" 
-                                        class="btn btn-white btn-sm" data-toggle="tooltip" @click="deleteSelections()">
-                                        <i class="fa fa-trash-o"></i> 删除
+                                        class="btn btn-white btn-sm" data-toggle="tooltip" @click="recycleSelections()">
+                                        <i class="fa fa-trash-o"></i> 放入回收站
                                     </button>&nbsp;
                                     <button v-if="this.selectedFiles.length+this.selectedFolders.length>0" 
                                         class="btn btn-white btn-sm" data-toggle="tooltip" @click="cutSelections()">
@@ -456,6 +459,9 @@ export default {
             isTrash: false,
             isCutting: false,
             currentCutFF: null,
+            isCuttingSeletion: false,
+            currentCuttingSelectFiles: [],
+            currentCuttingSelectFolders: [],
             userData: JSON.parse(sessionStorage.getItem('userData')) || {},
             folderCollectionStatus: {},
             fileCollectionStatus: {},
@@ -622,6 +628,7 @@ export default {
                 toastr.error(`无法进入正在剪切板的文件夹！`, "警告");
                 return
             }
+            
             this.showLoading();  // 显示加载页面
             this.cancelCheckbox();
             await this.findFFsByParentId(id);
@@ -1155,7 +1162,7 @@ export default {
                 this.$swal.fire('取消收藏成功', '', 'success');
                 this.enterPath(this.currentFolder.folderId)
             },
-            async deleteSelections(){
+            async recycleSelections(){
                 const result = await this.$swal.fire({
                     title: '是否将所选文件及文件夹放入回收站',
                     icon: 'warning',
@@ -1181,6 +1188,25 @@ export default {
                 this.selectedFiles.forEach(element => {
                     this.downloadFile(element)
                 });
+            },
+            cutSelections(){
+                this.currentCuttingSelectFiles = this.selectedFiles;
+                this.currentCuttingSelectFolders = this.selectedFolders;
+                this.isCuttingSeletion = true;
+                toastr.success(`成功剪切${this.currentCuttingSelectFiles.length+this.currentCuttingSelectFolders.length}个文件`, "成功");
+            },
+            pasteSelections(){
+                this.currentCuttingSelectFiles.forEach(element => {
+                    axios.post(`/api/changeFileRouteById?id=${element.fileId}&parentId=${this.currentFolder.folderId}`);
+                });
+                this.currentCuttingSelectFolders.forEach(element => {
+                    axios.post(`/api/changeFolderRouteById?id=${element.folderId}&parentId=${this.currentFolder.folderId}`);
+                });
+                this.currentCuttingSelectFiles = [];
+                this.currentCuttingSelectFolders = [];
+                this.isCuttingSeletion = false;
+                toastr.success(`成功粘贴${this.currentCuttingSelectFiles.length+this.currentCuttingSelectFolders.length}个文件`, "成功");
+                this.enterPath(this.currentFolder.folderId)
             },
             allCheckbox(){
                 this.selectedFiles = this.files.slice();
