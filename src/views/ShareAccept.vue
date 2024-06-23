@@ -184,6 +184,8 @@ import { useRoute } from 'vue-router';
 import axios from "axios";
 import toastr from "../assets/js/plugins/toastr/toastr.min.js";
 import "../assets/js/plugins/peity/jquery.peity.min.js";
+import 'viewerjs/dist/viewer.css'
+import VueViewer from 'v-viewer'
 toastr.options = {
   "closeButton": true,
   "debug": false,
@@ -206,6 +208,7 @@ export default {
   data() {
     return {
       folders: [],
+      viewerOptions: {},
       files: [],
       images: [],
       topFolderId: null,
@@ -248,25 +251,23 @@ export default {
   },
   methods: {
     async filePreview(file) {
-      if (this.isTrash) return;
       if (file.fileType.startsWith('image/')) {
-        let imageUrl = "api/downloadFile?fileID=" + file.fileId
+        let imageUrl = "/api/downloadFile?fileID=" + file.fileId
         this.images = [imageUrl]
         const imageDivs = this.$el.querySelector('.images')
         const viewer = imageDivs.$viewer
-        // viewer.index = key
         viewer.show()
       }
       else if (file.fileType.startsWith('audio/')) {
         this.audio_videoTitle = file.fileName;
-        this.audioOptions.sources.src = 'api/downloadFile?fileID=' + file.fileId;
+        this.audioOptions.sources.src = '/api/downloadFile?fileID=' + file.fileId;
         this.audioOptions.sources.type = file.fileType;
         this.showPlayer = true;
         $('#audioModal').modal('show');
       }
       else if (file.fileType.startsWith('video/')) {
         this.audio_videoTitle = file.fileName;
-        this.videoOptions.sources.src = 'api/downloadFile?fileID=' + file.fileId;
+        this.videoOptions.sources.src = '/api/downloadFile?fileID=' + file.fileId;
         this.videoOptions.sources.type = file.fileType;
         this.showPlayer = true;
         $('#videoModal').modal('show');
