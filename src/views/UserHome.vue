@@ -371,6 +371,9 @@ export default {
                 this.showPlayer = true;
                 $('#videoModal').modal('show');
             }
+            else if (file.fileType.includes('wordprocessingml') || file.fileType.includes('pdf') || file.fileType.includes('spreadsheetml')) {
+                window.open('/preview?fileID=' + file.fileId + '&&fileType=' + file.fileType, '_blank');
+            }
         },
         closePlayer(){
             this.showPlayer = false;
@@ -424,7 +427,7 @@ export default {
             });
         },
         downloadFile(file) {
-            axios.post('/api/downloadFile?fileID=' + file.fileId, { responseType: 'blob' }).then(res => {
+            axios.post('/api/downloadFile?fileID=' + file.fileId, {}, { responseType: 'blob' }).then(res => {
                 let blob = new Blob([res.data])
                 let fileName = file.fileName
                 if (blob.size > 0) {
