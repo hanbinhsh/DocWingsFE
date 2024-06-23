@@ -1145,97 +1145,97 @@ export default {
                 }
         },
         async checkAllFFsCollectionStatus() {
-                const response=await axios.post('/api/findCollectionFFs?userId='+this.userData.userId);
-                const data = response.data
-                this.folderCollectionStatus = {}
-                this.fileCollectionStatus = {}
-                data.forEach(item => {
-                    if (item.isFolder) {
-                        this.folderCollectionStatus[item.folderId] = true;
-                    } else {
-                        this.fileCollectionStatus[item.fileId] = true;
-                    }
-                });
+            const response=await axios.post('/api/findCollectionFFs?userId='+this.userData.userId);
+            const data = response.data
+            this.folderCollectionStatus = {}
+            this.fileCollectionStatus = {}
+            data.forEach(item => {
+                if (item.isFolder) {
+                    this.folderCollectionStatus[item.folderId] = true;
+                } else {
+                    this.fileCollectionStatus[item.fileId] = true;
+                }
+            });
         },
         isAdmin() {
-                return this.userData.isAdmin; // 检查is_admin属性是否为true
+            return this.userData.isAdmin; // 检查is_admin属性是否为true
         },
         cancelCheckbox(){
-                this.selectedFiles = [];
-                this.selectedFolders = [];
+            this.selectedFiles = [];
+            this.selectedFolders = [];
         },
         shareSelections(){
 
         },
         collectSelections(){
-                this.selectedFiles.forEach(element => {
-                    axios.post('api/CollectionsInsertFile',{"fileId":element.fileId,"userId":this.userData.userId});
-                });
-                this.selectedFolders.forEach(element => {
-                    axios.post('api/CollectionsInsertFolder',{"folderId":element.folderId,"userId":this.userData.userId});
-                });
-                this.$swal.fire('收藏成功', '', 'success');
-                this.enterPath(this.currentFolder.folderId)
+            this.selectedFiles.forEach(element => {
+                axios.post('api/CollectionsInsertFile',{"fileId":element.fileId,"userId":this.userData.userId});
+            });
+            this.selectedFolders.forEach(element => {
+                axios.post('api/CollectionsInsertFolder',{"folderId":element.folderId,"userId":this.userData.userId});
+            });
+            this.$swal.fire('收藏成功', '', 'success');
+            this.enterPath(this.currentFolder.folderId)
         },
         cancelCollectSelections(){
-                this.selectedFiles.forEach(element => {
-                    axios.post('api/CollectionsDeleteFile',{"fileId":element.fileId,"userId":this.userData.userId});
-                });
-                this.selectedFolders.forEach(element => {
-                    axios.post('api/CollectionsDeleteFolder',{"folderId":element.folderId,"userId":this.userData.userId});
-                });
-                this.$swal.fire('取消收藏成功', '', 'success');
-                this.enterPath(this.currentFolder.folderId)
+            this.selectedFiles.forEach(element => {
+                axios.post('api/CollectionsDeleteFile',{"fileId":element.fileId,"userId":this.userData.userId});
+            });
+            this.selectedFolders.forEach(element => {
+                axios.post('api/CollectionsDeleteFolder',{"folderId":element.folderId,"userId":this.userData.userId});
+            });
+            this.$swal.fire('取消收藏成功', '', 'success');
+            this.enterPath(this.currentFolder.folderId)
         },
         async recycleSelections(){
-                const result = await this.$swal.fire({
-                    title: '是否将所选文件及文件夹放入回收站',
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonText: '确定',  
-                    cancelButtonText: '取消',
+            const result = await this.$swal.fire({
+                title: '是否将所选文件及文件夹放入回收站',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: '确定',  
+                cancelButtonText: '取消',
+            });
+            if (result.isConfirmed) {
+                this.selectedFiles.forEach(element => {
+                    axios.post('api/recycleBinFile',{"fileId":element.fileId, "status": 1 });
                 });
-                if (result.isConfirmed) {
-                    this.selectedFiles.forEach(element => {
-                        axios.post('api/recycleBinFile',{"fileId":element.fileId, "status": 1 });
-                    });
-                    this.selectedFolders.forEach(element => {
-                        axios.post('api/recycleBinFolder',{"folderId":element.folderId, "status": 1 });
-                    });
-                    this.$swal.fire('操作成功', '所选文件和文件夹已放入回收站', 'success');
-                    this.enterPath(this.currentFolder.folderId);
-                }
-                else{
-                    this.$swal.fire('操作取消', '删除操作取消', 'info');
-                }
+                this.selectedFolders.forEach(element => {
+                    axios.post('api/recycleBinFolder',{"folderId":element.folderId, "status": 1 });
+                });
+                this.$swal.fire('操作成功', '所选文件和文件夹已放入回收站', 'success');
+                this.enterPath(this.currentFolder.folderId);
+            }
+            else{
+                this.$swal.fire('操作取消', '删除操作取消', 'info');
+            }
         },
         downloadSelections(){
-                this.selectedFiles.forEach(element => {
-                    this.downloadFile(element)
-                });
+            this.selectedFiles.forEach(element => {
+                this.downloadFile(element)
+            });
         },
         cutSelections(){
-                this.currentCuttingSelectFiles = this.selectedFiles;
-                this.currentCuttingSelectFolders = this.selectedFolders;
-                this.isCuttingSeletion = true;
-                toastr.success(`成功剪切${this.currentCuttingSelectFiles.length+this.currentCuttingSelectFolders.length}个文件`, "成功");
+            this.currentCuttingSelectFiles = this.selectedFiles;
+            this.currentCuttingSelectFolders = this.selectedFolders;
+            this.isCuttingSeletion = true;
+            toastr.success(`成功剪切${this.currentCuttingSelectFiles.length+this.currentCuttingSelectFolders.length}个文件`, "成功");
         },
         pasteSelections(){
-                this.currentCuttingSelectFiles.forEach(element => {
-                    axios.post(`/api/changeFileRouteById?id=${element.fileId}&parentId=${this.currentFolder.folderId}`);
-                });
-                this.currentCuttingSelectFolders.forEach(element => {
-                    axios.post(`/api/changeFolderRouteById?id=${element.folderId}&parentId=${this.currentFolder.folderId}`);
-                });
-                this.currentCuttingSelectFiles = [];
-                this.currentCuttingSelectFolders = [];
-                this.isCuttingSeletion = false;
-                toastr.success(`成功粘贴${this.currentCuttingSelectFiles.length+this.currentCuttingSelectFolders.length}个文件`, "成功");
-                this.enterPath(this.currentFolder.folderId)
+            this.currentCuttingSelectFiles.forEach(element => {
+                axios.post(`/api/changeFileRouteById?id=${element.fileId}&parentId=${this.currentFolder.folderId}`);
+            });
+            this.currentCuttingSelectFolders.forEach(element => {
+                axios.post(`/api/changeFolderRouteById?id=${element.folderId}&parentId=${this.currentFolder.folderId}`);
+            });
+            this.currentCuttingSelectFiles = [];
+            this.currentCuttingSelectFolders = [];
+            this.isCuttingSeletion = false;
+            toastr.success(`成功粘贴${this.currentCuttingSelectFiles.length+this.currentCuttingSelectFolders.length}个文件`, "成功");
+            this.enterPath(this.currentFolder.folderId)
         },
         allCheckbox(){
-                this.selectedFiles = this.files.slice();
-                this.selectedFolders = this.folders.slice();
+            this.selectedFiles = this.files.slice();
+            this.selectedFolders = this.folders.slice();
         }
     },
     components: {
