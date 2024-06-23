@@ -15,8 +15,9 @@
                     </div>
                     <div class="modal-body">
                         <div class="text-center">
-                            <VideoPlayer v-if="showPlayer" :options="this.audioOptions" :key="new Date().getTime()"
-                                class="video-js-a vjs-big-play-centered" />
+                            <VideoPlayer v-if="showPlayer" :options="audioOptions" 
+                            :key="new Date().getTime()"
+                            class="video-js-a vjs-big-play-centered"/>
                         </div>
                     </div>
                 </div>
@@ -32,8 +33,9 @@
                     </div>
                     <div class="modal-body">
                         <div class="text-center">
-                            <VideoPlayer v-if="showPlayer" :options="this.videoOptions" :key="new Date().getTime()"
-                                class="video-js-v vjs-big-play-centered" />
+                            <VideoPlayer v-if="showPlayer" :options="videoOptions" 
+                            :key="new Date().getTime()"
+                            class="video-js-v vjs-big-play-centered"/>
                         </div>
                     </div>
                 </div>
@@ -571,7 +573,7 @@ export default {
         hideLoading() { this.loading = false; },
         async findFolderById(id) {
             const responseFiles = await axios.get('/api/findFolderById?id=' + id);
-            sessionStorage.setItem("currentFolder", JSON.stringify(responseFiles.data));
+            sessionStorage.setItem("currentFolder", JSON.stringify(responseFiles.data.data.folder));
         },
         async countFFsByParentId(id) {
             const currentFFsCount = await axios.get('/api/countFFsByParentId?parentId=' + id);
