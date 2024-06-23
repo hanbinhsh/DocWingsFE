@@ -16,8 +16,10 @@
 					<div class="form-group">
 						<input type="password" class="form-control" placeholder="密码" id="password" v-model="password">
 					</div>
+					<!-- <button @click="onShow">开始验证</button> -->
+					<Vcode  :show="isShow" @success="onSuccess" :key="new Date()"/>
 					<span class="help-block text-danger" id="alart"></span>
-					<input type="button" class="btn btn-primary block full-width m-b" @click="login()" value="登录">
+					<input type="button" class="btn btn-primary block full-width m-b" @click="onShow()" value="登录" >
 					<p class="text-muted text-center">
 						<small>没有账号?</small>
 					</p>
@@ -46,6 +48,7 @@ export default {
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import axios from "axios";
+import Vcode from "vue3-puzzle-vcode";
 import toastr from "../assets/js/plugins/toastr/toastr.min.js"
 import "../assets/js/plugins/metisMenu/jquery.metisMenu.js"
 import "../assets/js/plugins/slimscroll/jquery.slimscroll.min.js"
@@ -72,6 +75,18 @@ toastr.options = {
 const router = useRouter();
 const username = ref('');
 const password = ref('');
+const isShow = ref(false);
+const onShow = () => {
+    isShow.value = true;
+};
+const onClose = () => {
+    isShow.value = false;
+	login();
+};
+
+const onSuccess = () => {
+    onClose(); // 验证成功，需要手动关闭模态框
+};
 
 async function login() {
 	try {
@@ -95,7 +110,7 @@ async function login() {
 				router.replace('/userhome').then(() => {  // 跳转后强制刷新
 					window.location.reload();
 				});
-			}
+			}		
 		}
 	} catch (error) {
 		console.error("Error during login:", error.message);  // 添加错误处理，打印错误信息
