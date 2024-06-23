@@ -179,12 +179,16 @@
                                         <i class="fa fa-check-square"></i> 全选
                                     </button>&nbsp;
                                     <button v-if="this.selectedFiles.length+this.selectedFolders.length>0" 
-                                        class="btn btn-white btn-sm" data-toggle="tooltip" @click="cancleCheckbox()">
+                                        class="btn btn-white btn-sm" data-toggle="tooltip" @click="cancelCheckbox()">
                                         <i class="fa fa-square-o"></i> 取消多选
                                     </button>&nbsp;
                                     <button v-if="this.selectedFiles.length+this.selectedFolders.length>0" 
                                         class="btn btn-white btn-sm" data-toggle="tooltip" @click="collectSelections()">
                                         <i class="fa fa-star"></i> 收藏
+                                    </button>&nbsp;
+                                    <button v-if="this.selectedFiles.length+this.selectedFolders.length>0" 
+                                        class="btn btn-white btn-sm" data-toggle="tooltip" @click="cancelCollectSelections()">
+                                        <i class="fa fa-star-o"></i> 取消收藏
                                     </button>&nbsp;
                                     <button v-if="this.selectedFiles.length+this.selectedFolders.length>0" 
                                         class="btn btn-white btn-sm" data-toggle="tooltip" @click="shareSelections()">
@@ -619,7 +623,7 @@ export default {
                 return
             }
             this.showLoading();  // 显示加载页面
-            this.cancleCheckbox();
+            this.cancelCheckbox();
             await this.findFFsByParentId(id);
             await this.findFolderById(id);
             await this.countFFsByParentId(id);
@@ -1124,9 +1128,57 @@ export default {
             isAdmin() {
                 return this.userData.isAdmin; // 检查is_admin属性是否为true
             },
-            cancleCheckbox(){
+            cancelCheckbox(){
                 this.selectedFiles = [];
                 this.selectedFolders = [];
+            },
+            shareSelections(){
+
+            },
+            collectSelections(){
+                this.selectedFiles.forEach(element => {
+                    axios.post('api/CollectionsInsertFile',{"fileId":element.fileId,"userId":this.userData.userId});
+                });
+                this.selectedFolders.forEach(element => {
+                    axios.post('api/CollectionsInsertFolder',{"folderId":element.folderId,"userId":this.userData.userId});
+                });
+                this.$swal.fire('收藏成功', '', 'success');
+                this.enterPath(this.currentFolder.folderId)
+            },
+            cancelCollectSelections(){
+                this.selectedFiles.forEach(element => {
+                    axios.post('api/CollectionsDeleteFile',{"fileId":element.fileId,"userId":this.userData.userId});
+                });
+                this.selectedFolders.forEach(element => {
+                    axios.post('api/CollectionsDeleteFolder',{"folderId":element.folderId,"userId":this.userData.userId});
+                });
+                this.$swal.fire('取消收藏成功', '', 'success');
+                this.enterPath(this.currentFolder.folderId)
+            },
+            async deleteSelections(){
+                const result = await this.$swal.fire({
+                    title: '是否将所选文件及文件夹放入回收站',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: '确定',  
+                    cancelButtonText: '取消',
+                });
+                if (result.isConfirmed) {
+                    this.selectedFiles.forEach(element => {
+                        axios.post('api/recycleBinFile',{"fileId":element.fileId, "status": 1 });
+                    });
+                    this.selectedFolders.forEach(element => {
+                        axios.post('api/recycleBinFolder',{"folderId":element.folderId, "status": 1 });
+                    });
+                    this.$swal.fire('操作成功', '所选文件和文件夹已放入回收站', 'success');
+                    this.enterPath(this.currentFolder.folderId);
+                }
+                else{
+                    this.$swal.fire('操作取消', '删除操作取消', 'info');
+                }
+            },
+            downloadSelections(){
+
             },
             allCheckbox(){
                 this.selectedFiles = this.files.slice();
