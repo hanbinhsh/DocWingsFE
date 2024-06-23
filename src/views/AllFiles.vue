@@ -600,9 +600,7 @@ export default {
                 window.open('/preview?fileID=' + file.fileId + '&&fileType=' + file.fileType, '_blank');
             }
         },
-        closePlayer() {
-            this.showPlayer = false;
-        },
+        closePlayer() {this.showPlayer = false;},
         handleFileUploadSuccess() {  // 成功弹窗
             toastr.success("上传文件成功！", "成功");
             this.enterPath(this.currentFolder.folderId);
@@ -1145,8 +1143,8 @@ export default {
                     await axios.post('api/insertShare', [shareData])
                     this.$swal.fire('分享成功', '', 'success');
                 }
-            },
-            async checkAllFFsCollectionStatus() {
+        },
+        async checkAllFFsCollectionStatus() {
                 const response=await axios.post('/api/findCollectionFFs?userId='+this.userData.userId);
                 const data = response.data
                 this.folderCollectionStatus = {}
@@ -1158,18 +1156,18 @@ export default {
                         this.fileCollectionStatus[item.fileId] = true;
                     }
                 });
-            },
-            isAdmin() {
+        },
+        isAdmin() {
                 return this.userData.isAdmin; // 检查is_admin属性是否为true
-            },
-            cancelCheckbox(){
+        },
+        cancelCheckbox(){
                 this.selectedFiles = [];
                 this.selectedFolders = [];
-            },
-            shareSelections(){
+        },
+        shareSelections(){
 
-            },
-            collectSelections(){
+        },
+        collectSelections(){
                 this.selectedFiles.forEach(element => {
                     axios.post('api/CollectionsInsertFile',{"fileId":element.fileId,"userId":this.userData.userId});
                 });
@@ -1178,8 +1176,8 @@ export default {
                 });
                 this.$swal.fire('收藏成功', '', 'success');
                 this.enterPath(this.currentFolder.folderId)
-            },
-            cancelCollectSelections(){
+        },
+        cancelCollectSelections(){
                 this.selectedFiles.forEach(element => {
                     axios.post('api/CollectionsDeleteFile',{"fileId":element.fileId,"userId":this.userData.userId});
                 });
@@ -1188,8 +1186,8 @@ export default {
                 });
                 this.$swal.fire('取消收藏成功', '', 'success');
                 this.enterPath(this.currentFolder.folderId)
-            },
-            async recycleSelections(){
+        },
+        async recycleSelections(){
                 const result = await this.$swal.fire({
                     title: '是否将所选文件及文件夹放入回收站',
                     icon: 'warning',
@@ -1210,19 +1208,19 @@ export default {
                 else{
                     this.$swal.fire('操作取消', '删除操作取消', 'info');
                 }
-            },
-            downloadSelections(){
+        },
+        downloadSelections(){
                 this.selectedFiles.forEach(element => {
                     this.downloadFile(element)
                 });
-            },
-            cutSelections(){
+        },
+        cutSelections(){
                 this.currentCuttingSelectFiles = this.selectedFiles;
                 this.currentCuttingSelectFolders = this.selectedFolders;
                 this.isCuttingSeletion = true;
                 toastr.success(`成功剪切${this.currentCuttingSelectFiles.length+this.currentCuttingSelectFolders.length}个文件`, "成功");
-            },
-            pasteSelections(){
+        },
+        pasteSelections(){
                 this.currentCuttingSelectFiles.forEach(element => {
                     axios.post(`/api/changeFileRouteById?id=${element.fileId}&parentId=${this.currentFolder.folderId}`);
                 });
@@ -1234,11 +1232,11 @@ export default {
                 this.isCuttingSeletion = false;
                 toastr.success(`成功粘贴${this.currentCuttingSelectFiles.length+this.currentCuttingSelectFolders.length}个文件`, "成功");
                 this.enterPath(this.currentFolder.folderId)
-            },
-            allCheckbox(){
+        },
+        allCheckbox(){
                 this.selectedFiles = this.files.slice();
                 this.selectedFolders = this.folders.slice();
-            }
+        }
     },
     components: {
         TopBar,
