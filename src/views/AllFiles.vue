@@ -702,7 +702,7 @@ export default {
                 title: '重命名文件',
                 input: 'text',
                 inputLabel: '请输入新的文件名',
-                inputValue: this.currentFileName, // 当前文件名，可以作为默认值显示在输入框中
+                inputValue: file.fileName, // 当前文件名，可以作为默认值显示在输入框中
                 showCancelButton: true,
                 confirmButtonText: '确定',
                 cancelButtonText: '取消',
@@ -728,7 +728,7 @@ export default {
                 title: '重命名文件夹',
                 input: 'text',
                 inputLabel: '请输入新的文件夹名',
-                inputValue: this.currentFolderName, // 当前文件夹名，可以作为默认值显示在输入框中
+                inputValue: folder.folderName, // 当前文件夹名，可以作为默认值显示在输入框中
                 showCancelButton: true,
                 confirmButtonText: '确定',
                 cancelButtonText: '取消',
