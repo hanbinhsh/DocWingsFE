@@ -152,7 +152,6 @@
                                     </div>
                                 </form>
                                 <h2>
-                                    <!-- {{currentFolder.folderName}} ({{ this.currentFFsCount }}) -->
                                     {{ isTrash ? '回收站' : currentFolder.folderName + ' (' + this.currentFFsCount + ')' }}
                                 </h2>
                                 <div class="mail-tools tooltip-demo m-t-md">
@@ -209,12 +208,12 @@
                                     <tbody>
                                         <tr v-for="(folder, index) in folders" :key="index" class="read"
                                             @dblclick="enterPath(folder.folderId, folder.parentId)">
-                                            <td><i class="fa fa-folder-o"></i>
-                                                <a v-if="!this.isTrash"
-                                                    @click="collectionFolder(folder.folderId)">&nbsp;<i class="fa"
-                                                        :class="folderCollectionStatus[folder.folderId] ? 'fa-star' : 'fa-star-o'"></i>&nbsp;</a>
+                                            <td>
+                                                <a v-if="!this.isTrash" @click="collectionFolder(folder.folderId)">
+                                                <i class="fa" :class="folderCollectionStatus[folder.folderId] ? 'fa-star' : 'fa-star-o'">
+                                                </i></a>
                                             </td>
-                                            <td>{{ folder.folderName }}</td>
+                                            <td><i class="fa fa-folder-o"></i> {{ folder.folderName }}</td>
                                             <td v-if="!this.isTrash"><a @click="renameFolder(folder)"><i
                                                         class="fa fa-edit"></i></a></td>
                                             <td>{{ folder.tag }}</td>
@@ -244,6 +243,11 @@
                                         <tr v-for="(file, index) in files" :key="index" class="read"
                                             @dblclick="filePreview(file)">
                                             <td>
+                                                <a v-if="!this.isTrash" @click="collectionFile(file.fileId)">
+                                                <i class="fa" :class="fileCollectionStatus[file.fileId] ? 'fa-star' : 'fa-star-o'">
+                                                </i></a>
+                                            </td>
+                                            <td>
                                                 <i v-if="file.fileType.startsWith('image/')"
                                                     class="fa fa-file-image-o"></i>
                                                 <i v-else-if="file.fileType.includes('pdf')"
@@ -264,12 +268,8 @@
                                                     class="fa fa-file-audio-o"></i>
                                                 <i v-else-if="file.fileType.includes('compressed')"
                                                     class="fa fa-file-archive-o"></i>
-                                                <i v-else class="fa fa-file-o"></i>
-                                                <a v-if="!this.isTrash" @click="collectionFile(file.fileId)">&nbsp;<i
-                                                        class="fa"
-                                                        :class="fileCollectionStatus[file.fileId] ? 'fa-star' : 'fa-star-o'"></i></a>
+                                                <i v-else class="fa fa-file-o"></i> {{ file.fileName }}
                                             </td>
-                                            <td>{{ file.fileName }}</td>
                                             <td v-if="!this.isTrash"><a class="" @click="renameFile(file)"><i
                                                         class="fa fa-edit"></i></a></td>
                                             <td>{{ file.tag }}</td>
