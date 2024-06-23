@@ -724,22 +724,22 @@ export default {
             }
         },
         async renameFolder(folder) {
-        const { value: newName } = await this.$swal.fire({
-            title: '重命名文件夹',
-            input: 'text',
-            inputLabel: '请输入新的文件夹名',
-            inputValue: this.currentFolderName, // 当前文件夹名，可以作为默认值显示在输入框中
-            showCancelButton: true,
-            confirmButtonText: '确定',
-            cancelButtonText: '取消',
-            inputValidator: (value) => {
-                if (!value) {
-                    return '文件夹名不能为空！'
+            const { value: newName } = await this.$swal.fire({
+                title: '重命名文件夹',
+                input: 'text',
+                inputLabel: '请输入新的文件夹名',
+                inputValue: this.currentFolderName, // 当前文件夹名，可以作为默认值显示在输入框中
+                showCancelButton: true,
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                inputValidator: (value) => {
+                    if (!value) {
+                        return '文件夹名不能为空！'
+                    }
                 }
-            }
-        });
-        // 如果用户点击了确定按钮，并且提供了新的文件名
-        if (newName) {
+            });
+            // 如果用户点击了确定按钮，并且提供了新的文件名
+            if (newName) {
             // 调用 API 来更新文件名
                 await axios.post('/api/renameFolder', { "folderId": folder.folderId, "folderName": newName });
                 this.$swal.fire('文件夹名已更新', `文件夹名已更新为:${newName}`, 'success');
