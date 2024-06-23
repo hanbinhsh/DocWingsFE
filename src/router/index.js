@@ -69,6 +69,7 @@ const routes = [
     meta: { 
       title: '日志',
       requiresAuth: true,
+      requiresAdmin: true,
     }
   },
   {
@@ -105,12 +106,11 @@ const routes = [
     }
   },
   {
-    path: '/shareaccept',
+    path: '/shareaccept/:shareid',
     name: 'shareaccept',
     component: ShareAccept,
     meta: {
       title: '查看分享',
-      requiresAuth: true,
     }
   },
   {
@@ -120,6 +120,7 @@ const routes = [
     meta: {
       title: '用户组编辑',
       requiresAuth: true,
+      requiresAdmin: true,
     }
   }
 ]
@@ -144,6 +145,19 @@ router.beforeEach((to, from, next) => {
       });
     } else {
       // 如果有用户数据，允许访问
+      if(to.matched.some(record => record.meta.requiresAdmin)){
+        // 需要管理员权限
+        const admin = JSON.parse(sessionStorage.getItem('userData'));
+        if(admin.isAdmin != 1){
+          console.log(admin)
+          console.log(admin.isAdmin)
+          toastr.error("您没有管理员权限，无法访问该页面！", "错误");
+          next({
+            path: '/userhome',
+            query: { redirect: to.fullPath },
+          });
+        }
+      }
       next();
     }
   } else {

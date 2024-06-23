@@ -131,7 +131,7 @@
                                                     <td v-if="share.dueTime==null">无限</td>
                                                     <td v-if="share.dueTime!=null">
                                                         {{new Date(share.dueTime).toLocaleString()}}
-                                                        <span v-if="share.lastRatio>=0" class="pie">{{ share.lastRatio }}/1</span>
+                                                        <span v-if="share.lastRatio>0" class="pie">{{ share.lastRatio }}/1</span>
                                                     </td>
                                                     <td><a @click=""><i class="fa fa-edit"></i></a></td>
                                                     <td>
@@ -221,14 +221,14 @@ export default {
             }, 1000);
         },
         isAdmin() {
-                return this.userData.isAdmin; // 检查is_admin属性是否为true
-            },
+            return this.userData.isAdmin; // 检查is_admin属性是否为true
+        },
     },
     watch: {
         shares() {
-        this.$nextTick(() => {
-            this.initializePeity();
-        });
+            this.$nextTick(() => {
+                this.initializePeity();
+            });
         }
     },
     components: {
