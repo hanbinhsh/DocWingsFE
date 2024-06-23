@@ -39,12 +39,6 @@
                 </div>
             </div>
         </div>
-        <div id="popupModal" class="modal-office">
-            <div class="modal-content-office">
-                <span class="close-office" @click="closeSpan">&times;</span>
-                <div id="docx-preview"></div>
-            </div>
-        </div>
         <div id="wrapper">
             <nav class="navbar-default navbar-static-side" role="navigation">
                 <div class="sidebar-collapse">
@@ -321,41 +315,6 @@ div:where(.swal2-container) div:where(.swal2-popup) {
     font-size: 1.5rem !important;
 }
 
-.modal-office {
-  display: none; /* 默认隐藏 */
-  position: fixed;
-  z-index: 1000;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
-  overflow: auto;
-  background-color: rgba(0,0,0,0.5); /* 半透明背景 */
-}
-
-.modal-content-office {
-  background-color: #fefefe;
-  margin: 15% auto; /* 居中显示 */
-  padding: 20px;
-  border: 1px solid #888;
-  width: 80%;
-  max-width: 1400px;
-}
-
-.close-office {
-  color: #aaa;
-  float: right;
-  font-size: 28px;
-  font-weight: bold;
-}
-
-.close-office:hover,
-.close-office:focus {
-  color: black;
-  text-decoration: none;
-  cursor: pointer;
-}
-
 .modal-lg {
     display: flex;
     justify-content: center;
@@ -594,50 +553,12 @@ export default {
                 this.showPlayer = true;
                 $('#videoModal').modal('show');
             }
-            else if (file.fileType.includes('wordprocessingml')) {
-                this.officeFileName = file.fileName;
-                var modal = document.getElementById("popupModal");
-                modal.style.display = "block";
-                const myDocxPreviewer = jsPreviewDocx.init(document.getElementById('docx-preview'));
-                myDocxPreviewer.preview('api/downloadFile?fileID=' + file.fileId).then(res => {
-                    console.log('预览完成');
-                }).catch(e => {
-                    console.log('预览失败', e);
-                })
-                
+            else if (file.fileType.includes('wordprocessingml') || file.fileType.includes('pdf') || file.fileType.includes('spreadsheetml') ) {
+                window.open('/preview?fileID=' + file.fileId + '&&fileType=' + file.fileType, '_blank');
             }
-            else if (file.fileType.includes('pdf')) {
-                this.officeFileName = file.fileName;
-                var modal = document.getElementById("popupModal");
-                modal.style.display = "block";
-                const myDocxPreviewer = jsPreviewPdf.init(document.getElementById('docx-preview'));
-                myDocxPreviewer.preview('api/downloadFile?fileID=' + file.fileId).then(res => {
-                    console.log('预览完成');
-                }).catch(e => {
-                    console.log('预览失败', e);
-                })
-            }
-            else if (file.fileType.includes('spreadsheetml')) {
-                this.officeFileName = file.fileName;
-                var modal = document.getElementById("popupModal");
-                modal.style.display = "block";
-                const myDocxPreviewer = jsPreviewExcel.init(document.getElementById('docx-preview'));
-                myDocxPreviewer.preview('api/downloadFile?fileID=' + file.fileId).then(res => {
-                    console.log('预览完成');
-                }).catch(e => {
-                    console.log('预览失败', e);
-                })
-            }
-        },
-        closeSpan(){
-            var modal = document.getElementById("popupModal");
-            modal.style.display = "none";
         },
         closePlayer() {
             this.showPlayer = false;
-        },
-        destoryOffice() {
-            this.destoryOffice();
         },
         handleFileUploadSuccess() {  // 成功弹窗
             toastr.success("上传文件成功！", "成功");
