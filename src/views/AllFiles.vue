@@ -81,7 +81,7 @@
                 </div>
             </nav>
             <div id="page-wrapper" class="gray-bg">
-                <TopBar />
+                <TopBar @search-path="enterPath"/>
                 <div class="wrapper wrapper-content">
                     <div class="row">
                         <div class="col-lg-2">
@@ -621,7 +621,7 @@ export default {
         },
         async enterPath(id) {  // 按下文件夹->改变路径
             if (this.isTrash) return;
-            if (id === this.currentCutFF?.folderId) {
+            if (this.isCutting&&id == this.currentCutFF?.folderId) {
                 toastr.error(`无法进入正在剪切板的文件夹！`, "警告");
                 return
             }
@@ -1245,6 +1245,6 @@ export default {
         VideoPlayer,
         FootBar
     },
-    mounted() { },
+    mounted() {},
 }
 </script>
