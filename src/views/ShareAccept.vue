@@ -36,8 +36,7 @@
                                     <div class="text-center article-title">
                                         <span v-if="exist" class="text-muted"><i class="fa fa-clock-o"></i>
                                             {{ share.dueTime ? new Date(share.dueTime).toLocaleString() : '无限' }}
-                                            <span v-if="share.lastRatio > 0" class="pie">{{ 1 - share.lastRatio
-                                                }}/1</span>
+                                            <span v-if="share.lastRatio > 0" class="pie">{{ share.lastRatio }}/1</span>
                                         </span>
                                         <h1 v-if="exist">
                                             {{ share.sharerName }}的分享
@@ -177,179 +176,178 @@ toastr.options = {
 };
 
 export default {
-    name: 'ShareAccept',
-    data() {
-        return {
-            folders: [],
-            files: [],
-            topFolderId: null,
-            userData: JSON.parse(sessionStorage.getItem('userData')) || {},
-            currentFolder: null,
-            isFolder: false,
-            shareId: null,
-            exist: null,
-            share: null,
-            outOfDate: null,
-        };
+  name: 'ShareAccept',
+  data() {
+    return {
+      folders: [],
+      files: [],
+      topFolderId: null,
+      userData: JSON.parse(sessionStorage.getItem('userData')) || {},
+      currentFolder: null,
+      isFolder: false,
+      shareId: null,
+      exist: null,
+      share: null,
+      outOfDate: null,
+    };
+  },
+  computed: {
+    formattedLastTime() {
+      const lastTimeDate = new Date(this.share.dueTime);
+      const currentTime = new Date();
+      let diffMillis = lastTimeDate.getTime() - currentTime.getTime();
+      if (diffMillis < 0) {
+        return '无限';
+      }
+      const days = Math.floor(diffMillis / (24 * 60 * 60 * 1000));
+      diffMillis %= 24 * 60 * 60 * 1000;
+      const hours = Math.floor(diffMillis / (60 * 60 * 1000));
+      diffMillis %= 60 * 60 * 1000;
+      const minutes = Math.floor(diffMillis / (60 * 1000));
+      if (days === 0) {
+        return `${hours}时 ${minutes}分`;
+      } else if (days === 0 && hours === 0) {
+        return `${minutes}分`;
+      }
+      return `${days}天 ${hours}时 ${minutes}分`;
     },
-    computed: {
-        formattedLastTime() {
-            // 将字符串解析为日期对象
-            const lastTimeDate = new Date(this.share.dueTime);
-            // 当前时间
-            const currentTime = new Date();
-            // 计算剩余时间的毫秒数
-            let diffMillis = lastTimeDate.getTime() - currentTime.getTime();
-            // 如果剩余时间为负数，则表示时间已经过期
-            if (diffMillis < 0) {
-                return `无限`;
-            }
-            // 计算天数、小时数、分钟数
-            const days = Math.floor(diffMillis / (24 * 60 * 60 * 1000));
-            diffMillis %= 24 * 60 * 60 * 1000;
-            const hours = Math.floor(diffMillis / (60 * 60 * 1000));
-            diffMillis %= 60 * 60 * 1000;
-            const minutes = Math.floor(diffMillis / (60 * 1000));
-            if(days==0){
-                return `${hours}时 ${minutes}分`;
-            }else if(days==0&&hours==0){
-                return `${minutes}分`;
-            }
-            return `${days}天 ${hours}时 ${minutes}分`;
+  },
+  setup() {
+    const route = useRoute();
+    const shareId = route.params.shareid;
+    return {
+      shareId,
+    };
+  },
+  methods: {
+    initializePeity() {
+      this.$nextTick(() => {
+        $('span.pie').peity('pie', {
+          fill: ['#1ab394', '#d7d7d7', '#ffffff'],
+        });
+        $('.line').peity('line', {
+          fill: '#1ab394',
+          stroke: '#169c81',
+        });
+        $('.bar').peity('bar', {
+          fill: ['#1ab394', '#d7d7d7'],
+        });
+        $('.bar_dashboard').peity('bar', {
+          fill: ['#1ab394', '#d7d7d7'],
+          width: 100,
+        });
+        const updatingChart = $('.updating-chart').peity('line', {
+          fill: '#1ab394',
+          stroke: '#169c81',
+          width: 64,
+        });
+        setInterval(() => {
+          const random = Math.round(Math.random() * 10);
+          const values = updatingChart.text().split(',');
+          values.shift();
+          values.push(random);
+          updatingChart.text(values.join(',')).change();
+        }, 1000);
+      });
+    },
+    async enterPath(id) {
+      if (!this.isFolder) return;
+      await this.findFFsByParentId(id);
+    },
+    async findFFsByParentId(id) {
+      const response = await axios.get('/api/findFFsByParentId?parentId=' + id);
+      this.folders = response.data.data.folders;
+      this.files = response.data.data.files;
+      const responseFiles = await axios.get('/api/findFolderById?id=' + id);
+      this.currentFolder = responseFiles.data.data.folder;
+      this.initializePeity();
+    },
+    async backPath() {
+      if (!this.isFolder) return;
+      if (this.currentFolder.folderId === this.topFolderId) {
+        toastr.error('已经是分享根文件夹了', '错误');
+        return;
+      }
+      await this.enterPath(this.currentFolder.parentId);
+    },
+    downloadFile(file) {
+      axios.post('/api/downloadFile?fileID=' + file.fileId, { responseType: 'blob' }).then((res) => {
+        const blob = new Blob([res.data]);
+        const fileName = file.fileName;
+        if (blob.size > 0) {
+          const elink = document.createElement('a');
+          elink.style.display = 'none';
+          elink.href = URL.createObjectURL(blob);
+          elink.download = `${fileName}`;
+          document.body.appendChild(elink);
+          elink.click();
+          URL.revokeObjectURL(elink.href);
+          document.body.removeChild(elink);
         }
+      });
     },
-    setup() {
-        const route = useRoute();
-        const shareId = route.params.shareid;
-        return {
-            shareId
-        };
-    },
-    methods: {
-        initializePeity() {
-            $('span.pie').peity('pie', {
-                fill: ['#1ab394', '#d7d7d7', '#ffffff']
-            });
-            $('.line').peity('line', {
-                fill: '#1ab394',
-                stroke: '#169c81'
-            });
-            $('.bar').peity('bar', {
-                fill: ['#1ab394', '#d7d7d7']
-            });
-            $('.bar_dashboard').peity('bar', {
-                fill: ['#1ab394', '#d7d7d7'],
-                width: 100
-            });
-            const updatingChart = $('.updating-chart').peity('line', { fill: '#1ab394', stroke: '#169c81', width: 64 });
-            setInterval(() => {
-                const random = Math.round(Math.random() * 10);
-                const values = updatingChart.text().split(',');
-                values.shift();
-                values.push(random);
-                updatingChart.text(values.join(',')).change();
-            }, 1000);
-        },
-        async enterPath(id) {
-            if(!this.isFolder) return;
-            await this.findFFsByParentId(id);
-            this.$nextTick(() => {
-                this.initializePeity();
-            });
-        },
-        async findFFsByParentId(id) {
-            const response = await axios.get('/api/findFFsByParentId?parentId=' + id);
-            this.folders = response.data.data.folders;
-            this.files = response.data.data.files;
-            const responseFiles = await axios.get('/api/findFolderById?id=' + id);
-            this.currentFolder = responseFiles.data.data.folder;
-        },
-        async backPath() {
-            if(!this.isFolder) return;
-            if (this.currentFolder.folderId == this.topFolderId) {
-                toastr.error("已经是分享根文件夹了", "错误");
-                return;
-            }
-            await this.enterPath(this.currentFolder.parentId);
-        },
-        downloadFile(file) {
-            axios.post('/api/downloadFile?fileID=' + file.fileId, { responseType: 'blob' }).then(res => {
-                let blob = new Blob([res.data]);
-                let fileName = file.fileName;
-                if (blob.size > 0) {
-                    const elink = document.createElement('a');
-                    elink.style.display = 'none';
-                    elink.href = URL.createObjectURL(blob);
-                    elink.download = `${fileName}`;
-                    document.body.appendChild(elink);
-                    elink.click();
-                    URL.revokeObjectURL(elink.href);
-                    document.body.removeChild(elink);
-                }
-            });
-        },
-        async queryShare() {
-            const response = await axios.get('/api/getSharesByShareId?shareId=' + this.shareId);
-            if (response.data.data.isExist == 1) {
-                if (response.data.data.share.validate == 0) {
-                    toastr.error("该分享已经被取消了", "错误");
-                    return;
-                }
-                this.exist = true;
-                this.share = response.data.data.share;
-                await this.$nextTick(() => {
-                    this.initializePeity();
-                });
-                if (response.data.data.share.accepterId != 0) {
-                    if (this.userData == null) {
-                        toastr.error("用户未登录，请登录后再试", "错误");
-                        return;
-                    } else if (this.userData.userId != response.data.data.share.accepterId
-                                && this.userData.userId != response.data.data.share.sharerId
-                    ) {
-                        toastr.error("您没有权限查看该分享", "错误");
-                        return;
-                    }
-                }
-                this.updateShare();
-            } else {
-                this.exist = false;
-            }
-        },
-        async updateShare() {
-            if (this.share.isFolder == 0) {
-                const response = await axios.get('/api/findFileById?id=' + this.share.fileId);
-                if (response.data.data.file.isDeleted == 1) {
-                    toastr.error("分享的文件已经被删除了", "错误");
-                    return;
-                } else {
-                    this.files = [response.data.data.file];
-                }
-            } else {
-                const response = await axios.get('/api/findFolderById?id=' + this.share.folderId);
-                if (response.data.data.folder.isDeleted == 1) {
-                    toastr.error("分享的文件已经被删除了", "错误");
-                    return;
-                } else {
-                    this.isFolder = true;
-                    this.topFolderId = response.data.data.folder.folderId;
-                    this.currentFolder = response.data.data.folder;
-                    await this.findFFsByParentId(response.data.data.folder.folderId);
-                }
-            }
+    async queryShare() {
+      const response = await axios.get('/api/getSharesByShareId?shareId=' + this.shareId);
+      if (response.data.data.isExist == 1) {
+        if (response.data.data.share.validate == 0) {
+          toastr.error('该分享已经被取消了', '错误');
+          return;
         }
-    },
-    created() {
-        this.shareId = this.$route.params.shareid;
-        this.userData = JSON.parse(sessionStorage.getItem('userData')) || {};
-        this.queryShare();
-    },
-    watch: {
-        shares() {
-            this.$nextTick(() => {
-                this.initializePeity();
-            });
+        if (response.data.data.share.accepterId != 0) {
+          if (this.userData.userId == null) {
+            toastr.error('用户未登录，请登录后再试', '错误');
+            return;
+          } else if (
+            this.userData.userId != response.data.data.share.accepterId &&
+            this.userData.userId != response.data.data.share.sharerId
+          ) {
+            toastr.error('您没有权限查看该分享', '错误');
+            return;
+          }
         }
-    }
+        this.exist = true;
+        this.share = response.data.data.share;
+        this.updateShare();
+      } else {
+        this.exist = false;
+      }
+    },
+    async updateShare() {
+      if (this.share.isFolder == 0) {
+        const response = await axios.get('/api/findFileById?id=' + this.share.fileId);
+        if (response.data.data.file.isDeleted == 1) {
+          toastr.error('分享的文件已经被删除了', '错误');
+          return;
+        } else {
+          this.files = [response.data.data.file];
+        }
+      } else {
+        const response = await axios.get('/api/findFolderById?id=' + this.share.folderId);
+        if (response.data.data.folder.isDeleted == 1) {
+          toastr.error('分享的文件已经被删除了', '错误');
+          return;
+        } else {
+          this.isFolder = true;
+          this.topFolderId = response.data.data.folder.folderId;
+          this.currentFolder = response.data.data.folder;
+          await this.findFFsByParentId(response.data.data.folder.folderId);
+        }
+      }
+      this.initializePeity();
+    },
+  },
+  async created() {
+    this.shareId = this.$route.params.shareid;
+    this.userData = JSON.parse(sessionStorage.getItem('userData')) || {};
+    await this.queryShare();
+    this.initializePeity();
+  },
+  watch: {
+    shares() {
+      this.$nextTick(() => {
+        this.initializePeity();
+      });
+    },
+  },
 };
 </script>

@@ -137,8 +137,8 @@
                                                     <td>
                                                         <div class="btn-group">
                                                             <a @click=""><i class="fa fa-trash-o"></i>&nbsp;</a>
-                                                            <a @click=""><i class="fa fa-eye"></i>&nbsp;</a>
-                                                            <a @click=""><i class="fa fa-copy"></i>&nbsp;</a>
+                                                            <a @click="enterSharePage(share.shareId)"><i class="fa fa-eye"></i>&nbsp;</a>
+                                                            <a @click="copySharePage(share.shareId)"><i class="fa fa-copy"></i>&nbsp;</a>
                                                         </div>
                                                     </td>
                                                 </tr>
@@ -169,7 +169,23 @@ import axios from "axios";
 import TopBar from '@/components/TopBar.vue'
 import UserItem from '@/components/UserItem.vue'
 import FootBar from '@/components/FootBar.vue'
-
+import toastr from "../assets/js/plugins/toastr/toastr.min.js"
+toastr.options = {
+	"closeButton": true,
+	"debug": false,
+	"progressBar": true,
+	"preventDuplicates": true,
+	"positionClass": "toast-bottom-center",
+	"onclick": null,
+	"showDuration": "400",
+	"hideDuration": "1000",
+	"timeOut": "7000",
+	"extendedTimeOut": "1000",
+	"showEasing": "swing",
+	"hideEasing": "linear",
+	"showMethod": "fadeIn",
+	"hideMethod": "fadeOut"
+}
 export default {
     name: 'Share',
     data() {
@@ -222,6 +238,14 @@ export default {
         },
         isAdmin() {
             return this.userData.isAdmin; // 检查is_admin属性是否为true
+        },
+        enterSharePage(shareId){
+            window.open('shareaccept/'+shareId);
+        },
+        copySharePage(shareId){
+            const url = window.location.href.split('#')[0] + 'accept/' + shareId;
+            navigator.clipboard.writeText(url)
+            toastr.success("复制分享连接成功", "成功");
         },
     },
     watch: {
