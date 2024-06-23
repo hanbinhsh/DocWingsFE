@@ -632,7 +632,10 @@ export default {
                 toastr.error(`无法进入正在剪切板的文件夹！`, "警告");
                 return
             }
-            
+            if(this.isCuttingSeletion&&this.currentCuttingSelectFolders.some(folder=>folder.folderId==id)){
+                toastr.error(`无法进入正在剪切板的文件夹！`, "警告");
+                return
+            }
             this.showLoading();  // 显示加载页面
             this.cancelCheckbox();
             await this.findFFsByParentId(id);
