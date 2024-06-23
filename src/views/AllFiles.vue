@@ -741,8 +741,7 @@ export default {
             // 如果用户点击了确定按钮，并且提供了新的文件名
             if (newName) {
                 // 调用 API 来更新文件名
-                console.log(this.userData.userId)
-                await axios.post('/api/renameFile', { "fileId": file.file.fileId, "fileName": newName, "userId": this.userData.userId });
+                await axios.post('/api/renameFile', { "fileId": fileId, "fileName": newName });
                 this.$swal.fire('文件名已更新', `文件名已更新为:${newName}`, 'success');
                 this.enterPath(this.currentFolder.folderId);
             }
@@ -750,7 +749,6 @@ export default {
                 this.$swal.fire('操作取消', '文件名未更新', 'info');
             }
         },
-        async renameFolder(folder) {
         async renameFolder(folder) {
             const { value: newName } = await this.$swal.fire({
                 title: '重命名文件夹',
@@ -769,239 +767,214 @@ export default {
             // 如果用户点击了确定按钮，并且提供了新的文件名
             if (newName) {
                 // 调用 API 来更新文件名
-                await axios.post('/api/renameFolder', { "folderId": folder.folder.folderId, "folderName": newName, "userId": this.userData.userId });
-                this.$swal.fire('文件夹名已更新', `文件夹名已更新为:${newName}`, 'success');
-                this.enterPath(this.currentFolder.folderId);
-            }
-            else {
-                this.$swal.fire('操作取消', '文件夹名未更新', 'info');
-            }
-        },
-        async renameFileTag(file) {
-            const { value: newName } = await this.$swal.fire({
-                title: '重命名标签',
-                input: 'text',
-                inputLabel: '请输入新的标签',
-                inputValue: file.tag, // 当前文件名，可以作为默认值显示在输入框中
-                showCancelButton: true,
-                confirmButtonText: '确定',
-                cancelButtonText: '取消',
-                inputValidator: (value) => {
-                    if (!value) {
-                        return '标签名不能为空！'
+                    await axios.post('/api/renameFolder', { "folderId": folderId, "folderName": newName });
+                    this.$swal.fire('文件夹名已更新', `文件夹名已更新为:${newName}`, 'success');
+                    this.enterPath(this.currentFolder.folderId);
+                }
+                else{
+                    this.$swal.fire('操作取消', '文件夹名未更新', 'info');
+                }
+            },
+            async renameFileTag(file){
+                const { value: newName } = await this.$swal.fire({
+                    title: '重命名标签',
+                    input: 'text',
+                    inputLabel: '请输入新的标签',
+                    inputValue: file.tag, // 当前文件名，可以作为默认值显示在输入框中
+                    showCancelButton: true,
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    inputValidator: (value) => {
+                        if (!value) {
+                            return '标签名不能为空！'
+                        }
                     }
+                });
+                if (newName) {
+                    await axios.post('/api/renameFileTag', { "fileId": file.fileId, "tag": newName });
+                    this.$swal.fire('标签已更改', `标签已更改为:${newName}`, 'success');
+                    this.enterPath(this.currentFolder.folderId);
                 }
-            });
-            if (newName) {
-                await axios.post('/api/renameFileTag', { "fileId": file.fileId, "tag": newName, "userId": this.userData.userId });
-                this.$swal.fire('标签已更改', `标签已更改为:${newName}`, 'success');
-                this.enterPath(this.currentFolder.folderId);
-            }
-            else {
-                this.$swal.fire('操作取消', '标签未更改', 'info');
-            }
-        },
-        async renameFolderTag(folder) {
-            const { value: newName } = await this.$swal.fire({
-                title: '重命名标签',
-                input: 'text',
-                inputLabel: '请输入新的标签',
-                inputValue: folder.tag,
-                showCancelButton: true,
-                confirmButtonText: '确定',
-                cancelButtonText: '取消',
-                inputValidator: (value) => {
-                    if (!value) {
-                        return '标签名不能为空！'
+                else {
+                    this.$swal.fire('操作取消', '标签未更改', 'info');
+                }
+            },
+            async renameFolderTag(folder){
+                const { value: newName } = await this.$swal.fire({
+                    title: '重命名标签',
+                    input: 'text',
+                    inputLabel: '请输入新的标签',
+                    inputValue: folder.tag,
+                    showCancelButton: true,
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    inputValidator: (value) => {
+                        if (!value) {
+                            return '标签名不能为空！'
+                        }
                     }
+                });
+                if (newName) {
+                        await axios.post('/api/renameFolderTag', { "folderId": folder.folderId, "tag": newName });
+                        this.$swal.fire('标签已更改', `标签已更改为:${newName}`, 'success');
+                        this.enterPath(this.currentFolder.folderId);
+                    }
+                else{
+                    this.$swal.fire('操作取消', '标签未更改', 'info');
                 }
-            });
-            if (newName) {
-                await axios.post('/api/renameFolderTag', { "folderId": folder.folderId, "tag": newName, "userId": this.userData.userId });
-                this.$swal.fire('标签已更改', `标签已更改为:${newName}`, 'success');
-                this.enterPath(this.currentFolder.folderId);
-            }
-            else {
-                this.$swal.fire('操作取消', '标签未更改', 'info');
-            }
-        },
-        async recycleBinFile(fileId) {
-            const result = await this.$swal.fire({
-                title: '是否将文件放入回收站',
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonText: '确定',
-                cancelButtonText: '取消',
-            });
-            if (result.isConfirmed) {
-                await axios.post('/api/recycleBinFile', { "fileId": fileId, "status": 1 });
-                this.$swal.fire('操作成功', '文件已放入回收站', 'success');
-                this.enterPath(this.currentFolder.folderId);
-            }
-            else {
-                this.$swal.fire('操作取消', '文件未放入回收站', 'info');
-            }
-        },
-        async recycleBinFolder(folderId) {
-            const result = await this.$swal.fire({
-                title: '是否将文件夹放入回收站',
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonText: '确定',
-                cancelButtonText: '取消',
-            });
-            if (result.isConfirmed) {
-                await axios.post('/api/recycleBinFolder', { "folderId": folderId, "status": 1 });
-                this.$swal.fire('操作成功', '文件夹已放入回收站', 'success');
-                this.enterPath(this.currentFolder.folderId);
-            }
-            else {
-                this.$swal.fire('操作取消', '文件夹未放入回收站', 'info');
-            }
-        },
-        downloadFile(file) {
-            axios.post('/api/downloadFile?fileID=' + file.fileId, { responseType: 'blob' }).then(res => {
-                let blob = new Blob([res.data])
-                let fileName = file.fileName
-                if (blob.size > 0) {
-                    const elink = document.createElement('a');
-                    elink.style.display = 'none';
-                    elink.href = URL.createObjectURL(blob);
-                    // 类似a标签下载
-                    // 自定义文件名称和导出类型。最好和后台保持一致
-                    elink.download = `${fileName}`; //模版字符串
-                    document.body.appendChild(elink);
-                    elink.click();//触发click事件 下载
-                    // 释放URL 对象
-                    URL.revokeObjectURL(elink.href);
-                    // 删除创建的 a 标签      
-                    document.body.removeChild(elink);
-                }
-            })
-        },
-        async replyTrashFile(fileId) {
-            const result = await this.$swal.fire({
-                title: '是否将文件还原',
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonText: '确定',
-                cancelButtonText: '取消',
-            });
-            if (result.isConfirmed) {
-                await axios.post('/api/recycleBinFile', { "fileId": fileId, "status": 0 });
-                this.$swal.fire('操作成功', '文件已还原', 'success');
-                this.enterPathTrash();
-            }
-            else {
-                this.$swal.fire('操作取消', '文件未还原', 'info');
-            }
-        },
-        async replyTrashFolder(folderId) {
-            const result = await this.$swal.fire({
-                title: '是否将文件夹还原',
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonText: '确定',
-                cancelButtonText: '取消',
-            });
-            if (result.isConfirmed) {
-                await axios.post('/api/recycleBinFolder', { "folderId": folderId, "status": 0 });
-                this.$swal.fire('操作成功', '文件夹已还原', 'success');
-                this.enterPathTrash();
-            }
-            else {
-                this.$swal.fire('操作取消', '文件夹未还原', 'info');
-            }
-        },
-            async replyTrashSelections(){
-                console.log(this.selectedFiles);
-                console.log(this.selectedFolders);
-                console.log(this.selectedFolders[0]);
+            },
+            async recycleBinFile(fileId){
                 const result = await this.$swal.fire({
-                    title: '是否将所选文件和文件夹还原',
+                    title: '是否将文件放入回收站',
                     icon: 'warning',
                     showCancelButton: true,
                     confirmButtonText: '确定',  
                     cancelButtonText: '取消',
                 });
                 if (result.isConfirmed) {
-                    for(const folder of this.selectedFolders){
-                        await axios.post('/api/recycleBinFolder', { "folderId": folder.folderId, "status": 0 });
+                    await axios.post('/api/recycleBinFile', { "fileId": fileId, "status": 1 });
+                    this.$swal.fire('操作成功', '文件已放入回收站', 'success');
+                    this.enterPath(this.currentFolder.folderId);
+                }
+                else{
+                    this.$swal.fire('操作取消', '文件未放入回收站', 'info');
+                }
+            },
+            async recycleBinFolder(folderId){
+                const result = await this.$swal.fire({
+                    title: '是否将文件夹放入回收站',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: '确定',  
+                    cancelButtonText: '取消',
+                });
+                if (result.isConfirmed) {
+                    await axios.post('/api/recycleBinFolder', { "folderId": folderId, "status": 1 });
+                    this.$swal.fire('操作成功', '文件夹已放入回收站', 'success');
+                    this.enterPath(this.currentFolder.folderId);
+                }
+                else{
+                    this.$swal.fire('操作取消', '文件夹未放入回收站', 'info');
+                }
+            },
+            downloadFile(file){
+                axios.post('/api/downloadFile?fileID='+file.fileId, {responseType: 'blob'}).then(res => {
+                    let blob = new Blob([res.data])
+                    let fileName = file.fileName
+                    if (blob.size > 0) {
+                        const elink = document.createElement('a');
+                        elink.style.display = 'none';
+                        elink.href = URL.createObjectURL(blob);
+                        // 类似a标签下载
+                        // 自定义文件名称和导出类型。最好和后台保持一致
+                        elink.download = `${fileName}`; //模版字符串
+                        document.body.appendChild(elink);
+                        elink.click();//触发click事件 下载
+                        // 释放URL 对象
+                        URL.revokeObjectURL(elink.href);
+                        // 删除创建的 a 标签      
+                        document.body.removeChild(elink);
                     }
-                    for(const file of this.selectedFiles){
-                        await axios.post('/api/recycleBinFile', { "fileId": file.fileId, "status": 0 });
-                    }
-                    this.$swal.fire('操作成功', '文件和文件夹已还原', 'success');
+                })
+            },
+            async replyTrashFile(fileId){
+                const result = await this.$swal.fire({
+                    title: '是否将文件还原',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: '确定',  
+                    cancelButtonText: '取消',
+                });
+                if (result.isConfirmed) {
+                    await axios.post('/api/recycleBinFile', { "fileId": fileId, "status": 0 });
+                    this.$swal.fire('操作成功', '文件已还原', 'success');
                     this.enterPathTrash();
                 }
                 else{
-                    this.$swal.fire('操作取消', '文件和文件夹未还原', 'info');
+                    this.$swal.fire('操作取消', '文件未还原', 'info');
                 }
             },
-        async deleteFile(fileId) {
-            const result = await this.$swal.fire({
-                title: '是否将文件删除',
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonText: '确定',
-                cancelButtonText: '取消',
-            });
-            if (result.isConfirmed) {
-                await axios.post('/api/deleteFile', { "fileId": fileId });
-                this.$swal.fire('操作成功', '文件已删除', 'success');
-                //更新容量
-                const event = new CustomEvent('update-capacity', {});
-                document.dispatchEvent(event);
-                this.enterPathTrash();
-            }
-            else {
-                this.$swal.fire('操作取消', '文件未删除', 'info');
-            }
-        },
-        async deleteFolder(folderId) {
-            const result = await this.$swal.fire({
-                title: '是否将文件夹删除',
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonText: '确定',
-                cancelButtonText: '取消',
-            });
-            if (result.isConfirmed) {
-                await axios.post('/api/deleteFolder', { "folderId": folderId });
-                this.$swal.fire('操作成功', '文件夹已删除', 'success');
-                //更新容量
-                const event = new CustomEvent('update-capacity', {});
-                document.dispatchEvent(event);
-                this.enterPathTrash();
-            }
-            else {
-                this.$swal.fire('操作取消', '文件夹未删除', 'info');
-            }
-        },
-        async collectionFile(fileId) {
-            const exist = this.fileCollectionStatus[fileId]//判断是否被收藏
-            if (exist) {//被收藏删除
-                await axios.post('api/CollectionsDeleteFile', { "fileId": fileId, "userId": this.userData.userId });
-            }
-            else {//没被收藏插入
-                await axios.post('api/CollectionsInsertFile', { "fileId": fileId, "userId": this.userData.userId });
-            }
-            this.enterPath(this.currentFolder.folderId)
-        },
-        async collectionFolder(folderId) {
-            const exist = this.folderCollectionStatus[folderId]//判断是否被收藏
-            if (exist) {//被收藏删除
-                await axios.post('api/CollectionsDeleteFolder', { "folderId": folderId, "userId": this.userData.userId });
-            }
-            else {//没被收藏插入
-                await axios.post('api/CollectionsInsertFolder', { "folderId": folderId, "userId": this.userData.userId });
-            }
-            this.enterPath(this.currentFolder.folderId)
-        },
-        async shareFile(file) {
-            const { value: formValues } = await this.$swal.fire({
-                title: '创建分享',
-                html: `
+            async replyTrashFolder(folderId){
+                const result = await this.$swal.fire({
+                    title: '是否将文件夹还原',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: '确定',  
+                    cancelButtonText: '取消',
+                });
+                if (result.isConfirmed) {
+                    await axios.post('/api/recycleBinFolder', { "folderId": folderId, "status": 0 });
+                    this.$swal.fire('操作成功', '文件夹已还原', 'success');
+                    this.enterPathTrash();
+                }
+                else{
+                    this.$swal.fire('操作取消', '文件夹未还原', 'info');
+                }
+            },
+            async deleteFile(fileId){
+                const result = await this.$swal.fire({
+                    title: '是否将文件删除',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: '确定',  
+                    cancelButtonText: '取消',
+                });
+                if (result.isConfirmed) {
+                    await axios.post('/api/deleteFile', { "fileId": fileId });
+                    this.$swal.fire('操作成功', '文件已删除', 'success');
+                    //更新容量
+                    const event = new CustomEvent('update-capacity', {});
+                    document.dispatchEvent(event);
+                    this.enterPathTrash();
+                }
+                else{
+                    this.$swal.fire('操作取消', '文件未删除', 'info');
+                }
+            },
+            async deleteFolder(folderId){
+                const result = await this.$swal.fire({
+                    title: '是否将文件夹删除',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: '确定',  
+                    cancelButtonText: '取消',
+                });
+                if (result.isConfirmed) {
+                    await axios.post('/api/deleteFolder', { "folderId": folderId });
+                    this.$swal.fire('操作成功', '文件夹已删除', 'success');
+                    //更新容量
+                    const event = new CustomEvent('update-capacity', {});
+                    document.dispatchEvent(event);
+                    this.enterPathTrash();
+                }
+                else{
+                    this.$swal.fire('操作取消', '文件夹未删除', 'info');
+                }
+            },
+            async collectionFile(fileId){
+                const exist = this.fileCollectionStatus[fileId]//判断是否被收藏
+                if(exist){//被收藏删除
+                    await axios.post('api/CollectionsDeleteFile',{"fileId":fileId,"userId":this.userData.userId});
+                }
+                else{//没被收藏插入
+                    await axios.post('api/CollectionsInsertFile',{"fileId":fileId,"userId":this.userData.userId});
+                }
+                this.enterPath(this.currentFolder.folderId)
+            },
+            async collectionFolder(folderId){
+                const exist = this.folderCollectionStatus[folderId]//判断是否被收藏
+                if(exist){//被收藏删除
+                    await axios.post('api/CollectionsDeleteFolder',{"folderId":folderId,"userId":this.userData.userId});
+                }
+                else{//没被收藏插入
+                    await axios.post('api/CollectionsInsertFolder',{"folderId":folderId,"userId":this.userData.userId});
+                }
+                this.enterPath(this.currentFolder.folderId)
+            },
+            async shareFile(file){
+                const { value: formValues } = await this.$swal.fire({
+                    title: '创建分享',
+                    html: `
                         <label class="control-label">权限</label>
                         <div class="form-group">
                             <select id="share_select" class="form-control">
@@ -1188,78 +1161,9 @@ export default {
             isAdmin() {
                 return this.userData.isAdmin; // 检查is_admin属性是否为true
             },
-            cancelCheckbox(){
+            cancleCheckbox(){
                 this.selectedFiles = [];
                 this.selectedFolders = [];
-            },
-            shareSelections(){
-
-            },
-            collectSelections(){
-                this.selectedFiles.forEach(element => {
-                    axios.post('api/CollectionsInsertFile',{"fileId":element.fileId,"userId":this.userData.userId});
-                });
-                this.selectedFolders.forEach(element => {
-                    axios.post('api/CollectionsInsertFolder',{"folderId":element.folderId,"userId":this.userData.userId});
-                });
-                this.$swal.fire('收藏成功', '', 'success');
-                this.enterPath(this.currentFolder.folderId)
-            },
-            cancelCollectSelections(){
-                this.selectedFiles.forEach(element => {
-                    axios.post('api/CollectionsDeleteFile',{"fileId":element.fileId,"userId":this.userData.userId});
-                });
-                this.selectedFolders.forEach(element => {
-                    axios.post('api/CollectionsDeleteFolder',{"folderId":element.folderId,"userId":this.userData.userId});
-                });
-                this.$swal.fire('取消收藏成功', '', 'success');
-                this.enterPath(this.currentFolder.folderId)
-            },
-            async recycleSelections(){
-                const result = await this.$swal.fire({
-                    title: '是否将所选文件及文件夹放入回收站',
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonText: '确定',  
-                    cancelButtonText: '取消',
-                });
-                if (result.isConfirmed) {
-                    this.selectedFiles.forEach(element => {
-                        axios.post('api/recycleBinFile',{"fileId":element.fileId, "status": 1 });
-                    });
-                    this.selectedFolders.forEach(element => {
-                        axios.post('api/recycleBinFolder',{"folderId":element.folderId, "status": 1 });
-                    });
-                    this.$swal.fire('操作成功', '所选文件和文件夹已放入回收站', 'success');
-                    this.enterPath(this.currentFolder.folderId);
-                }
-                else{
-                    this.$swal.fire('操作取消', '删除操作取消', 'info');
-                }
-            },
-            downloadSelections(){
-                this.selectedFiles.forEach(element => {
-                    this.downloadFile(element)
-                });
-            },
-            cutSelections(){
-                this.currentCuttingSelectFiles = this.selectedFiles;
-                this.currentCuttingSelectFolders = this.selectedFolders;
-                this.isCuttingSeletion = true;
-                toastr.success(`成功剪切${this.currentCuttingSelectFiles.length+this.currentCuttingSelectFolders.length}个文件`, "成功");
-            },
-            pasteSelections(){
-                this.currentCuttingSelectFiles.forEach(element => {
-                    axios.post(`/api/changeFileRouteById?id=${element.fileId}&parentId=${this.currentFolder.folderId}`);
-                });
-                this.currentCuttingSelectFolders.forEach(element => {
-                    axios.post(`/api/changeFolderRouteById?id=${element.folderId}&parentId=${this.currentFolder.folderId}`);
-                });
-                this.currentCuttingSelectFiles = [];
-                this.currentCuttingSelectFolders = [];
-                this.isCuttingSeletion = false;
-                toastr.success(`成功粘贴${this.currentCuttingSelectFiles.length+this.currentCuttingSelectFolders.length}个文件`, "成功");
-                this.enterPath(this.currentFolder.folderId)
             },
             allCheckbox(){
                 this.selectedFiles = this.files.slice();
