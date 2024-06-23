@@ -690,7 +690,7 @@ export default {
             const responseTags = await axios.get('/api/findTags');
             this.tags = responseTags.data;
         },
-        async renameFile(fileId) {
+        async renameFile(file) {
             const { value: newName } = await this.$swal.fire({
                 title: '重命名文件',
                 input: 'text',
@@ -708,7 +708,7 @@ export default {
             // 如果用户点击了确定按钮，并且提供了新的文件名
             if (newName) {
                 // 调用 API 来更新文件名
-                await axios.post('/api/renameFile', { "fileId": fileId, "fileName": newName });
+                await axios.post('/api/renameFile', { "fileId": file.fileId, "fileName": newName });
                 this.$swal.fire('文件名已更新', `文件名已更新为:${newName}`, 'success');
                 this.enterPath(this.currentFolder.folderId);
             }
@@ -716,7 +716,7 @@ export default {
                 this.$swal.fire('操作取消', '文件名未更新', 'info');
             }
         },
-        async renameFolder(folderId) {
+        async renameFolder(folder) {
             const { value: newName } = await this.$swal.fire({
                 title: '重命名文件夹',
                 input: 'text',
@@ -734,7 +734,7 @@ export default {
             // 如果用户点击了确定按钮，并且提供了新的文件名
             if (newName) {
                 // 调用 API 来更新文件名
-                    await axios.post('/api/renameFolder', { "folderId": folderId, "folderName": newName });
+                    await axios.post('/api/renameFolder', { "folderId": folder.folderId, "folderName": newName });
                     this.$swal.fire('文件夹名已更新', `文件夹名已更新为:${newName}`, 'success');
                     this.enterPath(this.currentFolder.folderId);
                 }
@@ -1178,7 +1178,9 @@ export default {
                 }
             },
             downloadSelections(){
-
+                this.selectedFiles.forEach(element => {
+                    this.downloadFile(element)
+                });
             },
             allCheckbox(){
                 this.selectedFiles = this.files.slice();
