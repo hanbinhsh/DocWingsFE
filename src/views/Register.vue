@@ -111,6 +111,22 @@ import "../assets/js/inspinia.js"
 import '../assets/js/plugins/steps/jquery.steps.min.js'
 import "../assets/js/plugins/validate/jquery.validate.min.js"
 import toastr from "../assets/js/plugins/toastr/toastr.min.js"
+toastr.options = {
+    "closeButton": true,
+    "debug": false,
+    "progressBar": true,
+    "preventDuplicates": true,
+    "positionClass": "toast-bottom-center",
+    "onclick": null,
+    "showDuration": "400",
+    "hideDuration": "1000",
+    "timeOut": "3000",
+    "extendedTimeOut": "1000",
+    "showEasing": "swing",
+    "hideEasing": "linear",
+    "showMethod": "fadeIn",
+    "hideMethod": "fadeOut"
+}
 export default {
     data(){
         return {
@@ -176,8 +192,7 @@ export default {
                     var form = $(this);
 
                     $.ajax({
-                        // TODO 用户名冲突、跳转页面
-                        // FIXME success指的是表单返回信息，不是response
+                        // TODO 跳转页面改用route
                         type: "POST",
                         url: "/api/registerUser",
                         contentType: "application/json; charset=utf-8",
@@ -192,12 +207,20 @@ export default {
                         success: function (response) {
                             if(response == '注册成功')
                             {
-                                alert("注册成功"); // 或者其他成功提示方式
+                                toastr.success('注册成功', "成功");
                                 window.location.href = "/login"; // 跳转到成功页面
                             }
-                            else
+                            else if(response == '用户名已存在')
                             {
                                 toastr.error("注册失败，用户名已存在"); // 提示用户注册失败
+                            }
+                            else if(response == '邮箱已注册')
+                            {
+                                toastr.error("注册失败，邮箱已注册"); // 提示用户注册失败
+                            }
+                            else if(response == '电话号码已注册')
+                            {
+                                toastr.error("注册失败，电话号码已注册"); // 提示用户注册失败
                             }
                         },
                         error: function (response) {

@@ -6,93 +6,136 @@
                     <div class="col-sm-4">
                         <h2>查看分享</h2>
                     </div>
+                    <ul class="nav navbar-top-links navbar-right">
+                        <li>
+                            <span class="m-r-sm text-muted welcome-message">欢迎来到文档之翼</span>
+                        </li>
+                        <li v-if="userData.userName">
+                            <span class="m-r-sm text-muted welcome-message">用户：{{ userData.userName }}</span>
+                        </li>
+                        <li v-else>
+                            <span class="m-r-sm text-muted welcome-message">用户未登录</span>
+                        </li>
+                        <li v-if="userData.userName">
+                            <a href="/userhome">
+                                <i class="fa fa-sign-out"></i>返回个人中心
+                            </a>
+                        </li>
+                        <li v-else>
+                            <a href="/login">
+                                <i class="fa fa-sign-out"></i>登录
+                            </a>
+                        </li>
+                    </ul>
                 </div>
-                <div class="wrapper wrapper-content  animated fadeInRight article">
+                <div class="wrapper wrapper-content animated fadeInRight article">
                     <div class="row">
                         <div class="col-lg-10 col-lg-offset-1">
                             <div class="ibox">
                                 <div class="ibox-content">
-                                    <div class="pull-right">
-                                        <button class="btn btn-white btn-xs" type="button">Model</button>
-                                        <button class="btn btn-white btn-xs" type="button">Publishing</button>
-                                        <button class="btn btn-white btn-xs" type="button">Modern</button>
-                                    </div>
                                     <div class="text-center article-title">
-                                        <span class="text-muted"><i class="fa fa-clock-o"></i> 28th Oct 2015</span>
-                                        <h1>
-                                            Behind the word mountains
+                                        <span v-if="exist" class="text-muted"><i class="fa fa-clock-o"></i>
+                                            {{ share.dueTime ? new Date(share.dueTime).toLocaleString() : '无限' }}
+                                            <span v-if="share.lastRatio > 0" class="pie">{{ share.lastRatio }}/1</span>
+                                        </span>
+                                        <h1 v-if="exist">
+                                            {{ share.sharerName }}的分享
+                                        </h1>
+                                        <h1 v-else>
+                                            分享不存在
                                         </h1>
                                     </div>
-                                    <p>
-                                        Many desktop publishing packages and web page editors now use <strong>Lorem
-                                            Ipsum as their default model text</strong>, and a search for 'lorem ipsum'
-                                        will uncover many web
-                                    </p>
-                                    <p>
-                                        One morning, when Gregor Samsa woke from troubled dreams, he found himself
-                                        transformed in his bed into a horrible vermin. He lay on his armour-like back,
-                                        and if he lifted his head a little he could see his brown belly, slightly domed
-                                        and divided by arches into stiff sections. The bedding was hardly able to cover
-                                        it and seemed ready to slide off any moment. His many legs, pitifully thin
-                                        compared with the size of the rest of him, waved about helplessly as he looked.
-                                        "What's happened to me?" he thought. It wasn't a dream. His room, a proper human
-                                        room although a little too small, lay peacefully between its four familiar
-                                        walls. A collection of textile samples lay spread out on the table - Samsa was a
-                                        travelling salesman - and above it there hung a picture that he had recently cut
-                                        out of an illustrated magazine and housed in a nice, gilded frame. It showed a
-                                        lady fitted out with a fur hat and fur boa who sat upright, raising a heavy fur
-                                        muff that covered the whole of her lower arm towards the viewer. Gregor then
-                                        turned to look out the window at the dull weather. Drops
-                                    </p>
-                                    <p>
-                                        <i>
-                                            Far far away, behind the word mountains, far from the countries Vokalia and
-                                            Consonantia, there live the blind texts. Separated they live in
-                                            Bookmarksgrove right at the coast of the Semantics, a large language ocean.
-                                            A small river named Duden flows by their place and supplies it with the
-                                            necessary regelialia. It is a paradisematic country, in which roasted parts
-                                            of sentences fly into your mouth.
-                                        </i>
-                                    </p>
-                                    <p>
-                                        The Big Oxmox advised her not to do so, because there were thousands of bad
-                                        Commas, wild Question Marks and devious Semikoli, but the Little Blind Text
-                                        didn’t listen. She packed her seven versalia, put her initial into the belt and
-                                        made herself on the way. When she reached the first hills of the Italic
-                                        Mountains, she had a last view back on the skyline of her hometown
-                                        Bookmarksgrove, the headline of Alphabet Village and the subline of her own
-                                        road, the Line Lane. Pityful a rethoric question ran over her cheek,
-                                    </p>
-                                    <p>
-                                        Two driven jocks help fax my big quiz. Quick, Baz, get my woven flax jodhpurs!
-                                        "Now fax quiz Jack!" my brave ghost pled. Five quacking zephyrs jolt my wax bed.
-                                        Flummoxed by job, kvetching W. zaps Iraq. Cozy sphinx waves quart jug of bad
-                                        milk. A very bad quack might jinx zippy fowls. Few quips galvanized the mock
-                                        jury box. Quick brown dogs jump over the lazy fox. The jay, pig, fox, zebra, and
-                                        my wolves quack! Blowzy red vixens fight for a quick jump. Joaquin Phoenix was
-                                        gazed by MTV for luck. A wizard’s job is to vex chumps quickly in fog. Watch
-                                        "Jeopardy!", Alex Trebek's fun TV quiz game. Woven silk pyjamas exchanged for
-                                        blue quartz. Brawny gods just
-                                    </p>
-                                    <p>
-                                        Brick quiz whangs jumpy veldt fox. Bright vixens jump; dozy fowl quack. Quick
-                                        wafting zephyrs vex bold Jim. Quick zephyrs blow, vexing daft Jim. Sex-charged
-                                        fop blew my junk TV quiz. How quickly daft jumping zebras vex.
-                                    </p>
-                                    <hr>
-                                    <div class="row">
-                                        <div class="col-md-6">
-                                            <h5>Tags:</h5>
-                                            <button class="btn btn-primary btn-xs" type="button">Model</button>
-                                            <button class="btn btn-white btn-xs" type="button">Publishing</button>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <div class="small text-right">
-                                                <h5>Stats:</h5>
-                                                <div> <i class="fa fa-comments-o"> </i> 56 comments </div>
-                                                <i class="fa fa-eye"> </i> 144 views
+                                    <div class="row" style="min-height: 490px;">
+                                        <div class="col-md-10" v-if="exist">
+                                            <div class="mail-box ibox table-responsive">
+                                                <table class="table table-hover table-mail ibox-content">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>名称</th>
+                                                            <th>文件大小</th>
+                                                            <th>下载</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <tr v-for="(folder, index) in folders" :key="index" class="read"
+                                                            @dblclick="enterPath(folder.folderId, folder.parentId)">
+                                                            <td><i class="fa fa-folder-o"></i> {{ folder.folderName }}
+                                                            </td>
+                                                            <td></td>
+                                                            <td></td>
+                                                        </tr>
+                                                        <tr v-for="(file, index) in files" :key="index" class="read"
+                                                            @dblclick="filePreview(file)">
+                                                            <td>
+                                                                <i v-if="file.fileType.startsWith('image/')"
+                                                                    class="fa fa-file-image-o"></i>
+                                                                <i v-else-if="file.fileType.includes('pdf')"
+                                                                    class="fa fa-file-pdf-o"></i>
+                                                                <i v-else-if="file.fileType.includes('word')"
+                                                                    class="fa fa-file-word-o"></i>
+                                                                <i v-else-if="file.fileType.includes('excel')"
+                                                                    class="fa fa-file-excel-o"></i>
+                                                                <i v-else-if="file.fileType.includes('sheet')"
+                                                                    class="fa fa-file-excel-o"></i>
+                                                                <i v-else-if="file.fileType.includes('powerpoint')"
+                                                                    class="fa fa-file-powerpoint-o"></i>
+                                                                <i v-else-if="file.fileType.includes('presentation')"
+                                                                    class="fa fa-file-powerpoint-o"></i>
+                                                                <i v-else-if="file.fileType.startsWith('video/')"
+                                                                    class="fa fa-file-movie-o"></i>
+                                                                <i v-else-if="file.fileType.startsWith('audio/')"
+                                                                    class="fa fa-file-audio-o"></i>
+                                                                <i v-else-if="file.fileType.includes('compressed')"
+                                                                    class="fa fa-file-archive-o"></i>
+                                                                <i v-else class="fa fa-file-o"></i> {{ file.fileName }}
+                                                            </td>
+                                                            <td>{{ file.fileSize }}MB</td>
+                                                            <td>
+                                                                <div class="btn-group">
+                                                                    <a @click="downloadFile(file)"><i
+                                                                            class="fa fa-download"></i>&nbsp;</a>
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
                                             </div>
                                         </div>
+                                        <div class="col-md-2" v-if="exist">
+                                            <div>
+                                                <div class="btn-group pull-right">
+                                                    <button :class="{ 'disabled': !isFolder }" class="btn btn-white btn-sm"
+                                                        @click="backPath()"><i class="fa fa-arrow-left"></i></button>
+                                                    <button :class="{ 'disabled': !isFolder }" class="btn btn-white btn-sm"
+                                                        @click="enterPath(this.topFolderId)"><i
+                                                            class="fa fa-home"></i></button>
+                                                </div>
+                                                <button class="btn btn-white btn-sm"
+                                                        @click="updateShare()"><i
+                                                            class="fa fa-refresh"></i></button>
+                                            </div>
+                                            <div class="hr-line-dashed"></div>
+                                            <div>
+                                                <ul class="category-list folder-list m-b-md" style="padding: 0">
+                                                    <li>
+                                                        <a> <i class="fa fa-circle text-navy"></i> 接收者
+                                                        <span class="label label-primary pull-right">{{ this.share.accepterName }}</span></a>
+                                                    </li>
+                                                    <li>
+                                                        <a> <i class="fa fa-circle text-danger"></i> 权限
+                                                        <span class="label label-primary pull-right">{{ this.share.auth }}</span></a>
+                                                    </li>
+                                                    <li>
+                                                        <a> <i class="fa fa-circle text-primary"></i> 有效时间
+                                                        <span class="label label-primary pull-right">{{ formattedLastTime }}</span></a>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <hr>
+                                    <div>
+                                        <div class="pull-right">{{ new Date().toLocaleString() }}</div>
                                     </div>
                                 </div>
                             </div>
@@ -108,28 +151,203 @@
         </div>
     </div>
 </template>
+
 <script>
-import $ from 'jquery'
-import "../assets/js/plugins/metisMenu/jquery.metisMenu.js"
-import "../assets/js/plugins/slimscroll/jquery.slimscroll.min.js"
-import "../assets/js/inspinia.js"
-import "../assets/js/plugins/pace/pace.min.js"
+import $ from 'jquery';
+import { useRoute } from 'vue-router';
+import axios from "axios";
+import toastr from "../assets/js/plugins/toastr/toastr.min.js";
+import "../assets/js/plugins/peity/jquery.peity.min.js";
+toastr.options = {
+    "closeButton": true,
+    "debug": false,
+    "progressBar": true,
+    "preventDuplicates": true,
+    "positionClass": "toast-bottom-center",
+    "onclick": null,
+    "showDuration": "400",
+    "hideDuration": "1000",
+    "timeOut": "7000",
+    "extendedTimeOut": "1000",
+    "showEasing": "swing",
+    "hideEasing": "linear",
+    "showMethod": "fadeIn",
+    "hideMethod": "fadeOut"
+};
+
 export default {
-    name: 'ShareAccept',
-    data() {
-        return {
-
+  name: 'ShareAccept',
+  data() {
+    return {
+      folders: [],
+      files: [],
+      topFolderId: null,
+      userData: JSON.parse(sessionStorage.getItem('userData')) || {},
+      currentFolder: null,
+      isFolder: false,
+      shareId: null,
+      exist: null,
+      share: null,
+      outOfDate: null,
+    };
+  },
+  computed: {
+    formattedLastTime() {
+      const lastTimeDate = new Date(this.share.dueTime);
+      const currentTime = new Date();
+      let diffMillis = lastTimeDate.getTime() - currentTime.getTime();
+      if (diffMillis < 0) {
+        return '无限';
+      }
+      const days = Math.floor(diffMillis / (24 * 60 * 60 * 1000));
+      diffMillis %= 24 * 60 * 60 * 1000;
+      const hours = Math.floor(diffMillis / (60 * 60 * 1000));
+      diffMillis %= 60 * 60 * 1000;
+      const minutes = Math.floor(diffMillis / (60 * 1000));
+      if (days === 0) {
+        return `${hours}时 ${minutes}分`;
+      } else if (days === 0 && hours === 0) {
+        return `${minutes}分`;
+      }
+      return `${days}天 ${hours}时 ${minutes}分`;
+    },
+  },
+  setup() {
+    const route = useRoute();
+    const shareId = route.params.shareid;
+    return {
+      shareId,
+    };
+  },
+  methods: {
+    initializePeity() {
+      this.$nextTick(() => {
+        $('span.pie').peity('pie', {
+          fill: ['#1ab394', '#d7d7d7', '#ffffff'],
+        });
+        $('.line').peity('line', {
+          fill: '#1ab394',
+          stroke: '#169c81',
+        });
+        $('.bar').peity('bar', {
+          fill: ['#1ab394', '#d7d7d7'],
+        });
+        $('.bar_dashboard').peity('bar', {
+          fill: ['#1ab394', '#d7d7d7'],
+          width: 100,
+        });
+        const updatingChart = $('.updating-chart').peity('line', {
+          fill: '#1ab394',
+          stroke: '#169c81',
+          width: 64,
+        });
+        setInterval(() => {
+          const random = Math.round(Math.random() * 10);
+          const values = updatingChart.text().split(',');
+          values.shift();
+          values.push(random);
+          updatingChart.text(values.join(',')).change();
+        }, 1000);
+      });
+    },
+    async enterPath(id) {
+      if (!this.isFolder) return;
+      await this.findFFsByParentId(id);
+    },
+    async findFFsByParentId(id) {
+      const response = await axios.get('/api/findFFsByParentId?parentId=' + id);
+      this.folders = response.data.data.folders;
+      this.files = response.data.data.files;
+      const responseFiles = await axios.get('/api/findFolderById?id=' + id);
+      this.currentFolder = responseFiles.data.data.folder;
+      this.initializePeity();
+    },
+    async backPath() {
+      if (!this.isFolder) return;
+      if (this.currentFolder.folderId === this.topFolderId) {
+        toastr.error('已经是分享根文件夹了', '错误');
+        return;
+      }
+      await this.enterPath(this.currentFolder.parentId);
+    },
+    downloadFile(file) {
+      axios.post('/api/downloadFile?fileID=' + file.fileId, { responseType: 'blob' }).then((res) => {
+        const blob = new Blob([res.data]);
+        const fileName = file.fileName;
+        if (blob.size > 0) {
+          const elink = document.createElement('a');
+          elink.style.display = 'none';
+          elink.href = URL.createObjectURL(blob);
+          elink.download = `${fileName}`;
+          document.body.appendChild(elink);
+          elink.click();
+          URL.revokeObjectURL(elink.href);
+          document.body.removeChild(elink);
         }
+      });
     },
-    methods: {
-
+    async queryShare() {
+      const response = await axios.get('/api/getSharesByShareId?shareId=' + this.shareId);
+      if (response.data.data.isExist == 1) {
+        if (response.data.data.share.validate == 0) {
+          toastr.error('该分享已经被取消了', '错误');
+          return;
+        }
+        if (response.data.data.share.accepterId != 0) {
+          if (this.userData.userId == null) {
+            toastr.error('用户未登录，请登录后再试', '错误');
+            return;
+          } else if (
+            this.userData.userId != response.data.data.share.accepterId &&
+            this.userData.userId != response.data.data.share.sharerId
+          ) {
+            toastr.error('您没有权限查看该分享', '错误');
+            return;
+          }
+        }
+        this.exist = true;
+        this.share = response.data.data.share;
+        this.updateShare();
+      } else {
+        this.exist = false;
+      }
     },
-    created() {
-
+    async updateShare() {
+      if (this.share.isFolder == 0) {
+        const response = await axios.get('/api/findFileById?id=' + this.share.fileId);
+        if (response.data.data.file.isDeleted == 1) {
+          toastr.error('分享的文件已经被删除了', '错误');
+          return;
+        } else {
+          this.files = [response.data.data.file];
+        }
+      } else {
+        const response = await axios.get('/api/findFolderById?id=' + this.share.folderId);
+        if (response.data.data.folder.isDeleted == 1) {
+          toastr.error('分享的文件已经被删除了', '错误');
+          return;
+        } else {
+          this.isFolder = true;
+          this.topFolderId = response.data.data.folder.folderId;
+          this.currentFolder = response.data.data.folder;
+          await this.findFFsByParentId(response.data.data.folder.folderId);
+        }
+      }
+      this.initializePeity();
     },
-    mounted() {
-
-    }
-}
+  },
+  async created() {
+    this.shareId = this.$route.params.shareid;
+    this.userData = JSON.parse(sessionStorage.getItem('userData')) || {};
+    await this.queryShare();
+    this.initializePeity();
+  },
+  watch: {
+    shares() {
+      this.$nextTick(() => {
+        this.initializePeity();
+      });
+    },
+  },
+};
 </script>
-<style></style>

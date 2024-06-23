@@ -27,11 +27,11 @@
                             <a href="trash"><i class="fa fa-trash-o"></i> <span
                                     class="nav-label">回收站</span></a>
                         </li>
-                        <li>
-                            <a v-if="isAdmin()" href="usergroupediting"><i class="fa fa-group"></i> <span
+                        <li v-if="isAdmin()">
+                            <a href="usergroupediting"><i class="fa fa-group"></i> <span
                                     class="nav-label">用户组编辑</span></a>
                         </li>
-                        <li class="active">
+                        <li class="active" v-if="isAdmin()">
                             <a href="log"><i class="fa fa-file-text-o"></i> <span class="nav-label">日志</span></a>
                         </li>
                         <li>
@@ -254,7 +254,8 @@ export default {
     },
     data() {
         return {
-            logs: []
+            logs: [],
+            userData: JSON.parse(sessionStorage.getItem('userData')) || {},
         };
     },
     created() {
@@ -270,8 +271,8 @@ export default {
             }
         },
         isAdmin() {
-                return this.userData.isAdmin; // 检查is_admin属性是否为true
-            },
+            return this.userData.isAdmin; // 检查is_admin属性是否为true
+        },
     },
     mounted() {
         $(document).ready(function () {

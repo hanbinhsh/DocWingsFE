@@ -29,13 +29,13 @@
                             <a href="trash"><i class="fa fa-trash-o"></i> <span
                                     class="nav-label">回收站</span></a>
                         </li>
-                        <li>
-                            <a v-if="isAdmin()" href="usergroupediting"><i class="fa fa-group"></i> <span class="nav-label">用户组编辑</span></a>
+                        <li class="active" v-if="isAdmin()">
+                            <a href="usergroupediting"><i class="fa fa-group"></i> <span class="nav-label">用户组编辑</span></a>
                         </li>
-                        <li>
+                        <li v-if="isAdmin()">
                             <a href="log"><i class="fa fa-file-text-o"></i> <span class="nav-label">日志</span></a>
                         </li>
-                        <li class="active">
+                        <li >
                             <a href="profile"><i class="fa fa-diamond"></i> <span class="nav-label">个人资料</span></a>
                         </li>
                     </ul>
@@ -160,8 +160,15 @@
                 }
                 const response = await axios.post('/api/login', { "userName": this.userData.userName, "password": password });
                 // 如果用户点击了确定按钮，并且提供正确密码
-                if (response.data == null||response.data=="") {
-                    this.$swal.fire('密码错误','','error');
+                if(response.data.accountLocked==true){
+                    this.$swal.fire('用户已冻结,请两小时后再试','','error');
+                    window.sessionStorage.clear();
+                    this.$router.push('/login');
+                }
+                else if (response.data == null||response.data=="") {
+                    const response1=await axios.post('/api/findUserByName', { "userName": this.userData.userName});
+                    var remainingAttempts =5- response1.data.failedAttempts;
+                    this.$swal.fire('密码错误您还有'+remainingAttempts+'次机会！','','error');
                 }
                 else{
                     // 删除用户，并删除其收藏
@@ -190,8 +197,15 @@
                 }
                 const response = await axios.post('/api/login', { "userName": this.userData.userName, "password": password });
                 // 如果用户点击了确定按钮，并且提供正确密码
-                if (response.data == null||response.data=="") {
-                    this.$swal.fire('密码错误','','error');
+                if(response.data.accountLocked==true){
+                    this.$swal.fire('用户已冻结,请两小时后再试','','error');
+                    window.sessionStorage.clear();
+                    this.$router.push('/login');
+                }
+                else if (response.data == null||response.data=="") {
+                    const response1=await axios.post('/api/findUserByName', { "userName": this.userData.userName});
+                    var remainingAttempts =5- response1.data.failedAttempts;
+                    this.$swal.fire('密码错误您还有'+remainingAttempts+'次机会！','','error');
                 }
                 else{
                     //重置该用户密码
@@ -221,8 +235,15 @@
                 }
                 const response = await axios.post('/api/login', { "userName": this.userData.userName, "password": password });
                 // 如果用户点击了确定按钮，并且提供正确密码
-                if (response.data == null||response.data=="") {
-                    this.$swal.fire('密码错误','','error');
+                if(response.data.accountLocked==true){
+                    this.$swal.fire('用户已冻结,请两小时后再试','','error');
+                    window.sessionStorage.clear();
+                    this.$router.push('/login');
+                }
+                else if (response.data == null||response.data=="") {
+                    const response1=await axios.post('/api/findUserByName', { "userName": this.userData.userName});
+                    var remainingAttempts =5- response1.data.failedAttempts;
+                    this.$swal.fire('密码错误您还有'+remainingAttempts+'次机会！','','error');
                 }
                 else{
                     // 用户存在冻结
@@ -252,8 +273,15 @@
                 }
                 const response = await axios.post('/api/login', { "userName": this.userData.userName, "password": password });
                 // 如果用户点击了确定按钮，并且提供正确密码
-                if (response.data == null||response.data=="") {
-                    this.$swal.fire('密码错误','','error');
+                if(response.data.accountLocked==true){
+                    this.$swal.fire('用户已冻结,请两小时后再试','','error');
+                    window.sessionStorage.clear();
+                    this.$router.push('/login');
+                }
+                else if (response.data == null||response.data=="") {
+                    const response1=await axios.post('/api/findUserByName', { "userName": this.userData.userName});
+                    var remainingAttempts =5- response1.data.failedAttempts;
+                    this.$swal.fire('密码错误您还有'+remainingAttempts+'次机会！','','error');
                 }
                 else{
                     //解冻用户

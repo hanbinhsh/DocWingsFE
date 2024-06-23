@@ -26,11 +26,11 @@
                         <li :class="{ active: this.isTrash }">
                             <a href="trash"><i class="fa fa-trash-o"></i> <span class="nav-label">回收站</span></a>
                         </li>
-                        <li>
-                            <a v-if="isAdmin()" href="usergroupediting"><i class="fa fa-group"></i> <span
+                        <li v-if="isAdmin()">
+                            <a href="usergroupediting"><i class="fa fa-group"></i> <span
                                     class="nav-label">用户组编辑</span></a>
                         </li>
-                        <li>
+                        <li v-if="isAdmin()">
                             <a href="log"><i class="fa fa-file-text-o"></i> <span class="nav-label">日志</span></a>
                         </li>
                         <li>
@@ -109,7 +109,17 @@
                                                     </td>
                                                     <td>
                                                         <i v-if="share.isFolder==1" class="fa fa-folder-o"></i>
-                                                        <i v-if="share.isFolder==0" class="fa fa-file-o"></i>
+                                                        <i v-else-if="share.fileType.startsWith('image/')" class="fa fa-file-image-o"></i>
+                                                        <i v-else-if="share.fileType.includes('pdf')" class="fa fa-file-pdf-o"></i>
+                                                        <i v-else-if="share.fileType.includes('word')" class="fa fa-file-word-o"></i>
+                                                        <i v-else-if="share.fileType.includes('excel')" class="fa fa-file-excel-o"></i>
+                                                        <i v-else-if="share.fileType.includes('sheet')" class="fa fa-file-excel-o"></i>
+                                                        <i v-else-if="share.fileType.includes('powerpoint')" class="fa fa-file-powerpoint-o"></i>
+                                                        <i v-else-if="share.fileType.includes('presentation')" class="fa fa-file-powerpoint-o"></i>
+                                                        <i v-else-if="share.fileType.startsWith('video/')" class="fa fa-file-movie-o"></i>
+                                                        <i v-else-if="share.fileType.startsWith('audio/')" class="fa fa-file-audio-o"></i>
+                                                        <i v-else-if="share.fileType.includes('compressed')" class="fa fa-file-archive-o"></i>
+                                                        <i v-else class="fa fa-file-o"></i>
                                                     </td>
                                                     <td v-if="share.isFolder==0">{{share.fileName}}</td>
                                                     <td v-if="share.isFolder==1">{{share.folderName}}</td>
@@ -121,14 +131,14 @@
                                                     <td v-if="share.dueTime==null">无限</td>
                                                     <td v-if="share.dueTime!=null">
                                                         {{new Date(share.dueTime).toLocaleString()}}
-                                                        <span class="pie">{{ share.lastRatio }}/1</span>
+                                                        <span v-if="share.lastRatio>0" class="pie">{{ share.lastRatio }}/1</span>
                                                     </td>
                                                     <td><a @click=""><i class="fa fa-edit"></i></a></td>
                                                     <td>
                                                         <div class="btn-group">
                                                             <a @click=""><i class="fa fa-trash-o"></i>&nbsp;</a>
-                                                            <a @click=""><i class="fa fa-eye"></i>&nbsp;</a>
-                                                            <a @click=""><i class="fa fa-copy"></i>&nbsp;</a>
+                                                            <a @click="enterSharePage(share.shareId)"><i class="fa fa-eye"></i>&nbsp;</a>
+                                                            <a @click="copySharePage(share.shareId)"><i class="fa fa-copy"></i>&nbsp;</a>
                                                         </div>
                                                     </td>
                                                 </tr>
@@ -159,7 +169,23 @@ import axios from "axios";
 import TopBar from '@/components/TopBar.vue'
 import UserItem from '@/components/UserItem.vue'
 import FootBar from '@/components/FootBar.vue'
-
+import toastr from "../assets/js/plugins/toastr/toastr.min.js"
+toastr.options = {
+	"closeButton": true,
+	"debug": false,
+	"progressBar": true,
+	"preventDuplicates": true,
+	"positionClass": "toast-bottom-center",
+	"onclick": null,
+	"showDuration": "400",
+	"hideDuration": "1000",
+	"timeOut": "7000",
+	"extendedTimeOut": "1000",
+	"showEasing": "swing",
+	"hideEasing": "linear",
+	"showMethod": "fadeIn",
+	"hideMethod": "fadeOut"
+}
 export default {
     name: 'Share',
     data() {
@@ -211,14 +237,22 @@ export default {
             }, 1000);
         },
         isAdmin() {
-                return this.userData.isAdmin; // 检查is_admin属性是否为true
-            },
+            return this.userData.isAdmin; // 检查is_admin属性是否为true
+        },
+        enterSharePage(shareId){
+            window.open('shareaccept/'+shareId);
+        },
+        copySharePage(shareId){
+            const url = window.location.href.split('#')[0] + 'accept/' + shareId;
+            navigator.clipboard.writeText(url)
+            toastr.success("复制分享连接成功", "成功");
+        },
     },
     watch: {
         shares() {
-        this.$nextTick(() => {
-            this.initializePeity();
-        });
+            this.$nextTick(() => {
+                this.initializePeity();
+            });
         }
     },
     components: {
