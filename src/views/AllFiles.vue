@@ -209,6 +209,10 @@
                                         class="btn btn-white btn-sm" data-toggle="tooltip" @click="cutSelections()">
                                         <i class="fa fa-scissors"></i> 剪切
                                     </button>&nbsp;
+                                    <button v-if="this.selectedFiles.length+this.selectedFolders.length>0 && this.isTrash" 
+                                        class="btn btn-white btn-sm" data-toggle="tooltip" @click="replyTrashSelections()">
+                                        <i class="fa fa-reply"></i> 恢复
+                                    </button>&nbsp;
                                 </div>
                             </div>
                             <div class="mail-box ibox table-responsive">
@@ -883,6 +887,31 @@ export default {
                 }
                 else{
                     this.$swal.fire('操作取消', '文件夹未还原', 'info');
+                }
+            },
+            async replyTrashSelections(){
+                console.log(this.selectedFiles);
+                console.log(this.selectedFolders);
+                console.log(this.selectedFolders[0]);
+                const result = await this.$swal.fire({
+                    title: '是否将所选文件和文件夹还原',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: '确定',  
+                    cancelButtonText: '取消',
+                });
+                if (result.isConfirmed) {
+                    for(const folder of this.selectedFolders){
+                        await axios.post('/api/recycleBinFolder', { "folderId": folder.folderId, "status": 0 });
+                    }
+                    for(const file of this.selectedFiles){
+                        await axios.post('/api/recycleBinFile', { "fileId": file.fileId, "status": 0 });
+                    }
+                    this.$swal.fire('操作成功', '文件和文件夹已还原', 'success');
+                    this.enterPathTrash();
+                }
+                else{
+                    this.$swal.fire('操作取消', '文件和文件夹未还原', 'info');
                 }
             },
             async deleteFile(fileId){
