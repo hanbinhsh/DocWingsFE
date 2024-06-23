@@ -177,7 +177,9 @@
                 const response = await axios.post('/api/login', { "userName": this.userData.userName, "password": password });
                 // 如果用户点击了确定按钮，并且提供正确密码
                 if (response.data == null||response.data=="") {
-                    this.$swal.fire('密码错误','','error');
+                    const response1=await axios.post('/api/findUserByName', { "userName": this.userData.userName});
+                    var remainingAttempts =5- response1.data.failedAttempts;
+                    this.$swal.fire('密码错误您还有'+remainingAttempts+'次机会！','','error');
                 }
                 else{
                     // 删除用户，并删除其收藏
@@ -194,10 +196,14 @@
                     this.$swal.fire('密码未输入','','error');
                 }
                 else if(response.data.accountLocked==true){
-                    this.$swal.fire('用户已冻结,请稍后再试','','error');
+                    this.$swal.fire('用户已冻结,请两小时后再试','','error');
+                    window.sessionStorage.clear();
+                    this.$router.push('/login');
                 }
                 else if (response.data == null||response.data=="") {
-                    this.$swal.fire('密码错误','','error');
+                    const response1=await axios.post('/api/findUserByName', { "userName": this.userData.userName});
+                    var remainingAttempts =5- response1.data.failedAttempts;
+                    this.$swal.fire('密码错误您还有'+remainingAttempts+'次机会！','','error');
                 }
                 else{
                     if(newPhone.value!=""){
