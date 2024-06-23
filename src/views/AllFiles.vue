@@ -388,11 +388,6 @@ import TopBar from '@/components/TopBar.vue'
 import FileDropzone from '../components/FileDropzone.vue'
 import UserItem from '@/components/UserItem.vue'
 import FootBar from '@/components/FootBar.vue'
-import jsPreviewDocx from "@js-preview/docx";
-import '@js-preview/docx/lib/index.css'
-import jsPreviewExcel from "@js-preview/excel";
-import '@js-preview/excel/lib/index.css';
-import jsPreviewPdf from "@js-preview/pdf";
 toastr.options = {
     "closeButton": true,
     "debug": false,
