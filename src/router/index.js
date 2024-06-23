@@ -91,12 +91,6 @@ const routes = [
     }
   },
   {
-    path: '/test',
-    name: 'test',
-    component: () => import('../views/fileYuLan.vue'),
-    meta: { title: '文件预览' }
-  },
-  {
     path: '/share',
     name: 'share',
     component: Share,
