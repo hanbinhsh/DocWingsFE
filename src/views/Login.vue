@@ -114,9 +114,15 @@ async function login() {
 				sessionStorage.setItem('authData', auth.data);
 				toastr.clear();  // 清空错误信息
 				// BUG 防止出错
-				router.replace('/userhome').then(() => {  // 跳转后强制刷新
-					window.location.reload();
-				});
+				if(auth==3){
+					router.replace('/profile').then(() => {  // 跳转后强制刷新
+						window.location.reload();
+					});
+				}else{
+					router.replace('/userhome').then(() => {  // 跳转后强制刷新
+						window.location.reload();
+					});
+				}
 			}		
 		}
 	} catch (error) {
