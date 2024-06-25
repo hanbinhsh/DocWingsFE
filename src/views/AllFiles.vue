@@ -938,7 +938,6 @@ export default {
                 if (result.isConfirmed) {
                     for(const folder of this.selectedFolders){
                         await axios.post('/api/deleteFolder', { "folderId": folder.folderId});
-                        console.log(111);
                     }
                     for(const file of this.selectedFiles){
                         await axios.post('/api/deleteFile', { "fileId": file.fileId});
