@@ -55,8 +55,12 @@
                                         <div class="col-lg-12">
                                             <div class="m-b-md">
                                                 <a @click.prevent="insertGroup()"
-                                                    class="btn btn-white btn-xs pull-right">
+                                                    class="btn btn-success  btn-xs pull-right">
                                                     新增用户组
+                                                </a>
+                                                <a @click.prevent="deleteGroup()"
+                                                    class="btn btn-danger  btn-xs pull-right">
+                                                    删除用户组
                                                 </a>
                                                 <h2>操作</h2>
                                             </div>
@@ -423,6 +427,35 @@ export default {
                 }
                 await axios.post('/api/insertGroup', { "auth": auth, "name": name });
                 toastr.success('新建用户组成功', '成功');
+                await this.updateUserInfo();
+            };
+            await this.validateUser(actionCallback, additionalInput);
+        },
+        async deleteGroup() {
+            const additionalInput = {
+                title: '用户组删除',
+                input: 'text',
+                inputLabel: '请输入用户组名',
+                showCancelButton: true,
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                inputValidator: (groupName) => {
+                    if (!groupName) {
+                        return '未输入用户组名！';
+                    }
+                }
+            };
+            const actionCallback = async (groupName) => {
+                const response = await axios.post('/api/findUserGroupByName?name=' + groupName);
+                const data = response.data.data;
+                if (data.state == 0) {
+                    this.$swal.fire('用户组不存在', '请重新输入', 'error');
+                    return;
+                }
+                const acceptGroupId = data.userGroup.groupId;
+                await axios.post('/api/deleteUserByGroupId', {"groupId": acceptGroupId })
+                await axios.post('/api/deleteUserGroupByGroupId', {"groupId": acceptGroupId })
+                toastr.success('用户组删除成功', '成功');
                 await this.updateUserInfo();
             };
             await this.validateUser(actionCallback, additionalInput);
