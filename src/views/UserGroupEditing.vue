@@ -128,7 +128,7 @@
                                                                                     <i class="fa fa-key"></i>&nbsp;
                                                                                 </a>
                                                                                 <a
-                                                                                    @click.prevent="unsubscibe(user.userId)">
+                                                                                    @click.prevent="unsubscribe(user.userId)">
                                                                                     <i class="fa fa-trash-o"></i>&nbsp;
                                                                                 </a>
                                                                             </div>
