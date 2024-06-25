@@ -5,10 +5,10 @@
                 <div class="sidebar-collapse">
                     <ul class="nav metismenu" id="side-menu">
                         <UserItem />
-                        <li>
+                        <li v-if="userAuth!=3">
                             <a href="userhome"><i class="fa fa-laptop"></i> <span class="nav-label">主页</span></a>
                         </li>
-                        <li>
+                        <li v-if="userAuth!=3">
                             <a><i class="fa fa-folder-o"></i> <span class="nav-label">文件管理</span><span
                                     class="fa arrow"></span></a>
                             <ul class="nav nav-second-level collapse">
@@ -23,7 +23,7 @@
                         <li class="active">
                             <a href="share"><i class="fa fa-share-square-o"></i> <span class="nav-label">分享</span></a>
                         </li>
-                        <li :class="{ active: this.isTrash }">
+                        <li v-if="userAuth!=3">
                             <a href="trash"><i class="fa fa-trash-o"></i> <span class="nav-label">回收站</span></a>
                         </li>
                         <li v-if="isAdmin()">
@@ -47,7 +47,7 @@
                         <h2>分享</h2>
                     </div>
                 </div>
-                <div class="wrapper wrapper-content animated fadeInRight" style="padding-bottom: 0px">
+                <div class="wrapper wrapper-content animated fadeInRight" style="padding-bottom: 0px" v-if="userAuth!=3">
                     <div class="row">
                         <div class="col-lg-12">
                             <div class="ibox float-e-margins">
@@ -299,6 +299,7 @@ export default {
     data() {
         return {
             userData: JSON.parse(sessionStorage.getItem('userData')) || {},
+            userAuth: sessionStorage.getItem("authData") || 3,
             shares: {},
             acceptions: {},
             shareCount: 0,
