@@ -82,10 +82,13 @@
                                                                 <thead>
                                                                     <tr>
                                                                         <th>用户名</th>
+                                                                        <th></th>
                                                                         <th>用户组名</th>
                                                                         <th></th>
                                                                         <th>电子邮件</th>
+                                                                        <th></th>
                                                                         <th>电话号码</th>
+                                                                        <th></th>
                                                                         <th>用户状态</th>
                                                                         <th></th>
                                                                         <th>操作</th>
@@ -94,6 +97,7 @@
                                                                 <tbody>
                                                                     <tr v-for="(user) in users" class="read">
                                                                         <td>{{ user.userName }}</td>
+                                                                        <td><a @click=""><i class="fa fa-edit"></i></a></td>
                                                                         <td>{{ user.groupName }}</td>
                                                                         <td>
                                                                             <a
@@ -102,7 +106,9 @@
                                                                             </a>
                                                                         </td>
                                                                         <td>{{ user.email }}</td>
+                                                                        <td><a @click=""><i class="fa fa-edit"></i></a></td>
                                                                         <td>{{ user.phone }}</td>
+                                                                        <td><a @click=""><i class="fa fa-edit"></i></a></td>
                                                                         <td v-if="user.accountLocked">已冻结</td>
                                                                         <td v-else>正常</td>
                                                                         <td>
