@@ -317,8 +317,21 @@ export default {
             await this.validateUser(actionCallback);
         },
         async freeze(userId) {
-            const actionCallback = async () => {
-                const response1 = await axios.post('/api/freeze', { "userId": userId });
+            const additionalInput = {
+                title: '冻结时间设置(小时)',
+                input: 'text',
+                inputLabel: '请输入冻结时间(小时)',
+                showCancelButton: true,
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                inputValidator: (time) => {
+                    if (!time) {
+                        return '未输入冻结时间！';
+                    }
+                }
+            };
+            const actionCallback = async (time) => {
+                const response1 = await axios.post('/api/setFreezingTime', { "userId": userId ,"time":time});
                 const response2 = await axios.get('/api/findAllUsers');
                 this.users = response2.data;
                 if (response1.data != null)
@@ -326,7 +339,7 @@ export default {
                 else
                     toastr.error('该用户不存在！', '错误');
             };
-            await this.validateUser(actionCallback);
+            await this.validateUser(actionCallback,additionalInput);
         },
         async defrost(userId) {
             const actionCallback = async () => {
