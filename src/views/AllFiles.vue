@@ -1199,12 +1199,12 @@ export default {
                 cancelButtonText: '取消',
             });
             if (result.isConfirmed) {
-                this.selectedFiles.forEach(element => {
-                    axios.post('api/recycleBinFile',{"fileId":element.fileId, "status": 1 });
-                });
-                this.selectedFolders.forEach(element => {
-                    axios.post('api/recycleBinFolder',{"folderId":element.folderId, "status": 1 });
-                });
+                for(const folder of this.selectedFolders){
+                    await axios.post('/api/recycleBinFolder', { "folderId": folder.folderId, "status": 1 });
+                }
+                for(const file of this.selectedFiles){
+                    await axios.post('/api/recycleBinFile', { "fileId": file.fileId, "status": 1 });
+                }
                 this.$swal.fire('操作成功', '所选文件和文件夹已放入回收站', 'success');
                 this.enterPath(this.currentFolder.folderId);
             }

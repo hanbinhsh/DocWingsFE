@@ -45,63 +45,105 @@
                 <TopBar/>
                 <div class="row wrapper border-bottom white-bg page-heading">
                     <div class="col-sm-4">
-                        <h2>个人资料</h2>
+                        <h2>用户组编辑</h2>
                     </div>
                 </div>
-                <div class="wrapper wrapper-content">
-                    <div class="row animated fadeInRight">
-                        <div class="col-md-4">
-                            <div class="ibox float-e-margins">
-                                <div class="ibox-title">
-                                    <h5>个人资料</h5>
-                                </div>
-                                <div>
-                                    <div class="ibox-content no-padding border-left-right">
-                                        <img alt="image" class="img-responsive" src="../assets/img/profile_big.jpg">
-                                    </div>
-                                    <div class="ibox-content profile-content">
-                                        <h4><strong>
-                                                用户名:{{ userData.userName }}
-                                            </strong>
-                                        </h4>
-                                        <h4><strong>
-                                                用户ID:{{ userData.userId }}
-                                            </strong>
-                                        </h4>
-                                        <h4><strong>
-                                                用户组ID:{{ userData.groupId }}
-                                            </strong>
-                                        </h4>
-                                        <h4><strong>
-                                                邮箱地址:{{ userData.email }}
-                                            </strong>
-                                        </h4>
-                                        <h4><strong>
-                                                电话号码:{{ userData.phone }}
-                                            </strong>
-                                        </h4>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="ibox float-e-margins">
-                                <div class="ibox-title">
-                                    <h5>编辑用户信息</h5>
-                                </div>
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="wrapper wrapper-content animated fadeInUp">
+                            <div class="ibox">
                                 <div class="ibox-content">
-                                    <div>
-                                        <div class="feed-activity-list">
-                                            <form class="m-t" role="form" action="ChangePassword" method="post">
-                                                <div class="form-group">
-                                                    <input autocomplete="off" type="input" id="userId" class="form-control"
-                                                        placeholder="请输入需要操作的用户ID">
+                                    <div class="row">
+                                        <div class="col-lg-12">
+                                            <div class="m-b-md">
+                                                <a @click.prevent="insertGroup()" class="btn btn-white btn-xs pull-right">
+                                                    新增用户组
+                                                </a>
+                                                <h2>操作</h2>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row m-t-sm">
+                                        <div class="col-lg-12">
+                                            <div class="panel blank-panel">
+                                                <div class="panel-heading">
+                                                    <div class="panel-options">
+                                                        <ul class="nav nav-tabs">
+                                                            <li class="active"><a href="project_detail.html#tab-1"
+                                                                    data-toggle="tab">用户信息</a></li>
+                                                            <li class=""><a href="project_detail.html#tab-2"
+                                                                    data-toggle="tab">用户组信息</a></li>
+                                                        </ul>
+                                                    </div>
                                                 </div>
-                                                <a type="submit" @click="resetPsw()" class="btn btn-primary block full-width m-b">重置密码</a>  
-                                                <a type="submit" @click="freeze()" class="btn btn-primary block full-width m-b">冻结</a>
-                                                <a type="submit" @click="defrost()" class="btn btn-primary block full-width m-b">解冻</a>
-                                                <a type="submit" @click="unsubscibe()" class="btn btn-danger block full-width m-b">注销</a>
-                                            </form>
+                                                <div class="panel-body">
+                                                    <div class="tab-content">
+                                                        <div class="tab-pane active" id="tab-1">
+                                                            <table class="table table-striped">
+                                                                <thead>
+                                                                    <tr>
+                                                                        <th>用户ID</th>
+                                                                        <th>用户名</th>
+                                                                        <th>用户组Id</th>
+                                                                        <th>用户组名</th>
+                                                                        <th>电子邮件</th>
+                                                                        <th>电话号码</th>
+                                                                        <th>用户状态</th>
+                                                                        <th>操作</th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody>
+                                                                    <tr v-for="(user) in users" class="read">
+                                                                        <td>{{ user.userId }}</td>
+                                                                        <td>{{ user.userName }}</td>
+                                                                        <td>{{ user.groupId }}</td>
+                                                                        <td>{{ user.groupName }}</td>
+                                                                        <td>{{ user.email }}</td>
+                                                                        <td>{{ user.phone }}</td>
+                                                                        <td v-if="user.accountLocked">冻结</td>
+                                                                        <td v-else>正常</td>
+                                                                        <td>
+                                                                            <div class="btn-group">
+                                                                                <a @click.prevent="resetPsw(user.userId)">
+                                                                                    <i class="fa fa-key"></i>&nbsp;
+                                                                                </a>
+                                                                                <a v-if="user.accountLocked" @click.prevent="defrost(user.userId)">
+                                                                                    <i class="fa fa-fire"></i>&nbsp;
+                                                                                </a>
+                                                                                <a v-else @click.prevent="freeze(user.userId)">
+                                                                                    <i class="fa fa-empire"></i>&nbsp;
+                                                                                </a>
+                                                                                <a @click.prevent="unsubscibe(user.userId)">
+                                                                                    <i class="fa fa-trash-o"></i>&nbsp;
+                                                                                </a>
+                                                                                <a @click.prevent="updateGroup(user.userId)">
+                                                                                    <i class="fa fa-arrows"></i>&nbsp;
+                                                                                </a>
+                                                                            </div>
+                                                                        </td>
+                                                                    </tr>
+                                                                </tbody>
+                                                            </table>
+                                                        </div>
+                                                        <div class="tab-pane" id="tab-2">
+                                                            <table class="table table-striped">
+                                                                <thead>
+                                                                    <tr>
+                                                                        <th>用户组名</th>
+                                                                        <th>权限</th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody>
+                                                                    <tr v-for="(log, index) in logs" :key="index">
+                                                                        <td>{{ log.userName }}</td>
+                                                                        <td>{{ log.groupName }}</td>
+                                                                    </tr>
+                                                                </tbody>
+                                                            </table>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -133,6 +175,8 @@
         data(){
             return {
                 userData: JSON.parse(sessionStorage.getItem('userData')) || {},
+                users: [],
+                logs: [],
             }
         },
         components: {
@@ -140,161 +184,312 @@
             UserItem,
             FootBar
         },
+        created() {
+        this.fetchLogs();
+        this.findAllUsers();
+        },
 		methods: {
-            async unsubscibe(){
-                const { value: password } = await this.$swal.fire({
-                    title: '用户验证',
-                    input: 'password',
-                    inputLabel: '请输入密码',
-                    showCancelButton: true,
-                    confirmButtonText: '确定',  
-                    cancelButtonText: '取消',
-                    inputValidator: (value) => {
-                        if (!value) {
-                            return '未输入密码！'
-                        }
+            async fetchLogs() {
+            try {
+                const response = await axios.get('/api/allLog');
+                this.logs = response.data.data.logPage;
+            } catch (error) {
+                console.error('Error fetching logs:', error);
+            }
+        },
+        isAdmin() {
+            return this.userData.isAdmin; // 检查is_admin属性是否为true
+        },
+        async findAllUsers(){
+            const response = await axios.get('/api/findAllUsers');
+            this.users = response.data;
+        },
+        async Validate(){
+            const { value: password } = await this.$swal.fire({
+                title: '用户验证',
+                input: 'password',
+                inputLabel: '请输入密码',
+                showCancelButton: true,
+                confirmButtonText: '确定',  
+                cancelButtonText: '取消',
+                inputValidator: (value) => {
+                    if (!value) {
+                        return false;
                     }
-                });
-                if (!password) {
-                    return; // 用户取消了，不做任何操作
                 }
-                const response = await axios.post('/api/login', { "userName": this.userData.userName, "password": password });
-                // 如果用户点击了确定按钮，并且提供正确密码
-                if(response.data.accountLocked==true){
-                    this.$swal.fire('用户已冻结,请两小时后再试','','error');
-                    window.sessionStorage.clear();
-                    this.$router.push('/login');
-                }
-                else if (response.data == null||response.data=="") {
-                    const response1=await axios.post('/api/findUserByName', { "userName": this.userData.userName});
-                    var remainingAttempts =5- response1.data.failedAttempts;
-                    this.$swal.fire('密码错误您还有'+remainingAttempts+'次机会！','','error');
-                }
-                else{
-                    // 删除用户，并删除其收藏
-                    // BUG 文件夹/文件/日志等外键依赖
-                    await axios.post('/api/UserCollectionDelete', { "userId":userId.value });   
-                    await axios.post('/api/UserDelete', { "userId":userId.value });
-                    alert('该用户已注销！');
-                }
-            },
-            async resetPsw(){
-                const { value: password } = await this.$swal.fire({
-                    title: '用户验证',
-                    input: 'password',
-                    inputLabel: '请输入密码',
-                    showCancelButton: true,
-                    confirmButtonText: '确定',  
-                    cancelButtonText: '取消',
-                    inputValidator: (value) => {
-                        if (!value) {
-                            return '未输入密码！'
-                        }
+            });
+            if (!password) {
+                return false; // 用户取消了，不做任何操作
+            }
+            const response = await axios.post('/api/login', { "userName": this.userData.userName, "password": password });
+            if(response.data.accountLocked==true){
+                this.$swal.fire('用户已冻结,请两小时后再试','','error');
+                window.sessionStorage.clear();
+                this.$router.push('/login');
+            }
+            else if (response.data == null||response.data=="") {
+                const response1=await axios.post('/api/findUserByName', { "userName": this.userData.userName});
+                var remainingAttempts =5- response1.data.failedAttempts;
+                this.$swal.fire('密码错误！您还有'+remainingAttempts+'次机会！','','error');
+                return false;
+            }
+            return true;
+        },
+        async unsubscibe(userId){
+            // 删除用户，并删除其收藏
+            // BUG 文件夹/文件/日志等外键依赖
+            const { value: password } = await this.$swal.fire({
+                title: '用户验证',
+                input: 'password',
+                inputLabel: '请输入密码',
+                showCancelButton: true,
+                confirmButtonText: '确定',  
+                cancelButtonText: '取消',
+                inputValidator: (value) => {
+                    if (!value) {
+                        return false;
                     }
-                });
-                if (!password) {
-                    return; // 用户取消了，不做任何操作
                 }
-                const response = await axios.post('/api/login', { "userName": this.userData.userName, "password": password });
-                // 如果用户点击了确定按钮，并且提供正确密码
-                if(response.data.accountLocked==true){
-                    this.$swal.fire('用户已冻结,请两小时后再试','','error');
-                    window.sessionStorage.clear();
-                    this.$router.push('/login');
-                }
-                else if (response.data == null||response.data=="") {
-                    const response1=await axios.post('/api/findUserByName', { "userName": this.userData.userName});
-                    var remainingAttempts =5- response1.data.failedAttempts;
-                    this.$swal.fire('密码错误您还有'+remainingAttempts+'次机会！','','error');
-                }
-                else{
-                    //重置该用户密码
-                    const response=await axios.post('/api/resetPsw', { "userId":userId.value }); 
-                    if(response.data!=null) 
-                    alert('已重置该用户密码！');
-                    else
-                    alert('该用户不存在！');
-                }
-            },
-            async freeze(){
-                const { value: password } = await this.$swal.fire({
-                    title: '用户验证',
-                    input: 'password',
-                    inputLabel: '请输入密码',
-                    showCancelButton: true,
-                    confirmButtonText: '确定',  
-                    cancelButtonText: '取消',
-                    inputValidator: (value) => {
-                        if (!value) {
-                            return '未输入密码！'
-                        }
+            });
+            if (!password) {
+                return false; // 用户取消了，不做任何操作
+            }
+            const response = await axios.post('/api/login', { "userName": this.userData.userName, "password": password });
+            if(response.data.accountLocked==true){
+                this.$swal.fire('用户已冻结,请两小时后再试','','error');
+                window.sessionStorage.clear();
+                this.$router.push('/login');
+            }
+            else if (response.data == null||response.data=="") {
+                const response1=await axios.post('/api/findUserByName', { "userName": this.userData.userName});
+                var remainingAttempts =5- response1.data.failedAttempts;
+                this.$swal.fire('密码错误！您还有'+remainingAttempts+'次机会！','','error');
+                return false;
+            }
+            await axios.post('/api/UserCollectionDelete', { "userId":userId });   
+            await axios.post('/api/UserDelete', { "userId":userId });
+            const response1 = await axios.get('/api/findAllUsers');
+            this.users = response1.data;
+            toastr.success(`已注销账户`, "成功");
+        },
+        async resetPsw(userId){
+            //重置该用户密码
+            const { value: password } = await this.$swal.fire({
+                title: '用户验证',
+                input: 'password',
+                inputLabel: '请输入密码',
+                showCancelButton: true,
+                confirmButtonText: '确定',  
+                cancelButtonText: '取消',
+                inputValidator: (value) => {
+                    if (!value) {
+                        return false;
                     }
-                });
-                if (!password) {
-                    return; // 用户取消了，不做任何操作
                 }
-                const response = await axios.post('/api/login', { "userName": this.userData.userName, "password": password });
-                // 如果用户点击了确定按钮，并且提供正确密码
-                if(response.data.accountLocked==true){
-                    this.$swal.fire('用户已冻结,请两小时后再试','','error');
-                    window.sessionStorage.clear();
-                    this.$router.push('/login');
-                }
-                else if (response.data == null||response.data=="") {
-                    const response1=await axios.post('/api/findUserByName', { "userName": this.userData.userName});
-                    var remainingAttempts =5- response1.data.failedAttempts;
-                    this.$swal.fire('密码错误您还有'+remainingAttempts+'次机会！','','error');
-                }
-                else{
-                    // 用户存在冻结
-                    const response=await axios.post('/api/freeze', { "userId":userId.value }); 
-                    if(response.data!=null)  
-                    alert('该用户已冻结！');
-                    else
-                    alert('该用户不存在！');
-                }
-            },
-            async defrost(){
-                const { value: password } = await this.$swal.fire({
-                    title: '用户验证',
-                    input: 'password',
-                    inputLabel: '请输入密码',
-                    showCancelButton: true,
-                    confirmButtonText: '确定',  
-                    cancelButtonText: '取消',
-                    inputValidator: (value) => {
-                        if (!value) {
-                            return '未输入密码！'
-                        }
+            });
+            if (!password) {
+                return false; // 用户取消了，不做任何操作
+            }
+            const response = await axios.post('/api/login', { "userName": this.userData.userName, "password": password });
+            if(response.data.accountLocked==true){
+                this.$swal.fire('用户已冻结,请两小时后再试','','error');
+                window.sessionStorage.clear();
+                this.$router.push('/login');
+            }
+            else if (response.data == null||response.data=="") {
+                const response1=await axios.post('/api/findUserByName', { "userName": this.userData.userName});
+                var remainingAttempts =5- response1.data.failedAttempts;
+                this.$swal.fire('密码错误！您还有'+remainingAttempts+'次机会！','','error');
+                return false;
+            }
+            const response1=await axios.post('/api/resetPsw', { "userId":userId });
+            const response2 = await axios.get('/api/findAllUsers');
+            this.users = response2.data; 
+            if(response1.data!=null) 
+                toastr.success(`已重置该用户密码为123456！`, "成功");
+            else
+                toastr.error(`该用户不存在！`, "错误");
+        },
+        async freeze(userId){
+            // 用户存在冻结
+            const { value: password } = await this.$swal.fire({
+                title: '用户验证',
+                input: 'password',
+                inputLabel: '请输入密码',
+                showCancelButton: true,
+                confirmButtonText: '确定',  
+                cancelButtonText: '取消',
+                inputValidator: (value) => {
+                    if (!value) {
+                        return false;
                     }
-                });
-                if (!password) {
-                    return; // 用户取消了，不做任何操作
                 }
-                const response = await axios.post('/api/login', { "userName": this.userData.userName, "password": password });
-                // 如果用户点击了确定按钮，并且提供正确密码
-                if(response.data.accountLocked==true){
-                    this.$swal.fire('用户已冻结,请两小时后再试','','error');
-                    window.sessionStorage.clear();
-                    this.$router.push('/login');
+            });
+            if (!password) {
+                return false; // 用户取消了，不做任何操作
+            }
+            const response = await axios.post('/api/login', { "userName": this.userData.userName, "password": password });
+            if(response.data.accountLocked==true){
+                this.$swal.fire('用户已冻结,请两小时后再试','','error');
+                window.sessionStorage.clear();
+                this.$router.push('/login');
+            }
+            else if (response.data == null||response.data=="") {
+                const response1=await axios.post('/api/findUserByName', { "userName": this.userData.userName});
+                var remainingAttempts =5- response1.data.failedAttempts;
+                this.$swal.fire('密码错误！您还有'+remainingAttempts+'次机会！','','error');
+                return false;
+            }
+            const response1=await axios.post('/api/freeze', { "userId":userId });
+            const response2 = await axios.get('/api/findAllUsers');
+            this.users = response2.data; 
+            if(response1.data!=null)  
+                toastr.success(`成功冻结该用户！`, "成功");
+            else
+                toastr.error(`该用户不存在！`, "错误");
+        },
+        async defrost(userId){
+            //解冻用户
+            const { value: password } = await this.$swal.fire({
+                title: '用户验证',
+                input: 'password',
+                inputLabel: '请输入密码',
+                showCancelButton: true,
+                confirmButtonText: '确定',  
+                cancelButtonText: '取消',
+                inputValidator: (value) => {
+                    if (!value) {
+                        return false;
+                    }
                 }
-                else if (response.data == null||response.data=="") {
-                    const response1=await axios.post('/api/findUserByName', { "userName": this.userData.userName});
-                    var remainingAttempts =5- response1.data.failedAttempts;
-                    this.$swal.fire('密码错误您还有'+remainingAttempts+'次机会！','','error');
+            });
+            if (!password) {
+                return false; // 用户取消了，不做任何操作
+            }
+            const response = await axios.post('/api/login', { "userName": this.userData.userName, "password": password });
+            if(response.data.accountLocked==true){
+                this.$swal.fire('用户已冻结,请两小时后再试','','error');
+                window.sessionStorage.clear();
+                this.$router.push('/login');
+            }
+            else if (response.data == null||response.data=="") {
+                const response1=await axios.post('/api/findUserByName', { "userName": this.userData.userName});
+                var remainingAttempts =5- response1.data.failedAttempts;
+                this.$swal.fire('密码错误！您还有'+remainingAttempts+'次机会！','','error');
+                return false;
+            }
+            const response1=await axios.post('/api/defrost', { "userId":userId });
+            const response2 = await axios.get('/api/findAllUsers');
+            this.users = response2.data;
+            if(response1.data!=null)  
+                toastr.success(`已解冻该用户！`, "成功");
+            else
+                toastr.error(`该用户不存在！`, "错误");
+        },
+        async updateGroup(userId){
+            const { value: password } = await this.$swal.fire({
+                title: '用户验证',
+                input: 'password',
+                inputLabel: '请输入密码',
+                showCancelButton: true,
+                confirmButtonText: '确定',  
+                cancelButtonText: '取消',
+                inputValidator: (value) => {
+                    if (!value) {
+                        return false;
+                    }
                 }
-                else{
-                    //解冻用户
-                    const response=await axios.post('/api/defrost', { "userId":userId.value }); 
-                    if(response.data!=null)  
-                    alert('已解冻该用户！');
-                    else
-                    alert('该用户不存在！');
+            });
+            if (!password) {
+                return false; // 用户取消了，不做任何操作
+            }
+            const response = await axios.post('/api/login', { "userName": this.userData.userName, "password": password });
+            if(response.data.accountLocked==true){
+                this.$swal.fire('用户已冻结,请两小时后再试','','error');
+                window.sessionStorage.clear();
+                this.$router.push('/login');
+            }
+            else if (response.data == null||response.data=="") {
+                const response1=await axios.post('/api/findUserByName', { "userName": this.userData.userName});
+                var remainingAttempts =5- response1.data.failedAttempts;
+                this.$swal.fire('密码错误！您还有'+remainingAttempts+'次机会！','','error');
+                return false;
+            }
+            const { value: groupId } = await this.$swal.fire({
+                title: '用户组更改',
+                input: 'text',
+                inputLabel: '请输入用户组ID',
+                showCancelButton: true,
+                confirmButtonText: '确定',  
+                cancelButtonText: '取消',
+                inputValidator: (groupId) => {
+                    if (!groupId) {
+                        return '未输入用户组ID！'
+                    }
                 }
-            },
-            isAdmin() {
-                return this.userData.isAdmin; // 检查is_admin属性是否为true
-            },
+            });
+            if (!groupId) {
+                return; // 用户取消了，不做任何操作
+            }
+            await axios.post('/api/updateGroup', { "userId":userId ,"groupId":groupId});
+            const response1 = await axios.get('/api/findAllUsers');
+            this.users = response1.data;
+        },
+        async insertGroup(){
+            const { value: password } = await this.$swal.fire({
+                title: '用户验证',
+                input: 'password',
+                inputLabel: '请输入密码',
+                showCancelButton: true,
+                confirmButtonText: '确定',  
+                cancelButtonText: '取消',
+                inputValidator: (value) => {
+                    if (!value) {
+                        return false;
+                    }
+                }
+            });
+            if (!password) {
+                return false; // 用户取消了，不做任何操作
+            }
+            const response = await axios.post('/api/login', { "userName": this.userData.userName, "password": password });
+            if(response.data.accountLocked==true){
+                this.$swal.fire('用户已冻结,请两小时后再试','','error');
+                window.sessionStorage.clear();
+                this.$router.push('/login');
+            }
+            else if (response.data == null||response.data=="") {
+                const response1=await axios.post('/api/findUserByName', { "userName": this.userData.userName});
+                var remainingAttempts =5- response1.data.failedAttempts;
+                this.$swal.fire('密码错误！您还有'+remainingAttempts+'次机会！','','error');
+                return false;
+            }
+            const { value: groupName } = await this.$swal.fire({
+                title: '增加用户组',
+                input: 'text',
+                inputLabel: '请输入用户组名字',
+                showCancelButton: true,
+                confirmButtonText: '确定',  
+                cancelButtonText: '取消',
+                inputValidator: (groupName) => {
+                    if (!groupName) {
+                        return '未输入用户组名字！'
+                    }
+                }
+            });
+            if (!groupName) {
+                return; // 用户取消了，不做任何操作
+            }
+            await axios.post('/api/insertGroup', { "groupName":groupName});
+            const response1 = await axios.get('/api/findAllUsers');
+            this.users = response1.data;
+            //window.location.reload();
+        },
+        async findGroupNameByUserId(userId){
+            const response = await axios.post('/api/findGroupNameByUserId',{"userId":userId});
+            // console.log(response.data);
+            return response.data;
+        }
 		}
 	}
 </script>
