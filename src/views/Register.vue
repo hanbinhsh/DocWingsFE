@@ -214,7 +214,7 @@ export default {
                             psw: form[0][2].value,
                             phone: form[0][6].value,
                             email: form[0][7].value,
-                            groupId: 1,
+                            groupId: 2,
                             isAdmin: 0
                         }),
                         success: function (response) {
