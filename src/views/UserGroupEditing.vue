@@ -78,8 +78,8 @@
                                                 </div>
                                                 <div class="panel-body">
                                                     <div class="tab-content">
-                                                        <div class="tab-pane active" id="tab-1">
-                                                            <table class="table table-striped">
+                                                        <div class="tab-pane active table-responsive" id="tab-1">
+                                                            <table class="table table-striped ibox-content">
                                                                 <thead>
                                                                     <tr>
                                                                         <th>用户ID</th>
@@ -125,18 +125,27 @@
                                                                 </tbody>
                                                             </table>
                                                         </div>
-                                                        <div class="tab-pane" id="tab-2">
-                                                            <table class="table table-striped">
+                                                        <div class="tab-pane table-responsive" id="tab-2">
+                                                            <table class="table table-striped ibox-content">
                                                                 <thead>
                                                                     <tr>
                                                                         <th>用户组名</th>
+                                                                        <th></th>
                                                                         <th>权限</th>
+                                                                        <th></th>
                                                                     </tr>
                                                                 </thead>
                                                                 <tbody>
-                                                                    <tr v-for="(log, index) in logs" :key="index">
-                                                                        <td>{{ log.userName }}</td>
-                                                                        <td>{{ log.groupName }}</td>
+                                                                    <tr v-for="(group, index) in usergroups" :key="index" class="read">
+                                                                        <td>{{ group.groupName }}</td>
+                                                                        <td>
+                                                                            <a @click="renameFolderTag(folder)"><i class="fa fa-edit"></i></a>
+                                                                        </td>
+                                                                        <td>{{ group.auth }}</td>
+                                                                        <td>
+                                                                            <a @click="renameFolderTag(folder)"><i class="fa fa-edit"></i></a>
+                                                                        </td>
+                                                                        <th></th>
                                                                     </tr>
                                                                 </tbody>
                                                             </table>
@@ -176,7 +185,7 @@
             return {
                 userData: JSON.parse(sessionStorage.getItem('userData')) || {},
                 users: [],
-                logs: [],
+                usergroups: []
             }
         },
         components: {
@@ -189,13 +198,9 @@
         this.findAllUsers();
         },
 		methods: {
-            async fetchLogs() {
-            try {
-                const response = await axios.get('/api/allLog');
-                this.logs = response.data.data.logPage;
-            } catch (error) {
-                console.error('Error fetching logs:', error);
-            }
+        async fetchLogs() {
+            const response = await axios.get('/api/findUserGroups');
+            this.usergroups = response.data.usergroups;
         },
         isAdmin() {
             return this.userData.isAdmin; // 检查is_admin属性是否为true
