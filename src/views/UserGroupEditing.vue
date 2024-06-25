@@ -216,7 +216,7 @@
             },
         async fetchLogs() {
             const response = await axios.get('/api/findUserGroups');
-            this.usergroups = response.data.usergroups;
+            this.usergroups = response.data.data.usergroups;
         },
         isAdmin() {
             return this.userData.isAdmin; // 检查is_admin属性是否为true
