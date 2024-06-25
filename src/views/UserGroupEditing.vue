@@ -139,11 +139,13 @@
                                                                     <tr v-for="(group, index) in usergroups" :key="index" class="read">
                                                                         <td>{{ group.groupName }}</td>
                                                                         <td>
-                                                                            <a @click="renameFolderTag(folder)"><i class="fa fa-edit"></i></a>
+                                                                            <a @click="editGropName()"><i class="fa fa-edit"></i></a>
                                                                         </td>
-                                                                        <td>{{ group.auth }}</td>
                                                                         <td>
-                                                                            <a @click="renameFolderTag(folder)"><i class="fa fa-edit"></i></a>
+                                                                            {{ shareAuth(group.auth) }}
+                                                                        </td>
+                                                                        <td>
+                                                                            <a @click="editGropAuth()"><i class="fa fa-edit"></i></a>
                                                                         </td>
                                                                         <th></th>
                                                                     </tr>
@@ -193,11 +195,25 @@
             UserItem,
             FootBar
         },
+        computed:{},
         created() {
         this.fetchLogs();
         this.findAllUsers();
         },
 		methods: {
+            shareAuth(auth){
+                if(auth == -1){
+                    return "无权限"
+                }else if(auth == 1){
+                    return "普通用户：除拥有除用户组编辑、日志查看的权限，其他功能正常"
+                }else if(auth == 2){
+                    return "1类受限用户：禁止删除文件"
+                }else if(auth == 3){
+                    return "2类受限用户：仅能操作对其分享的文件，禁用回收站（禁用放入回收站和删除文件）"
+                }else if(auth == 10){
+                    return "管理员：拥有所有权限"
+                }
+            },
         async fetchLogs() {
             const response = await axios.get('/api/findUserGroups');
             this.usergroups = response.data.usergroups;
