@@ -226,8 +226,7 @@ export default {
     },
     computed: {},
     created() {
-        this.findUserGroups();
-        this.findAllUsers();
+        this.updateUserInfo();
     },
     methods: {
         shareAuth(auth) {
@@ -249,10 +248,6 @@ export default {
         },
         isAdmin() {
             return this.userData.isAdmin; // 检查is_admin属性是否为true
-        },
-        async findAllUsers() {
-            const response = await axios.get('/api/findAllUsers');
-            this.users = response.data;
         },
         async validateUser(actionCallback, additionalInput = null) {
             const { value: password } = await this.$swal.fire({
@@ -343,7 +338,7 @@ export default {
             const additionalInput = {
                 title: '用户组更改',
                 input: 'text',
-                inputLabel: '请输入用户组ID',
+                inputLabel: '请输入用户组名',
                 showCancelButton: true,
                 confirmButtonText: '确定',
                 cancelButtonText: '取消',
@@ -370,19 +365,44 @@ export default {
         async insertGroup() {
             const additionalInput = {
                 title: '增加用户组',
-                input: 'text',
-                inputLabel: '请输入用户组名字',
+                html: `
+                    <label class="control-label">权限</label>
+                    <div class="form-group">
+                        <select id="auth_select" class="form-control">
+                            <option value="1">普通用户：除拥有除用户组编辑、日志查看的权限，其他功能正常</option>
+                            <option value="2">1类受限用户：禁止删除文件</option>
+                            <option value="3">2类受限用户：仅能操作对其分享的文件，禁用回收站（禁用放入回收站和删除文件）</option>
+                            <option value="10">管理员：拥有所有权限</option>
+                        </select>
+                    </div>
+                    <label class="control-label">用户组名</label>
+                    <div class="form-group">
+                        <input type="text" id="group_name" class="form-control" placeholder="请输入新的用户组名" style="text-align: center;">
+                    </div>
+                `,
                 showCancelButton: true,
                 confirmButtonText: '确定',
                 cancelButtonText: '取消',
-                inputValidator: (groupName) => {
-                    if (!groupName) {
-                        return '未输入用户组名字！';
+                preConfirm: () => {
+                    return {
+                        auth: document.getElementById('auth_select').value || 1,
+                        name: document.getElementById('group_name').value
                     }
                 }
             };
-            const actionCallback = async (groupName) => {
-                await axios.post('/api/insertGroup', { "groupName": groupName });
+            const actionCallback = async (data) => {
+                const { auth, name } = data;
+                if (!name) {
+                    this.$swal.fire('用户组名不能为空', '', 'error');
+                    return false;
+                }
+                const response=await axios.post('/api/findUserGroupByName?name='+name);
+                const responsedata = response.data.data
+                if(responsedata.state==1){
+                    this.$swal.fire('用户组已存在', '请重新输入', 'error');
+                    return;
+                }
+                await axios.post('/api/insertGroup', { "auth": auth, "name": name });
                 toastr.success('新建用户组成功', '成功');
                 await this.updateUserInfo();
             };
@@ -396,6 +416,7 @@ export default {
         async updateUserInfo() {
             const response = await axios.get('/api/findAllUsers');
             this.users = response.data;
+            this.findUserGroups();
         }
     }
 }

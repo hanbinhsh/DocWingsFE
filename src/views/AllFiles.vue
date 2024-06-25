@@ -981,7 +981,7 @@ export default {
                             <select id="share_select" class="form-control">
                                 <option value="1">全部权限</option>
                                 <option value="2">仅查看</option>
-                            </select></div>
+                            </select>
                         </div>
                         <label class="control-label">有效时间(为空表示永久有效)</label>
                         <div>
@@ -1081,7 +1081,7 @@ export default {
                             <select id="share_select" class="form-control">
                                 <option value="1">全部权限</option>
                                 <option value="2">仅查看</option>
-                            </select></div>
+                            </select>
                         </div>
                         <label class="control-label">有效时间(为空表示永久有效)</label>
                         <div>
