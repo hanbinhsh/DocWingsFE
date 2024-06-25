@@ -226,7 +226,7 @@ export default {
     },
     computed: {},
     created() {
-        this.fetchLogs();
+        this.findUserGroups();
         this.findAllUsers();
     },
     methods: {
@@ -243,7 +243,7 @@ export default {
                 return "管理员：拥有所有权限"
             }
         },
-        async fetchLogs() {
+        async findUserGroups() {
             const response = await axios.get('/api/findUserGroups');
             this.usergroups = response.data.data.usergroups;
         },
