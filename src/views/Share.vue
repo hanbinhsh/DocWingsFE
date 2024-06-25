@@ -184,7 +184,7 @@
                                                     title="刷新页面" @click="getShares()"><i class="fa fa-refresh"></i> 刷新</button>&nbsp;
                                                 <a href="allfiles" class="btn btn-primary btn-sm">新建分享</a>
                                             </div>
-                                            <strong>共{{this.shareCount}}条分享</strong>
+                                            <strong>共{{this.acceptCount}}条收到的分享</strong>
                                         </div>
                                     </div>
                                     <div class="table-responsive ibox">
@@ -205,18 +205,14 @@
                                                 <td></td><!--图标-->
                                                 <td>名称</td>
                                                 <td>权限</td>
-                                                <td></td><!--更改权限-->
                                                 <td>接收者</td>
-                                                <td></td><!--更改接收者-->
                                                 <td>接收用户组</td>
-                                                <td></td><!--更改接收用户组-->
                                                 <td>分享时间</td>
                                                 <td>到期时间</td>
-                                                <td></td><!--更改到期时间-->
                                                 <td>操作</td>
                                             </thead>
                                             <tbody>
-                                                <tr v-for="(share, index) in shares" :key="index" @dblclick="" class="read">
+                                                <tr v-for="(share, index) in acceptions" :key="index" @dblclick="" class="read">
                                                     <td>
                                                         <span v-if="share.validate==0" class="label label-danger">已过期</span>
                                                         <span v-if="share.validate==1" class="label label-primary">正常</span>
@@ -239,21 +235,16 @@
                                                     <td v-if="share.isFolder==0">{{share.fileName}}</td>
                                                     <td v-if="share.isFolder==1">{{share.folderName}}</td>
                                                     <td>{{share.auth==1 ? '全部权限' : '仅查看'}}</td>
-                                                    <td><a @click=""><i class="fa fa-edit"></i></a></td>
                                                     <td>{{share.accepterName}}</td>
-                                                    <td><a @click=""><i class="fa fa-edit"></i></a></td>
                                                     <td>{{share.acceptGroupName}}</td>
-                                                    <td><a @click=""><i class="fa fa-edit"></i></a></td>
                                                     <td>{{new Date(share.shareTime).toLocaleString()}}</td>
                                                     <td v-if="share.dueTime==null">无限</td>
                                                     <td v-if="share.dueTime!=null">
                                                         {{new Date(share.dueTime).toLocaleString()}}
                                                         <span v-if="share.lastRatio>0" class="pie">{{ share.lastRatio }}/1</span>
                                                     </td>
-                                                    <td><a @click=""><i class="fa fa-edit"></i></a></td>
                                                     <td>
                                                         <div class="btn-group">
-                                                            <a @click=""><i class="fa fa-trash-o"></i>&nbsp;</a>
                                                             <a @click="enterSharePage(share.shareId)"><i class="fa fa-eye"></i>&nbsp;</a>
                                                             <a @click="copySharePage(share.shareId)"><i class="fa fa-copy"></i>&nbsp;</a>
                                                         </div>
@@ -311,6 +302,7 @@ export default {
             shares: {},
             acceptions: {},
             shareCount: 0,
+            acceptCount: 0,
             loading: false,
         }
     },
@@ -324,7 +316,10 @@ export default {
             this.showLoading()
             const res = await axios.get("api/getSharesByUserId?userId=" + this.userData.userId);
             this.shares = res.data.data.shares;
+            const acres = await axios.get("api/getMyAcceptByUserIdGroupId?userId=" + this.userData.userId + "&groupId=" + this.userData.groupId);
+            this.acceptions = acres.data.data.shares;
             this.shareCount = res.data.data.shareCount;
+            this.acceptCount = acres.data.data.acceptCount;
             await this.$nextTick(() => {
                 this.initializePeity();
             });
