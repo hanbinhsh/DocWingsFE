@@ -95,6 +95,8 @@
                                                 <td></td><!--更改权限-->
                                                 <td>接收者</td>
                                                 <td></td><!--更改接收者-->
+                                                <td>接收用户组</td>
+                                                <td></td><!--更改接收用户组-->
                                                 <td>分享时间</td>
                                                 <td>到期时间</td>
                                                 <td></td><!--更改到期时间-->
@@ -126,6 +128,8 @@
                                                     <td>{{share.auth}}</td>
                                                     <td><a @click=""><i class="fa fa-edit"></i></a></td>
                                                     <td>{{share.accepterName}}</td>
+                                                    <td><a @click=""><i class="fa fa-edit"></i></a></td>
+                                                    <td>{{share.acceptGroupName}}</td>
                                                     <td><a @click=""><i class="fa fa-edit"></i></a></td>
                                                     <td>{{new Date(share.shareTime).toLocaleString()}}</td>
                                                     <td v-if="share.dueTime==null">无限</td>
