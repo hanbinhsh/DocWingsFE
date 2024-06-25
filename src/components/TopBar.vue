@@ -7,10 +7,25 @@
                 <form role="search" class="navbar-form-custom" action="search_results.html">
                     <div class="form-group">
                         <input type="text" placeholder="输入要查找的文件......" class="form-control" name="top-search"
-                            v-model="fileName" id="top-search" @input="searchFile">
-                        <ul v-if="filePaths.length > 0" class="dropdown-menu" style="display: block; width: 50%;">
-                            <li v-for="path in filePaths" :key="path">
-                                <a href="#" @click="selectFile(path)">{{ path }}</a>
+                            v-model="name" id="top-search" @input="searchFile">
+                        <ul v-if="files.length+folders.length > 0" class="dropdown-menu " style="display: block; width: 50%">
+                            <li v-for="folder in folders" :key="folder">
+                                <a @click="selectFolder(folder)"><i class="fa fa-folder-o"></i> {{ folder.folderName }}</a>
+                            </li>
+                            <li v-for="file in files" :key="file">
+                                <a @click="selectFile(file)">
+                                    <i v-if="file.fileType.startsWith('image/')" class="fa fa-file-image-o"></i>
+                                    <i v-else-if="file.fileType.includes('pdf')" class="fa fa-file-pdf-o"></i>
+                                    <i v-else-if="file.fileType.includes('word')" class="fa fa-file-word-o"></i>
+                                    <i v-else-if="file.fileType.includes('excel')" class="fa fa-file-excel-o"></i>
+                                    <i v-else-if="file.fileType.includes('sheet')" class="fa fa-file-excel-o"></i>
+                                    <i v-else-if="file.fileType.includes('powerpoint')" class="fa fa-file-powerpoint-o"></i>
+                                    <i v-else-if="file.fileType.includes('presentation')" class="fa fa-file-powerpoint-o"></i>
+                                    <i v-else-if="file.fileType.startsWith('video/')" class="fa fa-file-movie-o"></i>
+                                    <i v-else-if="file.fileType.startsWith('audio/')" class="fa fa-file-audio-o"></i>
+                                    <i v-else-if="file.fileType.includes('compressed')" class="fa fa-file-archive-o"></i>
+                                    <i v-else class="fa fa-file-o"></i> {{ file.fileName }}
+                                </a>
                             </li>
                         </ul>
                     </div>
@@ -36,8 +51,9 @@ export default {
     name: 'TopBar',
     data() {
         return {
-            fileName: '',
-            filePaths: [],
+            name: '',
+            files: [],
+            folders: [],
         }
     },
     methods: {
@@ -46,25 +62,27 @@ export default {
             this.$router.push('/login');
         },
         searchFile() {
-            const encodedFileName = encodeURIComponent(this.fileName); // 编码文件名
-            axios.get(`/api/searchFile?fileName=${encodedFileName}`)  // 将用户输入的数据传递给后端
-                .then((response) => { // 使用箭头函数来保持this指向组件实例  
-                    this.filePaths = response.data;
-                    console.log(response.data);
-                    console.log(this.filePaths);
+            const encodedName = encodeURIComponent(this.name);
+            axios.get(`/api/searchFFsByName?name=${encodedName}`)
+                .then((response) => { 
+                    this.files = response.data.data.files;
+                    this.folders = response.data.data.folders;
                 })
-                .catch((error) => { // 同样使用箭头函数  
+                .catch((error) => {
                     console.error(error);
                 });
         },
-        selectFile(path) {
-            // ... 选择文件的逻辑 
-            this.fileName = path; // 可能想要更新输入框的值为选择的文件路径  
-            this.hideDropdown(); // 选择文件后隐藏下拉菜单  
+        selectFile(file) {
+            this.$emit('search-path',file.parentId);
+            this.closeDropdown(); 
+        },
+        selectFolder(folder){
+            this.$emit('search-path',folder.folderId);
+            this.closeDropdown();
         },
         closeDropdown() {
-            // 关闭下拉菜单的逻辑
-            this.filePaths = []; // 或者根据需求修改下拉菜单的显示状态
+            this.files = [];
+            this.folders = [];
         }
     }
 }

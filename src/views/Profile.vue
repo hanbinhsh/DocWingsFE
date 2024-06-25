@@ -207,12 +207,18 @@
                 }
                 else{
                     if(newPhone.value!=""){
-                    await axios.post('/api/UpdatePhone',{"userId": this.userData.userId,"newPhone":newPhone.value});
+                    const response=await axios.post('/api/UpdatePhone',{"userId": this.userData.userId,"newPhone":newPhone.value});
+                    if(response.data==true)
                     alert('您的电话号码已更改！');
+                    else
+                    alert('该电话号码已被使用！');
                     }
                     if(newEmail.value!=""){
-                    await axios.post('/api/UpdateEmail',{"userId": this.userData.userId,"newEmail":newEmail.value});
+                    const response4 = await axios.post('/api/UpdateEmail',{"userId": this.userData.userId,"newEmail":newEmail.value});
+                    if(response4.data==true)
                     alert('您的邮箱已更改！');
+                    else
+                    alert('该邮箱已被使用！');
                     }
                     if(twicePassword.value==newpassword.value&&twicePassword.value!=""){
                     await axios.post('/api/UpdatePassword',{"userId": this.userData.userId,"newPassword":newpassword.value});
