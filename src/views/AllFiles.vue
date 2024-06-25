@@ -927,6 +927,32 @@ export default {
                     this.$swal.fire('操作取消', '文件夹未删除', 'info');
                 }
             },
+            async deleteSelections(){
+                const result = await this.$swal.fire({
+                    title: '是否将所选文件和文件夹删除',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: '确定',  
+                    cancelButtonText: '取消',
+                });
+                if (result.isConfirmed) {
+                    for(const folder of this.selectedFolders){
+                        await axios.post('/api/deleteFolder', { "folderId": folder.folderId});
+                        console.log(111);
+                    }
+                    for(const file of this.selectedFiles){
+                        await axios.post('/api/deleteFile', { "fileId": file.fileId});
+                    }
+                    this.$swal.fire('操作成功', '文件和文件夹已删除', 'success');
+                    //更新容量
+                    const event = new CustomEvent('update-capacity', {});
+                    document.dispatchEvent(event);
+                    this.enterPathTrash();
+                }
+                else{
+                    this.$swal.fire('操作取消', '文件和文件夹未删除', 'info');
+                }
+            },
             async collectionFile(fileId){
                 const exist = this.fileCollectionStatus[fileId]//判断是否被收藏
                 if(exist){//被收藏删除
