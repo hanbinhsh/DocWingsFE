@@ -224,6 +224,7 @@
                             <div class="mail-box ibox table-responsive">
                                 <table
                                     class="table table-hover table-mail ibox-content footable table-stripped toggle-arrow-tiny"
+                                    data-page-size="13"
                                     :class="{ 'sk-loading': loading }">
                                     <div class="sk-spinner sk-spinner-cube-grid">
                                         <div class="sk-cube"></div>
@@ -351,14 +352,10 @@
                                                     style="height: 11px;"></td>
                                         </tr>
                                     </tbody>
-                                    <tfoot>
-                                        <tr>
-                                            <td colspan="12">
-                                                <ul class="pagination pull-right"></ul>
-                                            </td>
-                                        </tr>
-                                    </tfoot>
                                 </table>
+                                <div class="col-sm-12">
+                                    <ul class="pagination pull-right"></ul>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -1421,10 +1418,10 @@ export default {
             this.currentCuttingSelectFolders.forEach(element => {
                 axios.post(`/api/changeFolderRouteById?id=${element.folderId}&parentId=${this.currentFolder.folderId}`);
             });
+            toastr.success(`成功粘贴${this.currentCuttingSelectFiles.length + this.currentCuttingSelectFolders.length}个文件`, "成功");
             this.currentCuttingSelectFiles = [];
             this.currentCuttingSelectFolders = [];
             this.isCuttingSeletion = false;
-            toastr.success(`成功粘贴${this.currentCuttingSelectFiles.length + this.currentCuttingSelectFolders.length}个文件`, "成功");
             this.enterPath(this.currentFolder.folderId)
         },
         allCheckbox() {
