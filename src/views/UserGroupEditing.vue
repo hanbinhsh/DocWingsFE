@@ -5,10 +5,10 @@
                 <div class="sidebar-collapse">
                     <ul class="nav metismenu" id="side-menu">
                         <UserItem />
-                        <li v-if="userAuth!=3">
+                        <li v-if="userAuth != 3">
                             <a href="UserHome"><i class="fa fa-laptop"></i> <span class="nav-label">主页</span></a>
                         </li>
-                        <li v-if="userAuth!=3">
+                        <li v-if="userAuth != 3">
                             <a><i class="fa fa-folder-o"></i> <span class="nav-label">文件管理</span><span
                                     class="fa arrow"></span></a>
                             <ul class="nav nav-second-level collapse">
@@ -23,7 +23,7 @@
                         <li>
                             <a href="share"><i class="fa fa-share-square-o"></i> <span class="nav-label">分享</span></a>
                         </li>
-                        <li v-if="userAuth!=3">
+                        <li v-if="userAuth != 3">
                             <a href="trash"><i class="fa fa-trash-o"></i> <span class="nav-label">回收站</span></a>
                         </li>
                         <li class="active" v-if="isAdmin()">
@@ -112,10 +112,14 @@
                                                                             </a>
                                                                         </td>
                                                                         <td>{{ user.email }}</td>
-                                                                        <td><a @click.prevent="updateEmail(user.userId)"><i class="fa fa-edit"></i></a>
+                                                                        <td><a
+                                                                                @click.prevent="updateEmail(user.userId)"><i
+                                                                                    class="fa fa-edit"></i></a>
                                                                         </td>
                                                                         <td>{{ user.phone }}</td>
-                                                                        <td><a @click=""><i class="fa fa-edit"></i></a>
+                                                                        <td><a
+                                                                                @click.prevent="updatePhone(user.userId)"><i
+                                                                                    class="fa fa-edit"></i></a>
                                                                         </td>
                                                                         <td v-if="user.accountLocked">已冻结</td>
                                                                         <td v-else>正常</td>
@@ -379,8 +383,8 @@ export default {
             const actionCallback = async (userName) => {
                 const response = await axios.post('/api/findUserByName', { "userName": userName });
                 console.log(userName);
-                console.log(response.date);
-                if (response.date != null) {
+                console.log(response);
+                if (response.data) {
                     this.$swal.fire('用户名已存在', '请重新输入', 'error');
                     return;
                 }
@@ -407,14 +411,39 @@ export default {
             };
             const actionCallback = async (email) => {
                 const response = await axios.post('/api/findUserByEmail', { "email": email });
-                console.log(email);
-                console.log(response);
-                if (response.date) {
+                if (response.data) {
                     this.$swal.fire('邮箱已存在', '请重新输入', 'error');
                     return;
                 }
-                await axios.post('/api/UpdateEmail', { "email": email});
+                await axios.post('/api/UpdateEmail', { "userId": userId, "newEmail": email });
                 toastr.success('邮箱更改成功', '成功');
+                await this.updateUserInfo();
+            };
+            await this.validateUser(actionCallback, additionalInput);
+
+        },
+        async updatePhone(userId) {
+            const additionalInput = {
+                title: '电话号码更改',
+                input: 'text',
+                inputLabel: '请输入新号码',
+                showCancelButton: true,
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                inputValidator: (userName) => {
+                    if (!userName) {
+                        return '未输入号码！';
+                    }
+                }
+            };
+            const actionCallback = async (phone) => {
+                const response = await axios.post('/api/findUserByPhone', { "phone": phone });
+                if (response.data) {
+                    this.$swal.fire('号码已存在', '请重新输入', 'error');
+                    return;
+                }
+                await axios.post('/api/UpdatePhone', { "userId": userId, "newPhone": phone });
+                toastr.success('电话号码更改成功', '成功');
                 await this.updateUserInfo();
             };
             await this.validateUser(actionCallback, additionalInput);
@@ -516,8 +545,8 @@ export default {
                     return;
                 }
                 const acceptGroupId = data.userGroup.groupId;
-                await axios.post('/api/deleteUserByGroupId', {"groupId": acceptGroupId })
-                await axios.post('/api/deleteUserGroupByGroupId', {"groupId": acceptGroupId })
+                await axios.post('/api/deleteUserByGroupId', { "groupId": acceptGroupId })
+                await axios.post('/api/deleteUserGroupByGroupId', { "groupId": acceptGroupId })
                 toastr.success('用户组删除成功', '成功');
                 await this.updateUserInfo();
             };
