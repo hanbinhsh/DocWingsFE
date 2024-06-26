@@ -151,7 +151,9 @@
                                     </div>
                                 </form>
                                 <h2>
-                                    {{ isTrash ? '回收站' : currentFolder.folderName + ' (' +
+                                    {{ isTrash ? '回收站' : category==0 ? '图片' : category==1 ? '文档' :
+                                    category==3 ? '视频' : category==2 ? '音乐' : category==4 ? '其他' : 
+                                    currentFolder.folderName + ' (' +
                                         (this.selectedFiles.length + this.selectedFolders.length <= 0 ? '' :
                                             this.selectedFiles.length + this.selectedFolders.length + '/') +
                                         this.currentFFsCount + ')' }} </h2>
@@ -691,6 +693,7 @@ export default {
         },
         async findFilesByCategory(category) {
             if (this.isTrash) return;
+            this.category = category;
             this.showLoading();  // 显示加载页面
             this.folders = [];
             const response = await axios.get('/api/findFilesByCategory?category=' + category);
