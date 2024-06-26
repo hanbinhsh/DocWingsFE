@@ -52,12 +52,12 @@
                             <a><i class="fa fa-folder-o"></i> <span class="nav-label">文件管理</span><span
                                     class="fa arrow"></span></a>
                             <ul class="nav nav-second-level collapse">
-                                <li :class="{ active: !this.isTrash }"><a href="allfiles">所有文件</a></li>
-                                <li><a href="table_basic.html">图片</a></li>
-                                <li><a href="table_data_tables.html">文档</a></li>
-                                <li><a href="table_foo_table.html">视频</a></li>
-                                <li><a href="jq_grid.html">音乐</a></li>
-                                <li><a href="jq_grid.html">其他</a></li>
+                                <li :class="{ active: isAllfiles }"><a href="allfiles">所有文件</a></li>
+                                <li :class="{ active: category==0 }"><a href="image">图片</a></li>
+                                <li :class="{ active: category==1 }"><a href="documentation">文档</a></li>
+                                <li :class="{ active: category==3 }"><a href="video">视频</a></li>
+                                <li :class="{ active: category==2 }"><a href="audio">音乐</a></li>
+                                <li :class="{ active: category==4 }"><a href="other">其他</a></li>
                             </ul>
                         </li>
                         <li>
@@ -151,10 +151,12 @@
                                     </div>
                                 </form>
                                 <h2>
-                                    {{ isTrash ? '回收站' : currentFolder.folderName + ' (' +
+                                    {{ (isTrash ? '回收站' : category==0 ? '图片' : category==1 ? '文档' :
+                                    category==3 ? '视频' : category==2 ? '音乐' : category==4 ? '其他' : 
+                                    currentFolder.folderName) + (' (' +
                                         (this.selectedFiles.length + this.selectedFolders.length <= 0 ? '' :
                                             this.selectedFiles.length + this.selectedFolders.length + '/') +
-                                        this.currentFFsCount + ')' }} </h2>
+                                        this.currentFFsCount + ')')}} </h2>
                                         <div class="mail-tools tooltip-demo m-t-md">
                                             <div class="btn-group pull-right">
                                                 <button :class="{ 'disabled': isTrash }" class="btn btn-white btn-sm"
@@ -448,6 +450,8 @@ import TopBar from '@/components/TopBar.vue'
 import FileDropzone from '../components/FileDropzone.vue'
 import UserItem from '@/components/UserItem.vue'
 import FootBar from '@/components/FootBar.vue'
+import { onMounted } from 'vue';
+import { useRoute } from 'vue-router';
 toastr.options = {
     "closeButton": true,
     "debug": false,
@@ -466,6 +470,7 @@ toastr.options = {
 }
 export default {
     name: 'Profile',
+    setup() {},
     data() {
         return {
             categoryCapacity: {},
@@ -477,6 +482,8 @@ export default {
             currentFolder: JSON.parse(sessionStorage.getItem("currentFolder")) || {},
             currentFFsCount: sessionStorage.getItem("currentFFsCount") || {},
             loading: false,
+            isAllfiles: false,
+            category: -1,
             isTrash: false,
             isCutting: false,
             currentCutFF: null,
@@ -515,12 +522,19 @@ export default {
         };
     },
     created() {
+        const route = useRoute();
+        const folderId = route.query.folderId;
+        if (folderId) {  //用户主页跳转
+            this.enterPath(folderId);
+            return;
+        }
         this.checkRoute();
         if (this.isTrash) {
             this.enterPathTrash();
-        }
-        else {
+        } else if(this.isAllfiles) {
             this.enterPath(0);
+        }else{
+            this.findFilesByCategory(this.category);
         }
     },
     methods: {
@@ -530,9 +544,19 @@ export default {
         },
         checkRoute() {
             if (this.$route.name === 'allfiles') {
-                this.isTrash = false;
+                this.isAllfiles = true;
             } else if (this.$route.name === 'trash') {
                 this.isTrash = true;
+            } else if (this.$route.name === 'image') {
+                this.category = 0;
+            } else if (this.$route.name === 'documentation') {
+                this.category = 1;
+            } else if (this.$route.name === 'video') {
+                this.category = 3;
+            } else if (this.$route.name === 'audio') {
+                this.category = 2;
+            } else if (this.$route.name === 'other') {
+                this.category = 4;
             }
         },
         async createFolder() {
@@ -653,6 +677,7 @@ export default {
             await this.findFFsByParentId(id);
             await this.findFolderById(id);
             this.currentFFsCount = this.folders.length + this.files.length;
+            this.isAllfiles=true;this.category=-1;
             const imageFiles = await axios.get(`/api/findImagesByParentId?parentId=${this.currentFolder.folderId ?? 0}`);
             this.images = imageFiles.data.data.imageList  // 更新图片列表
             this.checkAllFFsCollectionStatus();
@@ -678,10 +703,16 @@ export default {
         },
         async findFilesByCategory(category) {
             if (this.isTrash) return;
+            this.isAllfiles = false;
+            this.category = category;
             this.showLoading();  // 显示加载页面
             this.folders = [];
             const response = await axios.get('/api/findFilesByCategory?category=' + category);
             this.files = response.data.data.files;
+            this.currentFFsCount = this.folders.length + this.files.length;
+            this.checkAllFFsCollectionStatus();
+            this.findTags();
+            this.queryCategoryCapacity();
             if (category === 0) {
                 const imagesRes = await axios.get('/api/findImages');
                 this.images = imagesRes.data.data.imageList;
