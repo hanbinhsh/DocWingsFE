@@ -15,7 +15,7 @@
           </div>
           <div class="modal-body">
             <div class="text-center">
-              <VideoPlayer v-if="showPlayer" :options="audioOptions" :key="new Date().getTime()"
+              <VideoPlayer v-if="showPlayer" :options="this.audioOptions" :key="new Date().getTime()"
                 class="video-js-a vjs-big-play-centered" />
             </div>
           </div>
@@ -32,7 +32,7 @@
           </div>
           <div class="modal-body">
             <div class="text-center">
-              <VideoPlayer v-if="showPlayer" :options="videoOptions" :key="new Date().getTime()"
+              <VideoPlayer v-if="showPlayer" :options="this.videoOptions" :key="new Date().getTime()"
                 class="video-js-v vjs-big-play-centered" />
             </div>
           </div>
@@ -194,6 +194,7 @@ import toastr from "../assets/js/plugins/toastr/toastr.min.js";
 import "../assets/js/plugins/peity/jquery.peity.min.js";
 import 'viewerjs/dist/viewer.css'
 import VueViewer from 'v-viewer'
+import { VideoPlayer } from '@videojs-player/vue'
 toastr.options = {
   "closeButton": true,
   "debug": false,
@@ -227,7 +228,31 @@ export default {
       exist: null,
       share: null,
       outOfDate: null,
+      showPlayer: false,
+      audioOptions: {
+        autoplay: false,
+        controls: true,
+        bigPlayButton: true,
+        sources:
+        {
+            src: '',
+            type: '',
+        },
+    },
+      videoOptions: {
+        autoplay: false,
+        controls: true,
+        bigPlayButton: true,
+        sources:
+        {
+            src: '',
+            type: '',
+        },
+      },
     };
+  },
+  components: {
+    VideoPlayer,
   },
   computed: {
     formattedLastTime() {
@@ -284,6 +309,7 @@ export default {
         window.open('/preview?fileID=' + file.fileId + '&&fileType=' + file.fileType, '_blank');
       }
     },
+    closePlayer() { this.showPlayer = false; },
     initializePeity() {
       this.$nextTick(() => {
         $('span.pie').peity('pie', {
