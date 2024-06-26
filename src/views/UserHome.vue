@@ -149,7 +149,7 @@
                                                 <div>
                                                     &nbsp;<a @click="collectionFolder(folder.folderId)"><i class="fa"
                                                         :class="folderCollectionStatus[folder.folderId] ? 'fa-star' : 'fa-star-o'"></i></a>
-                                                    &nbsp;<a @click="recycleBinFolder(folder.folderId)"><i
+                                                    &nbsp;<a v-if="userAuth!=2" @click="recycleBinFolder(folder.folderId)"><i
                                                             class="fa fa-trash-o"></i></a>
                                                 </div>
                                                 <div class="file-name">
@@ -187,7 +187,7 @@
                                                         :class="fileCollectionStatus[file.fileId] ? 'fa-star' : 'fa-star-o'"></i></a>
                                                     &nbsp;<a @click="downloadFile(file)"><i
                                                             class="fa fa-download"></i></a>
-                                                    &nbsp;<a @click="recycleBinFile(file.fileId)"><i
+                                                    &nbsp;<a v-if="userAuth!=2" @click="recycleBinFile(file.fileId)"><i
                                                             class="fa fa-trash-o"></i></a>
                                                 </div>
                                                 <div class="file-name">
