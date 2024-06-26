@@ -352,14 +352,10 @@
                                                     style="height: 11px;"></td>
                                         </tr>
                                     </tbody>
-                                    <tfoot>
-                                        <tr>
-                                            <td colspan="12" style="padding-top: 0%;padding-bottom: 0%;">
-                                                <ul class="pagination"></ul>
-                                            </td>
-                                        </tr>
-                                    </tfoot>
                                 </table>
+                                <div class="col-md-12 pull right">
+                                    <ul class="pagination pull-right"></ul>
+                                </div>
                             </div>
                         </div>
                     </div>
