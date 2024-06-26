@@ -276,11 +276,11 @@
                                                 <div class="btn-group">
                                                     <a v-if="!this.isTrash" @click="shareFolder(folder)">
                                                         <i class="fa fa-share-alt"></i>&nbsp;</a>
-                                                    <a v-if="!this.isTrash&&userAuth!=2" @click="recycleBinFolder(folder.folderId)">
+                                                    <a v-if="!this.isTrash&&userAuth!=2" @click="recycleBinFolder(folder.folderId,folder.folderName)">
                                                         <i class="fa fa-trash-o"></i>&nbsp;</a>
                                                     <a v-if="!this.isTrash" @click="cutFF(folder)"><i
                                                             class="fa fa-scissors"></i>&nbsp;</a>
-                                                    <a v-if="this.isTrash&&userAuth!=2" @click="deleteFolder(folder.folderId)"><i
+                                                    <a v-if="this.isTrash&&userAuth!=2" @click="deleteFolder(folder.folderId,folder.folderName)"><i
                                                             class="fa fa-trash-o"></i>&nbsp;</a>
                                                     <a v-if="this.isTrash" @click="replyTrashFolder(folder.folderId)"><i
                                                             class="fa fa-reply"></i>&nbsp;</a>
@@ -337,11 +337,11 @@
                                                         <i class="fa fa-share-alt"></i>&nbsp;</a>
                                                     <a v-if="!this.isTrash" @click="downloadFile(file)"><i
                                                             class="fa fa-download"></i>&nbsp;</a>
-                                                    <a v-if="!this.isTrash&&userAuth!=2" @click="recycleBinFile(file.fileId)"><i
+                                                    <a v-if="!this.isTrash&&userAuth!=2" @click="recycleBinFile(file.fileId,file.fileName)"><i
                                                             class="fa fa-trash-o"></i>&nbsp;</a>
                                                     <a v-if="!this.isTrash" @click="cutFF(file)"><i
                                                             class="fa fa-scissors"></i>&nbsp;</a>
-                                                    <a v-if="this.isTrash&&userAuth!=2" @click="deleteFile(file.fileId)"><i
+                                                    <a v-if="this.isTrash&&userAuth!=2" @click="deleteFile(file.fileId,file.fileName)"><i
                                                             class="fa fa-trash-o"></i>&nbsp;</a>
                                                     <a v-if="this.isTrash" @click="replyTrashFile(file.fileId)"><i
                                                             class="fa fa-reply"></i>&nbsp;</a>
@@ -819,7 +819,7 @@ export default {
                 this.$swal.fire('操作取消', '标签未更改', 'info');
             }
         },
-        async recycleBinFile(fileId) {
+        async recycleBinFile(fileId,fileName) {
             const result = await this.$swal.fire({
                 title: '是否将文件放入回收站',
                 icon: 'warning',
@@ -829,6 +829,7 @@ export default {
             });
             if (result.isConfirmed) {
                 await axios.post('/api/recycleBinFile', { "fileId": fileId, "status": 1 });
+                await axios.post('/api/insertRecycleFileLog', { "userId":this.userData.userId,"fileName": fileName});
                 this.$swal.fire('操作成功', '文件已放入回收站', 'success');
                 this.enterPath(this.currentFolder.folderId);
             }
@@ -836,7 +837,7 @@ export default {
                 this.$swal.fire('操作取消', '文件未放入回收站', 'info');
             }
         },
-        async recycleBinFolder(folderId) {
+        async recycleBinFolder(folderId,folderName) {
             const result = await this.$swal.fire({
                 title: '是否将文件夹放入回收站',
                 icon: 'warning',
@@ -846,6 +847,7 @@ export default {
             });
             if (result.isConfirmed) {
                 await axios.post('/api/recycleBinFolder', { "folderId": folderId, "status": 1 });
+                await axios.post('/api/insertRecycleFolderLog', { "userId":this.userData.userId,"folderName": folderName});
                 this.$swal.fire('操作成功', '文件夹已放入回收站', 'success');
                 this.enterPath(this.currentFolder.folderId);
             }
@@ -932,7 +934,7 @@ export default {
                 this.$swal.fire('操作取消', '文件和文件夹未还原', 'info');
             }
         },
-        async deleteFile(fileId) {
+        async deleteFile(fileId,fileName) {
             const result = await this.$swal.fire({
                 title: '是否将文件删除',
                 icon: 'warning',
@@ -942,6 +944,7 @@ export default {
             });
             if (result.isConfirmed) {
                 await axios.post('/api/deleteFile', { "fileId": fileId });
+                await axios.post('/api/insertDeleteFileLog', { "userId":this.userData.userId,"fileName": fileName});
                 this.$swal.fire('操作成功', '文件已删除', 'success');
                 //更新容量
                 const event = new CustomEvent('update-capacity', {});
@@ -952,7 +955,7 @@ export default {
                 this.$swal.fire('操作取消', '文件未删除', 'info');
             }
         },
-        async deleteFolder(folderId) {
+        async deleteFolder(folderId,folderName) {
             const result = await this.$swal.fire({
                 title: '是否将文件夹删除',
                 icon: 'warning',
@@ -962,6 +965,7 @@ export default {
             });
             if (result.isConfirmed) {
                 await axios.post('/api/deleteFolder', { "folderId": folderId });
+                await axios.post('/api/insertDeleteFolderLog', { "userId":this.userData.userId,"folderName": folderName});
                 this.$swal.fire('操作成功', '文件夹已删除', 'success');
                 //更新容量
                 const event = new CustomEvent('update-capacity', {});
@@ -983,9 +987,11 @@ export default {
             if (result.isConfirmed) {
                 for (const folder of this.selectedFolders) {
                     await axios.post('/api/deleteFolder', { "folderId": folder.folderId });
+                    await axios.post('/api/insertDeleteFolderLog', { "userId":this.userData.userId,"folderId": folder.folderName});
                 }
                 for (const file of this.selectedFiles) {
                     await axios.post('/api/deleteFile', { "fileId": file.fileId });
+                    await axios.post('/api/insertDeleteFileLog', { "userId":this.userData.userId,"fileId": file.fileName});
                 }
                 this.$swal.fire('操作成功', '文件和文件夹已删除', 'success');
                 //更新容量
@@ -1384,9 +1390,11 @@ export default {
             if (result.isConfirmed) {
                 for (const folder of this.selectedFolders) {
                     await axios.post('/api/recycleBinFolder', { "folderId": folder.folderId, "status": 1 });
+                    await axios.post('/api/insertRecycleFolderLog', { "userId":this.userData.userId,"folderId": folder.folderName});
                 }
                 for (const file of this.selectedFiles) {
                     await axios.post('/api/recycleBinFile', { "fileId": file.fileId, "status": 1 });
+                    await axios.post('/api/insertRecycleFileLog', { "userId":this.userData.userId,"folderfileIdId": file.fileName});
                 }
                 this.$swal.fire('操作成功', '所选文件和文件夹已放入回收站', 'success');
                 this.enterPath(this.currentFolder.folderId);

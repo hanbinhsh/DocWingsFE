@@ -521,7 +521,7 @@ export default {
         },
         async deleteGroup(groupId) {
             const actionCallback = async () => {
-                await axios.post('/api/deleteUserByGroupId', {"groupId": groupId })
+                await axios.post('/api/updateUsersGroup', {"groupId": groupId })
                 await axios.post('/api/deleteUserGroupByGroupId', {"groupId": groupId })
                 toastr.success('用户组删除成功', '成功');
                 await this.updateUserInfo();
