@@ -1410,10 +1410,10 @@ export default {
             this.currentCuttingSelectFolders.forEach(element => {
                 axios.post(`/api/changeFolderRouteById?id=${element.folderId}&parentId=${this.currentFolder.folderId}`);
             });
+            toastr.success(`成功粘贴${this.currentCuttingSelectFiles.length + this.currentCuttingSelectFolders.length}个文件`, "成功");
             this.currentCuttingSelectFiles = [];
             this.currentCuttingSelectFolders = [];
             this.isCuttingSeletion = false;
-            toastr.success(`成功粘贴${this.currentCuttingSelectFiles.length + this.currentCuttingSelectFolders.length}个文件`, "成功");
             this.enterPath(this.currentFolder.folderId)
         },
         allCheckbox() {
