@@ -58,10 +58,6 @@
                                                     class="btn btn-success  btn-xs pull-right">
                                                     新增用户组
                                                 </a>
-                                                <a @click.prevent="deleteGroup()"
-                                                    class="btn btn-danger  btn-xs pull-right">
-                                                    删除用户组
-                                                </a>
                                                 <h2>操作</h2>
                                             </div>
                                         </div>
@@ -176,7 +172,7 @@
                                                                                     class="fa fa-edit"></i></a>
                                                                         </td>
                                                                         <td>
-                                                                            <a @click="deleteGroup()"><i
+                                                                            <a @click="deleteGroup(group.groupId)"><i
                                                                                     class="fa fa-trash-o"></i></a>
                                                                         </td>
                                                                     </tr>
@@ -523,34 +519,14 @@ export default {
             };
             await this.validateUser(actionCallback, additionalInput);
         },
-        async deleteGroup() {
-            const additionalInput = {
-                title: '用户组删除',
-                input: 'text',
-                inputLabel: '请输入用户组名',
-                showCancelButton: true,
-                confirmButtonText: '确定',
-                cancelButtonText: '取消',
-                inputValidator: (groupName) => {
-                    if (!groupName) {
-                        return '未输入用户组名！';
-                    }
-                }
-            };
-            const actionCallback = async (groupName) => {
-                const response = await axios.post('/api/findUserGroupByName?name=' + groupName);
-                const data = response.data.data;
-                if (data.state == 0) {
-                    this.$swal.fire('用户组不存在', '请重新输入', 'error');
-                    return;
-                }
-                const acceptGroupId = data.userGroup.groupId;
-                await axios.post('/api/deleteUserByGroupId', { "groupId": acceptGroupId })
-                await axios.post('/api/deleteUserGroupByGroupId', { "groupId": acceptGroupId })
+        async deleteGroup(groupId) {
+            const actionCallback = async () => {
+                await axios.post('/api/deleteUserByGroupId', {"groupId": groupId })
+                await axios.post('/api/deleteUserGroupByGroupId', {"groupId": groupId })
                 toastr.success('用户组删除成功', '成功');
                 await this.updateUserInfo();
             };
-            await this.validateUser(actionCallback, additionalInput);
+            await this.validateUser(actionCallback);
         },
         async findGroupNameByUserId(userId) {
             const response = await axios.post('/api/findGroupNameByUserId', { "userId": userId });
