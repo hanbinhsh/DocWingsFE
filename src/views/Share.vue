@@ -408,7 +408,7 @@ export default {
                                 <option value="2">仅查看</option>
                             </select>
                         </div>
-                        <label class="control-label">延长时间或缩短时间</label>
+                        <label class="control-label">延长时间</label>
                         <div>
                             <div class="col-md-4">
                                 <input type="text" id="share_day" class="form-control" placeholder="0" style="text-align: center;">
@@ -524,7 +524,7 @@ export default {
                 this.$swal.fire('操作成功', '分享已删除', 'success');
             }
             else {
-                this.$swal.fire('操作取消', '文件未删除', 'info');
+                this.$swal.fire('操作取消', '分享未删除', 'info');
             }
             await this.getShares();
         }
