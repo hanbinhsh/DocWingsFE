@@ -353,7 +353,7 @@
                                         </tr>
                                     </tbody>
                                 </table>
-                                <div class="col-md-12 pull right">
+                                <div class="col-sm-12">
                                     <ul class="pagination pull-right"></ul>
                                 </div>
                             </div>
