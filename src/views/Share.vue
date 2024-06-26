@@ -5,10 +5,10 @@
                 <div class="sidebar-collapse">
                     <ul class="nav metismenu" id="side-menu">
                         <UserItem />
-                        <li v-if="userAuth!=3">
+                        <li v-if="userAuth != 3">
                             <a href="userhome"><i class="fa fa-laptop"></i> <span class="nav-label">主页</span></a>
                         </li>
-                        <li v-if="userAuth!=3">
+                        <li v-if="userAuth != 3">
                             <a><i class="fa fa-folder-o"></i> <span class="nav-label">文件管理</span><span
                                     class="fa arrow"></span></a>
                             <ul class="nav nav-second-level collapse">
@@ -23,7 +23,7 @@
                         <li class="active">
                             <a href="share"><i class="fa fa-share-square-o"></i> <span class="nav-label">分享</span></a>
                         </li>
-                        <li v-if="userAuth!=3">
+                        <li v-if="userAuth != 3">
                             <a href="trash"><i class="fa fa-trash-o"></i> <span class="nav-label">回收站</span></a>
                         </li>
                         <li v-if="isAdmin()">
@@ -47,7 +47,8 @@
                         <h2>分享</h2>
                     </div>
                 </div>
-                <div class="wrapper wrapper-content animated fadeInRight" style="padding-bottom: 0px" v-if="userAuth!=3">
+                <div class="wrapper wrapper-content animated fadeInRight" style="padding-bottom: 0px"
+                    v-if="userAuth != 3">
                     <div class="row">
                         <div class="col-lg-12">
                             <div class="ibox float-e-margins">
@@ -62,19 +63,19 @@
                                 <div class="ibox-content">
                                     <div class="m-b-lg">
                                         <div class="input-group">
-                                            <input type="text" placeholder="输入要查找的分享......"
-                                                class=" form-control">
+                                            <input type="text" placeholder="输入要查找的分享......" class=" form-control">
                                             <span class="input-group-btn">
                                                 <button type="button" class="btn btn-white"> 查找</button>
                                             </span>
                                         </div>
                                         <div class="m-t-md">
                                             <div class="pull-right">
-                                                <button class="btn btn-white btn-sm" data-toggle="tooltip" data-placement="left"
-                                                    title="刷新页面" @click="getShares()"><i class="fa fa-refresh"></i> 刷新</button>&nbsp;
+                                                <button class="btn btn-white btn-sm" data-toggle="tooltip"
+                                                    data-placement="left" title="刷新页面" @click="getShares()"><i
+                                                        class="fa fa-refresh"></i> 刷新</button>&nbsp;
                                                 <a href="allfiles" class="btn btn-primary btn-sm">新建分享</a>
                                             </div>
-                                            <strong>共{{this.shareCount}}条分享</strong>
+                                            <strong>共{{ this.shareCount }}条分享</strong>
                                         </div>
                                     </div>
                                     <div class="table-responsive ibox">
@@ -106,46 +107,64 @@
                                                 <td>操作</td>
                                             </thead>
                                             <tbody>
-                                                <tr v-for="(share, index) in shares" :key="index" @dblclick="" class="read">
+                                                <tr v-for="(share, index) in shares" :key="index" @dblclick=""
+                                                    class="read">
                                                     <td>
-                                                        <span v-if="share.validate==0" class="label label-danger">已过期</span>
-                                                        <span v-if="share.validate==1" class="label label-primary">正常</span>
-                                                        <span v-if="share.validate==2" class="label label-info">无限</span>
+                                                        <span v-if="share.validate == 0"
+                                                            class="label label-danger">已过期</span>
+                                                        <span v-if="share.validate == 1"
+                                                            class="label label-primary">正常</span>
+                                                        <span v-if="share.validate == 2"
+                                                            class="label label-info">无限</span>
                                                     </td>
                                                     <td>
-                                                        <i v-if="share.isFolder==1" class="fa fa-folder-o"></i>
-                                                        <i v-else-if="share.fileType.startsWith('image/')" class="fa fa-file-image-o"></i>
-                                                        <i v-else-if="share.fileType.includes('pdf')" class="fa fa-file-pdf-o"></i>
-                                                        <i v-else-if="share.fileType.includes('word')" class="fa fa-file-word-o"></i>
-                                                        <i v-else-if="share.fileType.includes('excel')" class="fa fa-file-excel-o"></i>
-                                                        <i v-else-if="share.fileType.includes('sheet')" class="fa fa-file-excel-o"></i>
-                                                        <i v-else-if="share.fileType.includes('powerpoint')" class="fa fa-file-powerpoint-o"></i>
-                                                        <i v-else-if="share.fileType.includes('presentation')" class="fa fa-file-powerpoint-o"></i>
-                                                        <i v-else-if="share.fileType.startsWith('video/')" class="fa fa-file-movie-o"></i>
-                                                        <i v-else-if="share.fileType.startsWith('audio/')" class="fa fa-file-audio-o"></i>
-                                                        <i v-else-if="share.fileType.includes('compressed')" class="fa fa-file-archive-o"></i>
+                                                        <i v-if="share.isFolder == 1" class="fa fa-folder-o"></i>
+                                                        <i v-else-if="share.fileType.startsWith('image/')"
+                                                            class="fa fa-file-image-o"></i>
+                                                        <i v-else-if="share.fileType.includes('pdf')"
+                                                            class="fa fa-file-pdf-o"></i>
+                                                        <i v-else-if="share.fileType.includes('word')"
+                                                            class="fa fa-file-word-o"></i>
+                                                        <i v-else-if="share.fileType.includes('excel')"
+                                                            class="fa fa-file-excel-o"></i>
+                                                        <i v-else-if="share.fileType.includes('sheet')"
+                                                            class="fa fa-file-excel-o"></i>
+                                                        <i v-else-if="share.fileType.includes('powerpoint')"
+                                                            class="fa fa-file-powerpoint-o"></i>
+                                                        <i v-else-if="share.fileType.includes('presentation')"
+                                                            class="fa fa-file-powerpoint-o"></i>
+                                                        <i v-else-if="share.fileType.startsWith('video/')"
+                                                            class="fa fa-file-movie-o"></i>
+                                                        <i v-else-if="share.fileType.startsWith('audio/')"
+                                                            class="fa fa-file-audio-o"></i>
+                                                        <i v-else-if="share.fileType.includes('compressed')"
+                                                            class="fa fa-file-archive-o"></i>
                                                         <i v-else class="fa fa-file-o"></i>
                                                     </td>
-                                                    <td v-if="share.isFolder==0">{{share.fileName}}</td>
-                                                    <td v-if="share.isFolder==1">{{share.folderName}}</td>
-                                                    <td>{{share.auth==1 ? '全部权限' : '仅查看'}}</td>
-                                                    <td><a @click=""><i class="fa fa-edit"></i></a></td>
-                                                    <td>{{share.accepterName}}</td>
-                                                    <td><a @click=""><i class="fa fa-edit"></i></a></td>
-                                                    <td>{{share.acceptGroupName}}</td>
-                                                    <td><a @click=""><i class="fa fa-edit"></i></a></td>
-                                                    <td>{{new Date(share.shareTime).toLocaleString()}}</td>
-                                                    <td v-if="share.dueTime==null">无限</td>
-                                                    <td v-if="share.dueTime!=null">
-                                                        {{new Date(share.dueTime).toLocaleString()}}
-                                                        <span v-if="share.lastRatio>0" class="pie">{{ share.lastRatio }}/1</span>
+                                                    <td v-if="share.isFolder == 0">{{ share.fileName }}</td>
+                                                    <td v-if="share.isFolder == 1">{{ share.folderName }}</td>
+                                                    <td>{{ share.auth == 1 ? '全部权限' : '仅查看' }}</td>
+                                                    <td></td>
+                                                    <td>{{ share.accepterName }}</td>
+                                                    <td></td>
+                                                    <td>{{ share.acceptGroupName }}</td>
+                                                    <td></td>
+                                                    <td>{{ new Date(share.shareTime).toLocaleString() }}</td>
+                                                    <td v-if="share.dueTime == null">无限</td>
+                                                    <td v-if="share.dueTime != null">
+                                                        {{ new Date(share.dueTime).toLocaleString() }}
+                                                        <span v-if="share.lastRatio > 0" class="pie">{{ share.lastRatio
+                                                            }}/1</span>
                                                     </td>
-                                                    <td><a @click=""><i class="fa fa-edit"></i></a></td>
+                                                    <td></td>
                                                     <td>
                                                         <div class="btn-group">
+                                                            <a @click.prevent="updateShare(share)"><i class="fa fa-edit"></i>&nbsp;</a>
                                                             <a @click=""><i class="fa fa-trash-o"></i>&nbsp;</a>
-                                                            <a @click="enterSharePage(share.shareId)"><i class="fa fa-eye"></i>&nbsp;</a>
-                                                            <a @click="copySharePage(share.shareId)"><i class="fa fa-copy"></i>&nbsp;</a>
+                                                            <a @click="enterSharePage(share.shareId)"><i
+                                                                    class="fa fa-eye"></i>&nbsp;</a>
+                                                            <a @click="copySharePage(share.shareId)"><i
+                                                                    class="fa fa-copy"></i>&nbsp;</a>
                                                         </div>
                                                     </td>
                                                 </tr>
@@ -172,19 +191,19 @@
                                 <div class="ibox-content">
                                     <div class="m-b-lg">
                                         <div class="input-group">
-                                            <input type="text" placeholder="输入要查找的分享......"
-                                                class=" form-control">
+                                            <input type="text" placeholder="输入要查找的分享......" class=" form-control">
                                             <span class="input-group-btn">
                                                 <button type="button" class="btn btn-white"> 查找</button>
                                             </span>
                                         </div>
                                         <div class="m-t-md">
                                             <div class="pull-right">
-                                                <button class="btn btn-white btn-sm" data-toggle="tooltip" data-placement="left"
-                                                    title="刷新页面" @click="getShares()"><i class="fa fa-refresh"></i> 刷新</button>&nbsp;
+                                                <button class="btn btn-white btn-sm" data-toggle="tooltip"
+                                                    data-placement="left" title="刷新页面" @click="getShares()"><i
+                                                        class="fa fa-refresh"></i> 刷新</button>&nbsp;
                                                 <a href="allfiles" class="btn btn-primary btn-sm">新建分享</a>
                                             </div>
-                                            <strong>共{{this.acceptCount}}条收到的分享</strong>
+                                            <strong>共{{ this.acceptCount }}条收到的分享</strong>
                                         </div>
                                     </div>
                                     <div class="table-responsive ibox">
@@ -212,41 +231,58 @@
                                                 <td>操作</td>
                                             </thead>
                                             <tbody>
-                                                <tr v-for="(share, index) in acceptions" :key="index" @dblclick="" class="read">
+                                                <tr v-for="(share, index) in acceptions" :key="index" @dblclick=""
+                                                    class="read">
                                                     <td>
-                                                        <span v-if="share.validate==0" class="label label-danger">已过期</span>
-                                                        <span v-if="share.validate==1" class="label label-primary">正常</span>
-                                                        <span v-if="share.validate==2" class="label label-info">无限</span>
+                                                        <span v-if="share.validate == 0"
+                                                            class="label label-danger">已过期</span>
+                                                        <span v-if="share.validate == 1"
+                                                            class="label label-primary">正常</span>
+                                                        <span v-if="share.validate == 2"
+                                                            class="label label-info">无限</span>
                                                     </td>
                                                     <td>
-                                                        <i v-if="share.isFolder==1" class="fa fa-folder-o"></i>
-                                                        <i v-else-if="share.fileType.startsWith('image/')" class="fa fa-file-image-o"></i>
-                                                        <i v-else-if="share.fileType.includes('pdf')" class="fa fa-file-pdf-o"></i>
-                                                        <i v-else-if="share.fileType.includes('word')" class="fa fa-file-word-o"></i>
-                                                        <i v-else-if="share.fileType.includes('excel')" class="fa fa-file-excel-o"></i>
-                                                        <i v-else-if="share.fileType.includes('sheet')" class="fa fa-file-excel-o"></i>
-                                                        <i v-else-if="share.fileType.includes('powerpoint')" class="fa fa-file-powerpoint-o"></i>
-                                                        <i v-else-if="share.fileType.includes('presentation')" class="fa fa-file-powerpoint-o"></i>
-                                                        <i v-else-if="share.fileType.startsWith('video/')" class="fa fa-file-movie-o"></i>
-                                                        <i v-else-if="share.fileType.startsWith('audio/')" class="fa fa-file-audio-o"></i>
-                                                        <i v-else-if="share.fileType.includes('compressed')" class="fa fa-file-archive-o"></i>
+                                                        <i v-if="share.isFolder == 1" class="fa fa-folder-o"></i>
+                                                        <i v-else-if="share.fileType.startsWith('image/')"
+                                                            class="fa fa-file-image-o"></i>
+                                                        <i v-else-if="share.fileType.includes('pdf')"
+                                                            class="fa fa-file-pdf-o"></i>
+                                                        <i v-else-if="share.fileType.includes('word')"
+                                                            class="fa fa-file-word-o"></i>
+                                                        <i v-else-if="share.fileType.includes('excel')"
+                                                            class="fa fa-file-excel-o"></i>
+                                                        <i v-else-if="share.fileType.includes('sheet')"
+                                                            class="fa fa-file-excel-o"></i>
+                                                        <i v-else-if="share.fileType.includes('powerpoint')"
+                                                            class="fa fa-file-powerpoint-o"></i>
+                                                        <i v-else-if="share.fileType.includes('presentation')"
+                                                            class="fa fa-file-powerpoint-o"></i>
+                                                        <i v-else-if="share.fileType.startsWith('video/')"
+                                                            class="fa fa-file-movie-o"></i>
+                                                        <i v-else-if="share.fileType.startsWith('audio/')"
+                                                            class="fa fa-file-audio-o"></i>
+                                                        <i v-else-if="share.fileType.includes('compressed')"
+                                                            class="fa fa-file-archive-o"></i>
                                                         <i v-else class="fa fa-file-o"></i>
                                                     </td>
-                                                    <td v-if="share.isFolder==0">{{share.fileName}}</td>
-                                                    <td v-if="share.isFolder==1">{{share.folderName}}</td>
-                                                    <td>{{share.auth==1 ? '全部权限' : '仅查看'}}</td>
-                                                    <td>{{share.accepterName}}</td>
-                                                    <td>{{share.acceptGroupName}}</td>
-                                                    <td>{{new Date(share.shareTime).toLocaleString()}}</td>
-                                                    <td v-if="share.dueTime==null">无限</td>
-                                                    <td v-if="share.dueTime!=null">
-                                                        {{new Date(share.dueTime).toLocaleString()}}
-                                                        <span v-if="share.lastRatio>0" class="pie">{{ share.lastRatio }}/1</span>
+                                                    <td v-if="share.isFolder == 0">{{ share.fileName }}</td>
+                                                    <td v-if="share.isFolder == 1">{{ share.folderName }}</td>
+                                                    <td>{{ share.auth == 1 ? '全部权限' : '仅查看' }}</td>
+                                                    <td>{{ share.accepterName }}</td>
+                                                    <td>{{ share.acceptGroupName }}</td>
+                                                    <td>{{ new Date(share.shareTime).toLocaleString() }}</td>
+                                                    <td v-if="share.dueTime == null">无限</td>
+                                                    <td v-if="share.dueTime != null">
+                                                        {{ new Date(share.dueTime).toLocaleString() }}
+                                                        <span v-if="share.lastRatio > 0" class="pie">{{ share.lastRatio
+                                                            }}/1</span>
                                                     </td>
                                                     <td>
                                                         <div class="btn-group">
-                                                            <a @click="enterSharePage(share.shareId)"><i class="fa fa-eye"></i>&nbsp;</a>
-                                                            <a @click="copySharePage(share.shareId)"><i class="fa fa-copy"></i>&nbsp;</a>
+                                                            <a @click="enterSharePage(share.shareId)"><i
+                                                                    class="fa fa-eye"></i>&nbsp;</a>
+                                                            <a @click="copySharePage(share.shareId)"><i
+                                                                    class="fa fa-copy"></i>&nbsp;</a>
                                                         </div>
                                                     </td>
                                                 </tr>
@@ -279,20 +315,20 @@ import UserItem from '@/components/UserItem.vue'
 import FootBar from '@/components/FootBar.vue'
 import toastr from "../assets/js/plugins/toastr/toastr.min.js"
 toastr.options = {
-	"closeButton": true,
-	"debug": false,
-	"progressBar": true,
-	"preventDuplicates": true,
-	"positionClass": "toast-bottom-center",
-	"onclick": null,
-	"showDuration": "400",
-	"hideDuration": "1000",
-	"timeOut": "7000",
-	"extendedTimeOut": "1000",
-	"showEasing": "swing",
-	"hideEasing": "linear",
-	"showMethod": "fadeIn",
-	"hideMethod": "fadeOut"
+    "closeButton": true,
+    "debug": false,
+    "progressBar": true,
+    "preventDuplicates": true,
+    "positionClass": "toast-bottom-center",
+    "onclick": null,
+    "showDuration": "400",
+    "hideDuration": "1000",
+    "timeOut": "7000",
+    "extendedTimeOut": "1000",
+    "showEasing": "swing",
+    "hideEasing": "linear",
+    "showMethod": "fadeIn",
+    "hideMethod": "fadeOut"
 }
 export default {
     name: 'Share',
@@ -311,8 +347,8 @@ export default {
         this.getShares()
     },
     methods: {
-        showLoading() {this.loading = true;},
-        hideLoading() {this.loading = false;},
+        showLoading() { this.loading = true; },
+        hideLoading() { this.loading = false; },
         async getShares() {
             this.showLoading()
             const res = await axios.get("api/getSharesByUserId?userId=" + this.userData.userId);
@@ -353,13 +389,127 @@ export default {
         isAdmin() {
             return this.userData.isAdmin; // 检查is_admin属性是否为true
         },
-        enterSharePage(shareId){
-            window.open('shareaccept/'+shareId);
+        enterSharePage(shareId) {
+            window.open('shareaccept/' + shareId);
         },
-        copySharePage(shareId){
+        copySharePage(shareId) {
             const url = window.location.href.split('#')[0] + 'accept/' + shareId;
             navigator.clipboard.writeText(url)
             toastr.success("复制分享连接成功", "成功");
+        },
+        async updateShare(share) {
+            const { value: formValues } = await this.$swal.fire({
+                title: '修改分享',
+                html: `
+                        <label class="control-label">权限</label>
+                        <div class="form-group">
+                            <select id="share_select" class="form-control">
+                                <option value="1">全部权限</option>
+                                <option value="2">仅查看</option>
+                            </select>
+                        </div>
+                        <label class="control-label">延长时间或缩短时间</label>
+                        <div>
+                            <div class="col-md-4">
+                                <input type="text" id="share_day" class="form-control" placeholder="0" style="text-align: center;">
+                                <span>天</span>
+                            </div>
+                            <div class="col-md-4">
+                                <input type="text" id="share_hour" class="form-control" placeholder="0" style="text-align: center;">
+                                <span>时</span>
+                            </div>
+                            <div class="col-md-4">
+                                <input type="text" id="share_minute" class="form-control" placeholder="0" style="text-align: center;">
+                                <span>分</span>
+                            </div>
+                        </div>
+                        <label class="control-label">接收者</label>
+                        <div class="form-group">
+                            <input type="text" id="share_accepter" class="form-control" placeholder="接收者用户名(为空表示所有用户)" style="text-align: center;">
+                        </div>
+                        <label class="control-label">接收用户组</label>
+                        <div class="form-group">
+                            <input type="text" id="share_acceptgroup" class="form-control" placeholder="接收者用户组名(为空表示所有用户组)" style="text-align: center;">
+                        </div>
+                    `,
+                showCancelButton: true,
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                didOpen: () => {
+                    // 在对话框打开之后设置输入框的值
+                    document.getElementById('share_select').value = share.auth;
+                    document.getElementById('share_accepter').value = share.accepterName || '';
+                    document.getElementById('share_acceptgroup').value = share.acceptGroupName || '';
+                },
+                preConfirm: () => {
+                    return {
+                        permission: document.getElementById('share_select').value,
+                        day: document.getElementById('share_day').value || 0,
+                        hour: document.getElementById('share_hour').value || 0,
+                        minute: document.getElementById('share_minute').value || 0,
+                        accepter: document.getElementById('share_accepter').value,
+                        acceptGroupName: document.getElementById('share_acceptgroup').value,
+                    }
+                }
+            });
+            if (formValues) {
+                let userId = null
+                let acceptGroupId = null
+                if (formValues.day < 0 || formValues.hour < 0 || formValues.minute < 0) {
+                    this.$swal.fire('时间不能为负数', '请重新输入', 'error');
+                    return;
+                }
+                // 判断输入是否是数字
+                if (isNaN(formValues.day) || isNaN(formValues.hour) || isNaN(formValues.minute)) {
+                    this.$swal.fire('时间必须为数字', '请重新输入', 'error');
+                    return;
+                }
+                if (formValues.accepter) {
+                    if (formValues.accepter == this.userData.userName) {
+                        this.$swal.fire('不能分享给自己', '请重新输入', 'error');
+                        return;
+                    }
+                    const response = await axios.post('/api/queryIfExistsUserByUserName?userName=' + formValues.accepter);
+                    const data = response.data.data
+                    if (data.state == 0) {
+                        this.$swal.fire('用户不存在', '请重新输入', 'error');
+                        return;
+                    }
+                    userId = data.userId
+                }
+                if (formValues.acceptGroupName == '所有用户组')
+                {
+                    formValues.acceptGroupName = '';
+                } 
+                if (formValues.acceptGroupName) {
+                    const response = await axios.post('/api/findUserGroupByName?name=' + formValues.acceptGroupName);
+                    
+                    const data = response.data.data
+                    if (data.state == 0) {
+                        this.$swal.fire('用户组不存在', '请重新输入', 'error');
+                        return;
+                    }
+                    acceptGroupId = data.userGroup.groupId
+                }
+                const oldDueTime = new Date(share.dueTime);
+                const dueTime = new Date(oldDueTime.getTime() + formValues.day * 24 * 60 * 60 * 1000 + formValues.hour * 60 * 60 * 1000 + formValues.minute * 60 * 1000);
+                const shareData = {
+                    shareId:share.shareId,
+                    fileId: share.fileId,
+                    folderId: share.folderId,
+                    sharerId: share.sharerId,
+                    auth: share.auth,
+                    shareTime: share.shareTime,
+                    dueTime: dueTime,
+                    accepterId: userId ?? -2,
+                    acceptGroupId: acceptGroupId ?? -2,
+                    isFolder: 0
+                };
+                await axios.post('api/updateShare', [shareData])
+                this.$swal.fire('修改成功', '', 'success');
+                
+            }
+            await this.getShares();
         },
     },
     watch: {
