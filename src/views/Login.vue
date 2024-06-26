@@ -47,7 +47,7 @@ export default {
 <script setup>
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
-import axios from "axios";
+import axios, { Axios } from "axios";
 import Vcode from "vue3-puzzle-vcode";
 import toastr from "../assets/js/plugins/toastr/toastr.min.js"
 import "../assets/js/plugins/metisMenu/jquery.metisMenu.js"
@@ -112,6 +112,8 @@ async function login() {
 				sessionStorage.setItem('userData', JSON.stringify(response.data));
 				const auth = await axios.get('/api/findAuthByUserId?userId=' + response.data.userId);
 				sessionStorage.setItem('authData', auth.data);
+				const groupName = await axios.post('/api/findGroupNameByUserId',{userId: response.data.userId})
+				sessionStorage.setItem('groupName', groupName.data);
 				toastr.clear();  // 清空错误信息
 				// BUG 防止出错
 				if(auth==3){

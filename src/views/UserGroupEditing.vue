@@ -97,45 +97,45 @@
                                                                 <tbody>
                                                                     <tr v-for="(user) in users" class="read">
                                                                         <td>{{ user.userName }}</td>
-                                                                        <td><a
+                                                                        <td><a v-if="user.userId!=userData.userId&&user.userId!=1"
                                                                                 @click.prevent="updateUserName(user.userId)"><i
                                                                                     class="fa fa-edit"></i></a></td>
                                                                         <td>{{ user.groupName }}</td>
                                                                         <td>
-                                                                            <a
+                                                                            <a v-if="user.userId!=userData.userId&&user.userId!=1"
                                                                                 @click.prevent="updateGroup(user.userId)">
                                                                                 <i class="fa fa-arrows"></i>&nbsp;
                                                                             </a>
                                                                         </td>
                                                                         <td>{{ user.email }}</td>
-                                                                        <td><a
+                                                                        <td><a v-if="user.userId!=userData.userId&&user.userId!=1"
                                                                                 @click.prevent="updateEmail(user.userId)"><i
                                                                                     class="fa fa-edit"></i></a>
                                                                         </td>
                                                                         <td>{{ user.phone }}</td>
-                                                                        <td><a
+                                                                        <td><a v-if="user.userId!=userData.userId&&user.userId!=1"
                                                                                 @click.prevent="updatePhone(user.userId)"><i
                                                                                     class="fa fa-edit"></i></a>
                                                                         </td>
                                                                         <td v-if="user.accountLocked">已冻结</td>
                                                                         <td v-else>正常</td>
                                                                         <td>
-                                                                            <a v-if="user.accountLocked"
+                                                                            <a v-if="user.accountLocked&&user.userId!=userData.userId&&user.userId!=1"
                                                                                 @click.prevent="defrost(user.userId)">
                                                                                 <i class="fa fa-fire"></i>&nbsp;
                                                                             </a>
-                                                                            <a v-else
+                                                                            <a v-else v-if="user.userId!=userData.userId&&user.userId!=1"
                                                                                 @click.prevent="freeze(user.userId)">
                                                                                 <i class="fa fa-empire"></i>&nbsp;
                                                                             </a>
                                                                         </td>
                                                                         <td>
                                                                             <div class="btn-group">
-                                                                                <a
+                                                                                <a v-if="user.userId!=userData.userId&&user.userId!=1"
                                                                                     @click.prevent="resetPsw(user.userId)">
                                                                                     <i class="fa fa-key"></i>&nbsp;
                                                                                 </a>
-                                                                                <a
+                                                                                <a v-if="user.userId!=userData.userId&&user.userId!=1"
                                                                                     @click.prevent="unsubscribe(user.userId)">
                                                                                     <i class="fa fa-trash-o"></i>&nbsp;
                                                                                 </a>

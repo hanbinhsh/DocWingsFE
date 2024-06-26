@@ -66,7 +66,7 @@
                                             </strong>
                                         </h4>
                                         <h4><strong>
-                                                用户组ID:{{ userData.groupId }}
+                                                用户组名:{{ groupName }}
                                             </strong>
                                         </h4>
                                         <h4><strong>
@@ -146,6 +146,7 @@
             return {
                 userData: JSON.parse(sessionStorage.getItem('userData')) || {},
                 userAuth: sessionStorage.getItem("authData") || 3,
+                groupName: sessionStorage.getItem("groupName")  || {},
             }
         },
         components: {
