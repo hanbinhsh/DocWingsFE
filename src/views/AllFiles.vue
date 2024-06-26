@@ -203,7 +203,7 @@
                                                 <button class="btn btn-white btn-sm" @click="downloadSelections()">
                                                     <i class="fa fa-download"></i> 下载
                                                 </button>&nbsp;
-                                                <button class="btn btn-white btn-sm" @click="recycleSelections()">
+                                                <button v-if="userAuth!=2" class="btn btn-white btn-sm" @click="recycleSelections()">
                                                     <i class="fa fa-trash-o"></i> 放入回收站
                                                 </button>&nbsp;
                                                 <button class="btn btn-white btn-sm" @click="cutSelections()">
@@ -215,7 +215,7 @@
                                                 <button class="btn btn-white btn-sm" @click="replyTrashSelections()">
                                                     <i class="fa fa-reply"></i> 恢复
                                                 </button>&nbsp;
-                                                <button class="btn btn-white btn-sm" @click="deleteSelections()">
+                                                <button v-if="userAuth!=2" class="btn btn-white btn-sm" @click="deleteSelections()">
                                                     <i class="fa fa-trash-o"></i> 删除
                                                 </button>&nbsp;
                                             </span>
@@ -276,11 +276,11 @@
                                                 <div class="btn-group">
                                                     <a v-if="!this.isTrash" @click="shareFolder(folder)">
                                                         <i class="fa fa-share-alt"></i>&nbsp;</a>
-                                                    <a v-if="!this.isTrash" @click="recycleBinFolder(folder.folderId)">
+                                                    <a v-if="!this.isTrash&&userAuth!=2" @click="recycleBinFolder(folder.folderId)">
                                                         <i class="fa fa-trash-o"></i>&nbsp;</a>
                                                     <a v-if="!this.isTrash" @click="cutFF(folder)"><i
                                                             class="fa fa-scissors"></i>&nbsp;</a>
-                                                    <a v-if="this.isTrash" @click="deleteFolder(folder.folderId)"><i
+                                                    <a v-if="this.isTrash&&userAuth!=2" @click="deleteFolder(folder.folderId)"><i
                                                             class="fa fa-trash-o"></i>&nbsp;</a>
                                                     <a v-if="this.isTrash" @click="replyTrashFolder(folder.folderId)"><i
                                                             class="fa fa-reply"></i>&nbsp;</a>
@@ -337,11 +337,11 @@
                                                         <i class="fa fa-share-alt"></i>&nbsp;</a>
                                                     <a v-if="!this.isTrash" @click="downloadFile(file)"><i
                                                             class="fa fa-download"></i>&nbsp;</a>
-                                                    <a v-if="!this.isTrash" @click="recycleBinFile(file.fileId)"><i
+                                                    <a v-if="!this.isTrash&&userAuth!=2" @click="recycleBinFile(file.fileId)"><i
                                                             class="fa fa-trash-o"></i>&nbsp;</a>
                                                     <a v-if="!this.isTrash" @click="cutFF(file)"><i
                                                             class="fa fa-scissors"></i>&nbsp;</a>
-                                                    <a v-if="this.isTrash" @click="deleteFile(file.fileId)"><i
+                                                    <a v-if="this.isTrash&&userAuth!=2" @click="deleteFile(file.fileId)"><i
                                                             class="fa fa-trash-o"></i>&nbsp;</a>
                                                     <a v-if="this.isTrash" @click="replyTrashFile(file.fileId)"><i
                                                             class="fa fa-reply"></i>&nbsp;</a>
