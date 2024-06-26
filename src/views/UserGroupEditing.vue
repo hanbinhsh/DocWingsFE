@@ -58,10 +58,6 @@
                                                     class="btn btn-success  btn-xs pull-right">
                                                     新增用户组
                                                 </a>
-                                                <a @click.prevent="deleteGroup()"
-                                                    class="btn btn-danger  btn-xs pull-right">
-                                                    删除用户组
-                                                </a>
                                                 <h2>操作</h2>
                                             </div>
                                         </div>
