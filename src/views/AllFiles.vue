@@ -450,6 +450,8 @@ import TopBar from '@/components/TopBar.vue'
 import FileDropzone from '../components/FileDropzone.vue'
 import UserItem from '@/components/UserItem.vue'
 import FootBar from '@/components/FootBar.vue'
+import { onMounted } from 'vue';
+import { useRoute } from 'vue-router';
 toastr.options = {
     "closeButton": true,
     "debug": false,
@@ -468,6 +470,7 @@ toastr.options = {
 }
 export default {
     name: 'Profile',
+    setup() {},
     data() {
         return {
             categoryCapacity: {},
@@ -519,6 +522,12 @@ export default {
         };
     },
     created() {
+        const route = useRoute();
+        const folderId = route.query.folderId;
+        if (folderId) {  //用户主页跳转
+            this.enterPath(folderId);
+            return;
+        }
         this.checkRoute();
         if (this.isTrash) {
             this.enterPathTrash();

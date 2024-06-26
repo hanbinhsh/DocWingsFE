@@ -9,12 +9,12 @@
             <div class="modal-dialog modal-lg">
                 <div class="modal-content">
                     <div class="modal-header">
-                        {{this.audio_videoTitle}}
+                        {{audio_videoTitle}}
                         <button @click="closePlayer" type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
                     </div>
                     <div class="modal-body">
                         <div class="text-center">
-                            <VideoPlayer v-if="showPlayer" :options="this.audioOptions" 
+                            <VideoPlayer v-if="showPlayer" :options="audioOptions" 
                             :key="new Date().getTime()"
                             class="video-js-a vjs-big-play-centered"/>
                         </div>
@@ -26,12 +26,12 @@
             <div class="modal-dialog modal-lg">
                 <div class="modal-content">
                     <div class="modal-header">
-                        {{this.audio_videoTitle}}
+                        {{audio_videoTitle}}
                         <button @click="closePlayer" type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
                     </div>
                     <div class="modal-body">
                         <div class="text-center">
-                            <VideoPlayer v-if="showPlayer" :options="this.videoOptions" 
+                            <VideoPlayer v-if="showPlayer" :options="videoOptions" 
                             :key="new Date().getTime()"
                             class="video-js-v vjs-big-play-centered"/>
                         </div>
@@ -89,11 +89,19 @@
                         <div class="col-lg-3">
                             <div class="ibox float-e-margins">
                                 <div class="ibox-content">
+                                    <div class="btn-group pull-right">
+                                        <!-- <button class="btn btn-white btn-sm" @click="backPath()">
+                                            <i class="fa fa-arrow-left"></i></button> -->
+                                        <button class="btn btn-white btn-sm" @click="this.enterPath()">
+                                            <i class="fa fa-refresh"></i></button>
+                                        <!-- <button class="btn btn-white btn-sm" @click="enterPath(0)">
+                                            <i class="fa fa-home"></i></button> -->
+                                    </div>
                                     <div class="file-manager">
                                         <h5>查看:</h5>
-                                        <a @click="enterPath()" class="file-control active">收藏</a>
-                                        <a @click="" class="file-control">最近访问</a>
-                                        <a @click="" class="file-control">所有文件</a>
+                                        <a @click="enterPath()" class="file-control">收藏</a>
+                                        <!-- <a @click="" class="file-control">最近访问</a> -->
+                                        <a href="allfiles" class="file-control">所有文件</a>
                                         <div class="hr-line-dashed"></div>
                                         <a class="btn btn-primary btn-block" href="allfiles">上传文件</a>
                                         <div class="hr-line-dashed"></div>
@@ -106,23 +114,23 @@
                                         <ul class="category-list folder-list m-b-md" style="padding: 0">
                                             <li>
                                                 <a @click="findFilesByCategory(0)"> <i class="fa fa-circle text-navy"></i> 图片
-                                                <span class="label label-primary pull-right">{{ this.categoryCapacity.imageCapacity }}GB</span></a>
+                                                <span class="label label-primary pull-right">{{ categoryCapacity.imageCapacity }}GB</span></a>
                                             </li>
                                             <li>
                                                 <a @click="findFilesByCategory(1)"> <i class="fa fa-circle text-danger"></i> 文档
-                                                <span class="label label-primary pull-right">{{ this.categoryCapacity.documentCapacity }}GB</span></a>
+                                                <span class="label label-primary pull-right">{{ categoryCapacity.documentCapacity }}GB</span></a>
                                             </li>
                                             <li>
                                                 <a @click="findFilesByCategory(3)"> <i class="fa fa-circle text-primary"></i> 视频
-                                                <span class="label label-primary pull-right">{{ this.categoryCapacity.videoCapacity }}GB</span></a>
+                                                <span class="label label-primary pull-right">{{ categoryCapacity.videoCapacity }}GB</span></a>
                                             </li>
                                             <li>
                                                 <a @click="findFilesByCategory(2)"> <i class="fa fa-circle text-info"></i> 音乐
-                                                <span class="label label-primary pull-right">{{ this.categoryCapacity.audioCapacity }}GB</span></a>
+                                                <span class="label label-primary pull-right">{{ categoryCapacity.audioCapacity }}GB</span></a>
                                             </li>
                                             <li>
                                                 <a @click="findFilesByCategory(4)"> <i class="fa fa-circle text-warning"></i> 其他
-                                                <span class="label label-primary pull-right">{{ this.categoryCapacity.otherCapacity }}GB</span></a>
+                                                <span class="label label-primary pull-right">{{ categoryCapacity.otherCapacity }}GB</span></a>
                                             </li>
                                         </ul>
                                         <h5 class="tag-title">标签</h5>
@@ -139,7 +147,7 @@
                         <div class="col-lg-9 animated fadeInRight">
                             <div class="row">
                                 <div class="col-lg-12">
-                                    <div class="file-box" v-for="(folder, index) in folders" :key="index" @dblclick="">
+                                    <div class="file-box" v-for="(folder, index) in folders" :key="index" @dblclick="enterFolder(folder)">
                                         <div class="file">
                                             <a>
                                                 <span class="corner"></span>
@@ -225,6 +233,14 @@
 <script setup>
 import "../assets/js/plugins/morris/morris.js"
 import Raphael from "../assets/js/plugins/morris/raphael-2.1.0.min.js"
+import { useRouter } from 'vue-router';
+const router = useRouter();
+function enterFolder(folder) {
+  router.push({ 
+    path: '/allfiles', 
+    query: { folderId: folder.folderId } 
+  });
+}
 </script>
 
 <script>
@@ -259,6 +275,7 @@ export default {
             folderCollectionStatus: {},
             fileCollectionStatus: {},
             categoryCapacity:{},
+            viewerOptions: {},
             audio_videoTitle: null,
             showPlayer: true,
             audioOptions: {
@@ -492,7 +509,7 @@ export default {
         },
         isAdmin() {
             return this.userData.isAdmin; // 检查is_admin属性是否为true
-        }
+        },
     },
     mounted() {}
 }
