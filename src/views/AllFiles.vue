@@ -224,6 +224,7 @@
                             <div class="mail-box ibox table-responsive">
                                 <table
                                     class="table table-hover table-mail ibox-content footable table-stripped toggle-arrow-tiny"
+                                    data-page-size="13"
                                     :class="{ 'sk-loading': loading }">
                                     <div class="sk-spinner sk-spinner-cube-grid">
                                         <div class="sk-cube"></div>
@@ -353,8 +354,8 @@
                                     </tbody>
                                     <tfoot>
                                         <tr>
-                                            <td colspan="12">
-                                                <ul class="pagination pull-right"></ul>
+                                            <td colspan="12" style="padding-top: 0%;padding-bottom: 0%;">
+                                                <ul class="pagination"></ul>
                                             </td>
                                         </tr>
                                     </tfoot>

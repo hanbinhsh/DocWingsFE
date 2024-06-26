@@ -6,6 +6,10 @@ module.exports = defineConfig({
 
   // 配置Vue开发服务器相关选项
   devServer: {
+    //禁止全屏报错
+    client: {
+      overlay: false,
+    },
     // 配置HTTP代理，以便在开发过程中将特定请求转发到其他服务器
     proxy: {
       // 当请求以 '/api' 开头时进行代理
