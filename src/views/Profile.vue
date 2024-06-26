@@ -14,11 +14,11 @@
                                     class="nav-label">文件管理</span><span class="fa arrow"></span></a>
                             <ul class="nav nav-second-level collapse">
                                 <li><a href="allfiles">所有文件</a></li>
-                                <li><a href="table_basic.html">图片</a></li>
-                                <li><a href="table_data_tables.html">文档</a></li>
-                                <li><a href="table_foo_table.html">视频</a></li>
-                                <li><a href="jq_grid.html">音乐</a></li>
-                                <li><a href="jq_grid.html">其他</a></li>
+                                <li><a href="image">图片</a></li>
+                                <li><a href="documentation">文档</a></li>
+                                <li><a href="video">视频</a></li>
+                                <li><a href="audio">音乐</a></li>
+                                <li><a href="other">其他</a></li>
                             </ul>
                         </li>
                         <li>
@@ -66,11 +66,7 @@
                                             </strong>
                                         </h4>
                                         <h4><strong>
-                                                用户ID:{{ userData.userId }}
-                                            </strong>
-                                        </h4>
-                                        <h4><strong>
-                                                用户组ID:{{ userData.groupId }}
+                                                用户组名:{{ groupName }}
                                             </strong>
                                         </h4>
                                         <h4><strong>
@@ -150,6 +146,7 @@
             return {
                 userData: JSON.parse(sessionStorage.getItem('userData')) || {},
                 userAuth: sessionStorage.getItem("authData") || 3,
+                groupName: sessionStorage.getItem("groupName")  || {},
             }
         },
         components: {
@@ -187,6 +184,7 @@
                     // BUG 文件夹/文件/日志等外键依赖
                     await axios.post('/api/UserCollectionDelete', { "userId":this.userData.userId });   
                     await axios.post('/api/UserDelete', { "userId":this.userData.userId });
+                    await axios.post('/api/logoutLog', { "userId":this.userData.userId });
                     window.sessionStorage.clear();
                     this.$router.push('/login');
                 }
@@ -208,16 +206,22 @@
                 }
                 else{
                     if(newPhone.value!=""){
+                    const oldPhone=this.userData.phone;
                     const response=await axios.post('/api/UpdatePhone',{"userId": this.userData.userId,"newPhone":newPhone.value});
-                    if(response.data==true)
-                    alert('您的电话号码已更改！');
+                    if(response.data==true){
+                        await axios.post('/api/updatePhoneLog', { "userId":this.userData.userId,"oldPhone": oldPhone,"newPhone":newPhone.value});
+                        alert('您的电话号码已更改！');
+                    }
                     else
                     alert('该电话号码已被使用！');
                     }
                     if(newEmail.value!=""){
+                    const oldEmail=this.userData.email;
                     const response4 = await axios.post('/api/UpdateEmail',{"userId": this.userData.userId,"newEmail":newEmail.value});
-                    if(response4.data==true)
-                    alert('您的邮箱已更改！');
+                    if(response4.data==true){
+                        await axios.post('/api/updateEmailLog', { "userId":this.userData.userId,"oldEmail": oldEmail,"newEmail":newEmail.value});
+                        alert('您的邮箱已更改！');  
+                    }  
                     else
                     alert('该邮箱已被使用！');
                     }

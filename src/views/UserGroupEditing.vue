@@ -13,11 +13,11 @@
                                     class="fa arrow"></span></a>
                             <ul class="nav nav-second-level collapse">
                                 <li><a href="allfiles">所有文件</a></li>
-                                <li><a href="table_basic.html">图片</a></li>
-                                <li><a href="table_data_tables.html">文档</a></li>
-                                <li><a href="table_foo_table.html">视频</a></li>
-                                <li><a href="jq_grid.html">音乐</a></li>
-                                <li><a href="jq_grid.html">其他</a></li>
+                                <li><a href="image">图片</a></li>
+                                <li><a href="documentation">文档</a></li>
+                                <li><a href="video">视频</a></li>
+                                <li><a href="audio">音乐</a></li>
+                                <li><a href="other">其他</a></li>
                             </ul>
                         </li>
                         <li>
@@ -97,45 +97,45 @@
                                                                 <tbody>
                                                                     <tr v-for="(user) in users" class="read">
                                                                         <td>{{ user.userName }}</td>
-                                                                        <td><a
+                                                                        <td><a v-if="user.userId!=userData.userId&&user.userId!=1"
                                                                                 @click.prevent="updateUserName(user.userId)"><i
                                                                                     class="fa fa-edit"></i></a></td>
                                                                         <td>{{ user.groupName }}</td>
                                                                         <td>
-                                                                            <a
+                                                                            <a v-if="user.userId!=userData.userId&&user.userId!=1"
                                                                                 @click.prevent="updateGroup(user.userId)">
                                                                                 <i class="fa fa-arrows"></i>&nbsp;
                                                                             </a>
                                                                         </td>
                                                                         <td>{{ user.email }}</td>
-                                                                        <td><a
+                                                                        <td><a v-if="user.userId!=userData.userId&&user.userId!=1"
                                                                                 @click.prevent="updateEmail(user.userId)"><i
                                                                                     class="fa fa-edit"></i></a>
                                                                         </td>
                                                                         <td>{{ user.phone }}</td>
-                                                                        <td><a
+                                                                        <td><a v-if="user.userId!=userData.userId&&user.userId!=1"
                                                                                 @click.prevent="updatePhone(user.userId)"><i
                                                                                     class="fa fa-edit"></i></a>
                                                                         </td>
                                                                         <td v-if="user.accountLocked">已冻结</td>
                                                                         <td v-else>正常</td>
                                                                         <td>
-                                                                            <a v-if="user.accountLocked"
+                                                                            <a v-if="user.accountLocked&&user.userId!=userData.userId&&user.userId!=1"
                                                                                 @click.prevent="defrost(user.userId)">
                                                                                 <i class="fa fa-fire"></i>&nbsp;
                                                                             </a>
-                                                                            <a v-else
+                                                                            <a v-else v-if="user.userId!=userData.userId&&user.userId!=1"
                                                                                 @click.prevent="freeze(user.userId)">
                                                                                 <i class="fa fa-empire"></i>&nbsp;
                                                                             </a>
                                                                         </td>
                                                                         <td>
                                                                             <div class="btn-group">
-                                                                                <a
+                                                                                <a v-if="user.userId!=userData.userId&&user.userId!=1"
                                                                                     @click.prevent="resetPsw(user.userId)">
                                                                                     <i class="fa fa-key"></i>&nbsp;
                                                                                 </a>
-                                                                                <a
+                                                                                <a v-if="user.userId!=userData.userId&&user.userId!=1"
                                                                                     @click.prevent="unsubscribe(user.userId)">
                                                                                     <i class="fa fa-trash-o"></i>&nbsp;
                                                                                 </a>
@@ -161,14 +161,15 @@
                                                                         :key="index" class="read">
                                                                         <td>{{ group.groupName }}</td>
                                                                         <td>
-                                                                            <a @click="editGropName()"><i
+                                                                            <a @click="editGroupName(group)"><i
+                                                                                v-if="group.groupId!=-1 && group.groupId!=1 && group.groupId!=2"
                                                                                     class="fa fa-edit"></i></a>
                                                                         </td>
                                                                         <td>
                                                                             {{ shareAuth(group.auth) }}
                                                                         </td>
                                                                         <td>
-                                                                            <a @click="editGropAuth()"><i
+                                                                            <a @click="editGroupAuth(group)"><i
                                                                                     class="fa fa-edit"></i></a>
                                                                         </td>
                                                                         <td>
@@ -521,7 +522,7 @@ export default {
         },
         async deleteGroup(groupId) {
             const actionCallback = async () => {
-                await axios.post('/api/deleteUserByGroupId', {"groupId": groupId })
+                await axios.post('/api/updateUsersGroup', {"groupId": groupId })
                 await axios.post('/api/deleteUserGroupByGroupId', {"groupId": groupId })
                 toastr.success('用户组删除成功', '成功');
                 await this.updateUserInfo();
@@ -537,7 +538,65 @@ export default {
             const response = await axios.get('/api/findAllUsers');
             this.users = response.data;
             this.findUserGroups();
-        }
+        },
+        async editGroupName(group){
+            const additionalInput = {
+                title: '用户组名更改',
+                input: 'text',
+                inputLabel: '请输入用户组名',
+                showCancelButton: true,
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                inputValidator: (groupName) => {
+                    if (!groupName) {
+                        return '未输入用户组名！';
+                    }
+                }
+            };
+            const actionCallback = async (groupName) => {
+                const response = await axios.post('/api/findUserGroupByName?name=' + groupName);
+                const responsedata = response.data.data
+                if (responsedata.state == 1) {
+                    this.$swal.fire('用户组已存在', '请重新输入', 'error');
+                    return;
+                }
+                await axios.post('/api/updateGroupName', { "groupId": group.groupId, "groupName": groupName });
+                toastr.success('用户组名更改成功', '成功');
+                await this.updateUserInfo();
+            };
+            await this.validateUser(actionCallback, additionalInput);
+        },
+        async editGroupAuth(group){
+            const additionalInput = {
+                title: '更改用户组权限',
+                html: `
+                    <label class="control-label">权限</label>
+                    <div class="form-group">
+                        <select id="auth_select" class="form-control">
+                            <option value="1">普通用户：除拥有除用户组编辑、日志查看的权限，其他功能正常</option>
+                            <option value="2">1类受限用户：禁止删除文件</option>
+                            <option value="3">2类受限用户：仅能操作对其分享的文件，禁用回收站（禁用放入回收站和删除文件）</option>
+                            <option value="10">管理员：拥有所有权限</option>
+                        </select>
+                    </div>
+                `,
+                showCancelButton: true,
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                preConfirm: () => {
+                    return {
+                        auth: document.getElementById('auth_select').value || 1,
+                    }
+                }
+            };
+            const actionCallback = async (data) => {
+                const { auth } = data;
+                await axios.post('/api/updateAuth', { "groupId": group.groupId, "auth": auth });
+                toastr.success('更改用户组权限成功', '成功');
+                await this.updateUserInfo();
+            };
+            await this.validateUser(actionCallback, additionalInput);
+        },
     }
 }
 </script>

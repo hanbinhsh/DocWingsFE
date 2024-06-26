@@ -12,12 +12,12 @@
                             <a><i class="fa fa-folder-o"></i> <span class="nav-label">文件管理</span><span
                                     class="fa arrow"></span></a>
                             <ul class="nav nav-second-level collapse">
-                                <li><a href="allFiles">所有文件</a></li>
-                                <li><a href="table_basic.html">图片</a></li>
-                                <li><a href="table_data_tables.html">文档</a></li>
-                                <li><a href="table_foo_table.html">视频</a></li>
-                                <li><a href="jq_grid.html">音乐</a></li>
-                                <li><a href="jq_grid.html">其他</a></li>
+                                <li><a href="allfiles">所有文件</a></li>
+                                <li><a href="image">图片</a></li>
+                                <li><a href="documentation">文档</a></li>
+                                <li><a href="video">视频</a></li>
+                                <li><a href="audio">音乐</a></li>
+                                <li><a href="other">其他</a></li>
                             </ul>
                         </li>
                         <li>

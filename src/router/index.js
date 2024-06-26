@@ -7,22 +7,23 @@ import Log from '../views/Log.vue';
 import Share from '../views/Share.vue';
 import ShareAccept from '../views/ShareAccept.vue';
 import UserGroupEditing from '../views/UserGroupEditing.vue';
+import NotFound from "../views/404.vue";
 import toastr from "../assets/js/plugins/toastr/toastr.min.js";
 toastr.options = {
-	"closeButton": true,
-	"debug": false,
-	"progressBar": true,
-	"preventDuplicates": true,
-	"positionClass": "toast-bottom-center",
-	"onclick": null,
-	"showDuration": "400",
-	"hideDuration": "1000",
-	"timeOut": "7000",
-	"extendedTimeOut": "1000",
-	"showEasing": "swing",
-	"hideEasing": "linear",
-	"showMethod": "fadeIn",
-	"hideMethod": "fadeOut"
+  "closeButton": true,
+  "debug": false,
+  "progressBar": true,
+  "preventDuplicates": true,
+  "positionClass": "toast-bottom-center",
+  "onclick": null,
+  "showDuration": "400",
+  "hideDuration": "1000",
+  "timeOut": "7000",
+  "extendedTimeOut": "1000",
+  "showEasing": "swing",
+  "hideEasing": "linear",
+  "showMethod": "fadeIn",
+  "hideMethod": "fadeOut"
 }
 
 const routes = [
@@ -48,7 +49,7 @@ const routes = [
     path: '/profile',
     name: 'profile',
     component: Profile,
-    meta: { 
+    meta: {
       title: '个人资料',
       requiresAuth: true,
     }
@@ -57,7 +58,7 @@ const routes = [
     path: '/userhome',
     name: 'userhome',
     component: UserHome,
-    meta: { 
+    meta: {
       title: '用户主页',
       requiresAuth: true,
       requires_not_3_Auth: true,
@@ -67,7 +68,7 @@ const routes = [
     path: '/log',
     name: 'log',
     component: Log,
-    meta: { 
+    meta: {
       title: '日志',
       requiresAuth: true,
       requiresAdmin: true,
@@ -104,6 +105,56 @@ const routes = [
     }
   },
   {
+    path: '/image',
+    name: 'image',
+    component: AllFiles,
+    meta: {
+      title: '图片',
+      requiresAuth: true,
+      requires_not_3_Auth: true,
+    }
+  },
+  {
+    path: '/documentation',
+    name: 'documentation',
+    component: AllFiles,
+    meta: {
+      title: '文档',
+      requiresAuth: true,
+      requires_not_3_Auth: true,
+    }
+  },
+  {
+    path: '/video',
+    name: 'video',
+    component: AllFiles,
+    meta: {
+      title: '视频',
+      requiresAuth: true,
+      requires_not_3_Auth: true,
+    }
+  },
+  {
+    path: '/audio',
+    name: 'audio',
+    component: AllFiles,
+    meta: {
+      title: '音乐',
+      requiresAuth: true,
+      requires_not_3_Auth: true,
+    }
+  },
+  {
+    path: '/other',
+    name: 'other',
+    component: AllFiles,
+    meta: {
+      title: '其他',
+      requiresAuth: true,
+      requires_not_3_Auth: true,
+    }
+  },
+  {
     path: '/share',
     name: 'share',
     component: Share,
@@ -130,7 +181,13 @@ const routes = [
       requiresAdmin: true,
       requires_not_3_Auth: true,
     }
-  }
+  },
+  {
+    path: '/:pathMatch(.*)*',
+    name: 'notfound',
+    component: NotFound,
+    meta: { title: '页面未找到' }
+  },
 ]
 
 const router = createRouter({
@@ -153,10 +210,10 @@ router.beforeEach((to, from, next) => {
       });
     } else {
       // 如果有用户数据
-      if(to.matched.some(record => record.meta.requires_not_3_Auth)){
+      if (to.matched.some(record => record.meta.requires_not_3_Auth)) {
         //需要非3级用户权限
         const auth = sessionStorage.getItem("authData")
-        if(auth == 3){
+        if (auth == 3) {
           toastr.error("权限不足，无法访问该页面！", "错误");
           next({
             path: '/profile',
@@ -164,10 +221,10 @@ router.beforeEach((to, from, next) => {
           });
         }
       }
-      if(to.matched.some(record => record.meta.requiresAdmin)){
+      if (to.matched.some(record => record.meta.requiresAdmin)) {
         // 需要管理员权限
         const admin = JSON.parse(sessionStorage.getItem('userData'));
-        if(admin.isAdmin != 1){
+        if (admin.isAdmin != 1) {
           toastr.error("您没有管理员权限，无法访问该页面！", "错误");
           next({
             path: '/userhome',
