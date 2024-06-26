@@ -151,12 +151,12 @@
                                     </div>
                                 </form>
                                 <h2>
-                                    {{ isTrash ? '回收站' : category==0 ? '图片' : category==1 ? '文档' :
+                                    {{ (isTrash ? '回收站' : category==0 ? '图片' : category==1 ? '文档' :
                                     category==3 ? '视频' : category==2 ? '音乐' : category==4 ? '其他' : 
-                                    currentFolder.folderName + ' (' +
+                                    currentFolder.folderName) + (' (' +
                                         (this.selectedFiles.length + this.selectedFolders.length <= 0 ? '' :
                                             this.selectedFiles.length + this.selectedFolders.length + '/') +
-                                        this.currentFFsCount + ')' }} </h2>
+                                        this.currentFFsCount + ')')}} </h2>
                                         <div class="mail-tools tooltip-demo m-t-md">
                                             <div class="btn-group pull-right">
                                                 <button :class="{ 'disabled': isTrash }" class="btn btn-white btn-sm"
@@ -677,6 +677,7 @@ export default {
             await this.findFFsByParentId(id);
             await this.findFolderById(id);
             this.currentFFsCount = this.folders.length + this.files.length;
+            this.isAllfiles=true;this.category=-1;
             const imageFiles = await axios.get(`/api/findImagesByParentId?parentId=${this.currentFolder.folderId ?? 0}`);
             this.images = imageFiles.data.data.imageList  // 更新图片列表
             this.checkAllFFsCollectionStatus();
@@ -702,6 +703,7 @@ export default {
         },
         async findFilesByCategory(category) {
             if (this.isTrash) return;
+            this.isAllfiles = false;
             this.category = category;
             this.showLoading();  // 显示加载页面
             this.folders = [];
