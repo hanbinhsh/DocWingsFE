@@ -160,7 +160,7 @@
                                                     <td>
                                                         <div class="btn-group">
                                                             <a @click.prevent="updateShare(share)"><i class="fa fa-edit"></i>&nbsp;</a>
-                                                            <a @click=""><i class="fa fa-trash-o"></i>&nbsp;</a>
+                                                            <a @click.prevent="deleteShare(share)"><i class="fa fa-trash-o"></i>&nbsp;</a>
                                                             <a @click="enterSharePage(share.shareId)"><i
                                                                     class="fa fa-eye"></i>&nbsp;</a>
                                                             <a @click="copySharePage(share.shareId)"><i
@@ -511,6 +511,23 @@ export default {
             }
             await this.getShares();
         },
+        async deleteShare(share){
+            const result = await this.$swal.fire({
+                title: '是否将分享删除',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+            });
+            if (result.isConfirmed) {
+                await axios.post('/api/deleteShareByShareId', { shareId: share.shareId });
+                this.$swal.fire('操作成功', '分享已删除', 'success');
+            }
+            else {
+                this.$swal.fire('操作取消', '文件未删除', 'info');
+            }
+            await this.getShares();
+        }
     },
     watch: {
         shares() {
