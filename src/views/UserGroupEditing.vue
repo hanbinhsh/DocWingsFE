@@ -407,7 +407,7 @@ export default {
             const actionCallback = async (email) => {
                 const response = await axios.post('/api/findUserByEmail', { "email": email });
                 console.log(email);
-                console.log(response)
+                console.log(response);
                 if (response.date) {
                     this.$swal.fire('邮箱已存在', '请重新输入', 'error');
                     return;
