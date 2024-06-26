@@ -162,6 +162,7 @@
                                                                         <td>{{ group.groupName }}</td>
                                                                         <td>
                                                                             <a @click="editGroupName(group)"><i
+                                                                                v-if="group.groupId!=-1 && group.groupId!=1 && group.groupId!=2"
                                                                                     class="fa fa-edit"></i></a>
                                                                         </td>
                                                                         <td>
