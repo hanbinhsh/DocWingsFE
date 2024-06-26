@@ -92,7 +92,7 @@
                             <tr>
                               <th>名称</th>
                               <th>文件大小</th>
-                              <th>下载</th>
+                              <th v-if="share.auth==1">下载</th>
                             </tr>
                           </thead>
                           <tbody>
@@ -101,7 +101,7 @@
                               <td><i class="fa fa-folder-o"></i> {{ folder.folderName }}
                               </td>
                               <td></td>
-                              <td></td>
+                              <td v-if="share.auth==1"></td>
                             </tr>
                             <tr v-for="(file, index) in files" :key="index" class="read" @dblclick="filePreview(file)">
                               <td>
@@ -119,7 +119,7 @@
                                 <i v-else class="fa fa-file-o"></i> {{ file.fileName }}
                               </td>
                               <td>{{ file.fileSize }}MB</td>
-                              <td>
+                              <td v-if="share.auth==1">
                                 <div class="btn-group">
                                   <a @click="downloadFile(file)"><i class="fa fa-download"></i>&nbsp;</a>
                                 </div>
@@ -145,15 +145,15 @@
                         <ul class="category-list folder-list m-b-md" style="padding: 0">
                           <li>
                             <a> <i class="fa fa-circle text-navy"></i> 接收者
-                              <span class="label label-primary pull-right">{{ this.share.accepterName }}</span></a>
+                              <span class="label label-primary pull-right">{{ share.accepterName }}</span></a>
                           </li>
                           <li>
                             <a> <i class="fa fa-circle text-danger"></i> 用户组
-                              <span class="label label-primary pull-right">{{ this.share.acceptGroupName }}</span></a>
+                              <span class="label label-primary pull-right">{{ share.acceptGroupName }}</span></a>
                           </li>
                           <li>
                             <a> <i class="fa fa-circle text-primary"></i> 权限
-                              <span class="label label-primary pull-right">{{ this.share.auth==1 ? '全部权限' : '仅查看'}}</span></a>
+                              <span class="label label-primary pull-right">{{ share.auth==1 ? '全部权限' : '仅查看'}}</span></a>
                           </li>
                           <li>
                             <a> <i class="fa fa-circle text-info"></i> 有效时间

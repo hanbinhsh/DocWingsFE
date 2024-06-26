@@ -7,6 +7,7 @@ import Log from '../views/Log.vue';
 import Share from '../views/Share.vue';
 import ShareAccept from '../views/ShareAccept.vue';
 import UserGroupEditing from '../views/UserGroupEditing.vue';
+import NotFound from "../views/404.vue";
 import toastr from "../assets/js/plugins/toastr/toastr.min.js";
 toastr.options = {
 	"closeButton": true,
@@ -130,7 +131,13 @@ const routes = [
       requiresAdmin: true,
       requires_not_3_Auth: true,
     }
-  }
+  },
+  {
+    path: '/:pathMatch(.*)*',
+    name: 'notfound',
+    component: NotFound,
+    meta: { title: '页面未找到' }
+  },
 ]
 
 const router = createRouter({
