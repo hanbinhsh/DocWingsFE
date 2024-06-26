@@ -52,12 +52,12 @@
                             <a><i class="fa fa-folder-o"></i> <span class="nav-label">文件管理</span><span
                                     class="fa arrow"></span></a>
                             <ul class="nav nav-second-level collapse">
-                                <li :class="{ active: !this.isTrash }"><a href="allfiles">所有文件</a></li>
-                                <li><a href="table_basic.html">图片</a></li>
-                                <li><a href="table_data_tables.html">文档</a></li>
-                                <li><a href="table_foo_table.html">视频</a></li>
-                                <li><a href="jq_grid.html">音乐</a></li>
-                                <li><a href="jq_grid.html">其他</a></li>
+                                <li :class="{ active: isAllfiles }"><a href="allfiles">所有文件</a></li>
+                                <li :class="{ active: category==0 }"><a href="image">图片</a></li>
+                                <li :class="{ active: category==1 }"><a href="documentation">文档</a></li>
+                                <li :class="{ active: category==3 }"><a href="video">视频</a></li>
+                                <li :class="{ active: category==2 }"><a href="audio">音乐</a></li>
+                                <li :class="{ active: category==4 }"><a href="other">其他</a></li>
                             </ul>
                         </li>
                         <li>
@@ -477,12 +477,9 @@ export default {
             currentFolder: JSON.parse(sessionStorage.getItem("currentFolder")) || {},
             currentFFsCount: sessionStorage.getItem("currentFFsCount") || {},
             loading: false,
+            isAllfiles: false,
+            category: -1,
             isTrash: false,
-            isimage: false,
-            isdocumentation: false,
-            isvideo: false,
-            isaudio: false,
-            isother: false,
             isCutting: false,
             currentCutFF: null,
             isCuttingSeletion: false,
@@ -523,9 +520,10 @@ export default {
         this.checkRoute();
         if (this.isTrash) {
             this.enterPathTrash();
-        }
-        else {
+        } else if(this.isAllfiles) {
             this.enterPath(0);
+        }else{
+            this.findFilesByCategory(this.category);
         }
     },
     methods: {
@@ -535,9 +533,19 @@ export default {
         },
         checkRoute() {
             if (this.$route.name === 'allfiles') {
-                this.isTrash = false;
+                this.isAllfiles = true;
             } else if (this.$route.name === 'trash') {
                 this.isTrash = true;
+            } else if (this.$route.name === 'image') {
+                this.category = 0;
+            } else if (this.$route.name === 'documentation') {
+                this.category = 1;
+            } else if (this.$route.name === 'video') {
+                this.category = 3;
+            } else if (this.$route.name === 'audio') {
+                this.category = 2;
+            } else if (this.$route.name === 'other') {
+                this.category = 4;
             }
         },
         async createFolder() {
@@ -687,6 +695,10 @@ export default {
             this.folders = [];
             const response = await axios.get('/api/findFilesByCategory?category=' + category);
             this.files = response.data.data.files;
+            this.currentFFsCount = this.folders.length + this.files.length;
+            this.checkAllFFsCollectionStatus();
+            this.findTags();
+            this.queryCategoryCapacity();
             if (category === 0) {
                 const imagesRes = await axios.get('/api/findImages');
                 this.images = imagesRes.data.data.imageList;
