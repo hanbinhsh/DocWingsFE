@@ -13,11 +13,11 @@
                                     class="fa arrow"></span></a>
                             <ul class="nav nav-second-level collapse">
                                 <li><a href="allfiles">所有文件</a></li>
-                                <li><a href="table_basic.html">图片</a></li>
-                                <li><a href="table_data_tables.html">文档</a></li>
-                                <li><a href="table_foo_table.html">视频</a></li>
-                                <li><a href="jq_grid.html">音乐</a></li>
-                                <li><a href="jq_grid.html">其他</a></li>
+                                <li><a href="image">图片</a></li>
+                                <li><a href="documentation">文档</a></li>
+                                <li><a href="video">视频</a></li>
+                                <li><a href="audio">音乐</a></li>
+                                <li><a href="other">其他</a></li>
                             </ul>
                         </li>
                         <li>
@@ -162,6 +162,7 @@
                                                                         <td>{{ group.groupName }}</td>
                                                                         <td>
                                                                             <a @click="editGroupName(group)"><i
+                                                                                v-if="group.groupId!=-1 && group.groupId!=1 && group.groupId!=2"
                                                                                     class="fa fa-edit"></i></a>
                                                                         </td>
                                                                         <td>
@@ -521,7 +522,7 @@ export default {
         },
         async deleteGroup(groupId) {
             const actionCallback = async () => {
-                await axios.post('/api/deleteUserByGroupId', {"groupId": groupId })
+                await axios.post('/api/updateUsersGroup', {"groupId": groupId })
                 await axios.post('/api/deleteUserGroupByGroupId', {"groupId": groupId })
                 toastr.success('用户组删除成功', '成功');
                 await this.updateUserInfo();

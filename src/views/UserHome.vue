@@ -52,11 +52,11 @@
                                     class="fa arrow"></span></a>
                             <ul class="nav nav-second-level collapse">
                                 <li><a href="allfiles">所有文件</a></li>
-                                <li><a href="table_basic.html">图片</a></li>
-                                <li><a href="table_data_tables.html">文档</a></li>
-                                <li><a href="table_foo_table.html">视频</a></li>
-                                <li><a href="jq_grid.html">音乐</a></li>
-                                <li><a href="jq_grid.html">其他</a></li>
+                                <li><a href="image">图片</a></li>
+                                <li><a href="documentation">文档</a></li>
+                                <li><a href="video">视频</a></li>
+                                <li><a href="audio">音乐</a></li>
+                                <li><a href="other">其他</a></li>
                             </ul>
                         </li>
                         <li>
@@ -157,7 +157,7 @@
                                                 <div>
                                                     &nbsp;<a @click="collectionFolder(folder.folderId)"><i class="fa"
                                                         :class="folderCollectionStatus[folder.folderId] ? 'fa-star' : 'fa-star-o'"></i></a>
-                                                    &nbsp;<a v-if="userAuth!=2" @click="recycleBinFolder(folder.folderId)"><i
+                                                    &nbsp;<a v-if="userAuth!=2" @click="recycleBinFolder(folder.folderId,folder.folderName)"><i
                                                             class="fa fa-trash-o"></i></a>
                                                 </div>
                                                 <div class="file-name">
@@ -195,7 +195,7 @@
                                                         :class="fileCollectionStatus[file.fileId] ? 'fa-star' : 'fa-star-o'"></i></a>
                                                     &nbsp;<a @click="downloadFile(file)"><i
                                                             class="fa fa-download"></i></a>
-                                                    &nbsp;<a v-if="userAuth!=2" @click="recycleBinFile(file.fileId)"><i
+                                                    &nbsp;<a v-if="userAuth!=2" @click="recycleBinFile(file.fileId,file.fileName)"><i
                                                             class="fa fa-trash-o"></i></a>
                                                 </div>
                                                 <div class="file-name">
@@ -464,7 +464,7 @@ export default {
                 }
             })
         },
-        async recycleBinFile(fileId){
+        async recycleBinFile(fileId,fileName){
             const result = await this.$swal.fire({
                 title: '是否将文件放入回收站',
                 icon: 'warning',
@@ -474,6 +474,7 @@ export default {
             });
             if (result.isConfirmed) {
                 await axios.post('/api/recycleBinFile', { "fileId": fileId, "status": 1 });
+                await axios.post('/api/insertRecycleFileLog', { "userId":this.userData.userId,"fileName": fileName});
                 this.$swal.fire('操作成功', '文件已放入回收站', 'success');
                 this.enterPath();
             }
@@ -481,7 +482,7 @@ export default {
                 this.$swal.fire('操作取消', '文件未放入回收站', 'info');
             }
         },
-        async recycleBinFolder(folderId){
+        async recycleBinFolder(folderId,folderName){
             const result = await this.$swal.fire({
                 title: '是否将文件夹放入回收站',
                 icon: 'warning',
@@ -491,6 +492,7 @@ export default {
             });
             if (result.isConfirmed) {
                 await axios.post('/api/recycleBinFolder', { "folderId": folderId, "status": 1 });
+                await axios.post('/api/insertRecycleFolderLog', { "userId":this.userData.userId,"folderName": folderName});
                 this.$swal.fire('操作成功', '文件夹已放入回收站', 'success');
                 this.enterPath();
             }
