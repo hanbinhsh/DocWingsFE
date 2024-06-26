@@ -66,10 +66,6 @@
                                             </strong>
                                         </h4>
                                         <h4><strong>
-                                                用户ID:{{ userData.userId }}
-                                            </strong>
-                                        </h4>
-                                        <h4><strong>
                                                 用户组ID:{{ userData.groupId }}
                                             </strong>
                                         </h4>

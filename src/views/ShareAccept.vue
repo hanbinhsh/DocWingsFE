@@ -148,13 +148,21 @@
                               <span class="label label-primary pull-right">{{ this.share.accepterName }}</span></a>
                           </li>
                           <li>
-                            <a> <i class="fa fa-circle text-danger"></i> 权限
-                              <span class="label label-primary pull-right">{{ this.share.auth }}</span></a>
+                            <a> <i class="fa fa-circle text-danger"></i> 用户组
+                              <span class="label label-primary pull-right">{{ this.share.acceptGroupName }}</span></a>
                           </li>
                           <li>
-                            <a> <i class="fa fa-circle text-primary"></i> 有效时间
+                            <a> <i class="fa fa-circle text-primary"></i> 权限
+                              <span class="label label-primary pull-right">{{ this.share.auth==1 ? '全部权限' : '仅查看'}}</span></a>
+                          </li>
+                          <li>
+                            <a> <i class="fa fa-circle text-info"></i> 有效时间
                               <span class="label label-primary pull-right">{{ formattedLastTime }}</span></a>
                           </li>
+                          <!-- <li>
+                            <a> <i class="fa fa-circle text-warning"></i> 其他
+                              <span class="label label-primary pull-right"></span></a>
+                          </li> -->
                         </ul>
                       </div>
                     </div>
