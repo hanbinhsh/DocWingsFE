@@ -184,6 +184,7 @@
                     // BUG 文件夹/文件/日志等外键依赖
                     await axios.post('/api/UserCollectionDelete', { "userId":this.userData.userId });   
                     await axios.post('/api/UserDelete', { "userId":this.userData.userId });
+                    await axios.post('/api/logoutLog', { "userId":this.userData.userId });
                     window.sessionStorage.clear();
                     this.$router.push('/login');
                 }
@@ -205,16 +206,22 @@
                 }
                 else{
                     if(newPhone.value!=""){
+                    const oldPhone=this.userData.phone;
                     const response=await axios.post('/api/UpdatePhone',{"userId": this.userData.userId,"newPhone":newPhone.value});
-                    if(response.data==true)
-                    alert('您的电话号码已更改！');
+                    if(response.data==true){
+                        await axios.post('/api/updatePhoneLog', { "userId":this.userData.userId,"oldPhone": oldPhone,"newPhone":newPhone.value});
+                        alert('您的电话号码已更改！');
+                    }
                     else
                     alert('该电话号码已被使用！');
                     }
                     if(newEmail.value!=""){
+                    const oldEmail=this.userData.email;
                     const response4 = await axios.post('/api/UpdateEmail',{"userId": this.userData.userId,"newEmail":newEmail.value});
-                    if(response4.data==true)
-                    alert('您的邮箱已更改！');
+                    if(response4.data==true){
+                        await axios.post('/api/updateEmailLog', { "userId":this.userData.userId,"oldEmail": oldEmail,"newEmail":newEmail.value});
+                        alert('您的邮箱已更改！');  
+                    }  
                     else
                     alert('该邮箱已被使用！');
                     }
