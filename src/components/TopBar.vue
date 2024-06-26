@@ -5,7 +5,7 @@
                 <a style="height:30px" class="navbar-minimalize minimalize-styl-2 btn btn-primary "><i
                         style="margin-top:4px" class="fa fa-bars"></i> </a>
                 <form role="search" class="navbar-form-custom" action="search_results.html">
-                    <div class="form-group">
+                    <div class="form-group" v-if="userAuth!=3">
                         <input type="text" placeholder="输入要查找的文件......" class="form-control" name="top-search"
                             v-model="name" id="top-search" @input="searchFile">
                         <ul v-if="files.length+folders.length > 0" class="dropdown-menu " style="display: block; width: 50%">
@@ -54,6 +54,7 @@ export default {
             name: '',
             files: [],
             folders: [],
+            userAuth: sessionStorage.getItem("authData") || 3
         }
     },
     methods: {
@@ -73,6 +74,7 @@ export default {
                 });
         },
         selectFile(file) {
+            this.$router.push('/allfiles');
             this.$emit('search-path',file.parentId);
             this.closeDropdown(); 
         },

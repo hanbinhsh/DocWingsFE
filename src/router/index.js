@@ -60,6 +60,7 @@ const routes = [
     meta: { 
       title: '用户主页',
       requiresAuth: true,
+      requires_not_3_Auth: true,
     }
   },
   {
@@ -70,6 +71,7 @@ const routes = [
       title: '日志',
       requiresAuth: true,
       requiresAdmin: true,
+      requires_not_3_Auth: true,
     }
   },
   {
@@ -79,6 +81,7 @@ const routes = [
     meta: {
       title: '所有文件',
       requiresAuth: true,
+      requires_not_3_Auth: true,
     }
   },
   {
@@ -86,7 +89,7 @@ const routes = [
     name: 'preview',
     component: () => import('../views/preview.vue'),
     meta: {
-      title: '查看分享',
+      title: '文件预览',
       requiresAuth: true,
     }
   },
@@ -97,6 +100,7 @@ const routes = [
     meta: {
       title: '回收站',
       requiresAuth: true,
+      requires_not_3_Auth: true,
     }
   },
   {
@@ -124,6 +128,7 @@ const routes = [
       title: '用户组编辑',
       requiresAuth: true,
       requiresAdmin: true,
+      requires_not_3_Auth: true,
     }
   }
 ]
@@ -147,13 +152,22 @@ router.beforeEach((to, from, next) => {
         query: { redirect: to.fullPath },
       });
     } else {
-      // 如果有用户数据，允许访问
+      // 如果有用户数据
+      if(to.matched.some(record => record.meta.requires_not_3_Auth)){
+        //需要非3级用户权限
+        const auth = sessionStorage.getItem("authData")
+        if(auth == 3){
+          toastr.error("权限不足，无法访问该页面！", "错误");
+          next({
+            path: '/profile',
+            query: { redirect: to.fullPath },
+          });
+        }
+      }
       if(to.matched.some(record => record.meta.requiresAdmin)){
         // 需要管理员权限
         const admin = JSON.parse(sessionStorage.getItem('userData'));
         if(admin.isAdmin != 1){
-          console.log(admin)
-          console.log(admin.isAdmin)
           toastr.error("您没有管理员权限，无法访问该页面！", "错误");
           next({
             path: '/userhome',
@@ -161,6 +175,7 @@ router.beforeEach((to, from, next) => {
           });
         }
       }
+      // 允许访问
       next();
     }
   } else {

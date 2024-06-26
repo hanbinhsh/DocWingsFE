@@ -94,7 +94,6 @@ async function login() {
 			toastr.error("用户名或密码为空，请检查输入信息！", "错误");
 		} else {
 			const response = await axios.post('/api/login', { userName: username.value, password: password.value });
-			console.log(response.data);
 			if(response.data.accountLocked==true){
 				toastr.error("账户已冻结！请两个小时后再试！", "错误");
 			}
@@ -111,12 +110,19 @@ async function login() {
 				document.getElementById('username').focus();  // 光标移至用户名输入
 			} else {
 				sessionStorage.setItem('userData', JSON.stringify(response.data));
-				console.log(sessionStorage.getItem('userData'));
+				const auth = await axios.get('/api/findAuthByUserId?userId=' + response.data.userId);
+				sessionStorage.setItem('authData', auth.data);
 				toastr.clear();  // 清空错误信息
 				// BUG 防止出错
-				router.replace('/userhome').then(() => {  // 跳转后强制刷新
-					window.location.reload();
-				});
+				if(auth==3){
+					router.replace('/profile').then(() => {  // 跳转后强制刷新
+						window.location.reload();
+					});
+				}else{
+					router.replace('/userhome').then(() => {  // 跳转后强制刷新
+						window.location.reload();
+					});
+				}
 			}		
 		}
 	} catch (error) {
