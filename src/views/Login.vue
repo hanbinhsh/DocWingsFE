@@ -127,8 +127,6 @@ async function login() {
 				}
 			}		
 		}
-	} catch (error) {
-		console.error("Error during login:", error.message);  // 添加错误处理，打印错误信息
-	}
+	} catch (error) {}
 }
 </script>

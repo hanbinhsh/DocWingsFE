@@ -28,9 +28,7 @@ export default {
                 filesCapacity.value = response.data.data.filesCapacity;
                 maxCapacity.value = response.data.data.maxCapacity;
                 trashFilesCapacity.value = response.data.data.trashFilesCapacity;
-            } catch (error) {
-                console.error('Error fetching capacity:', error);
-            }
+            } catch (error) {}
         };
         // 在组件加载完成后调用查询容量的方法
         onMounted(() => {

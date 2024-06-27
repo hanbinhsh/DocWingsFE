@@ -148,9 +148,7 @@ export default {
             try {
                 const response = await axios.get('/api/allLog');
                 this.logs = response.data.data.logPage;
-            } catch (error) {
-                console.error('Error fetching logs:', error);
-            }
+            } catch (error) {}
         },
         isAdmin() {
             return this.userData.isAdmin; // 检查is_admin属性是否为true

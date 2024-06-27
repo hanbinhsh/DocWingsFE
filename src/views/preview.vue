@@ -48,9 +48,7 @@ export default {
         this.fileType = urlParams.get('fileType');
     },
     methods: {
-        rendered() {
-            console.log("渲染完成")
-        }
+        rendered() {}
     }
 }
 </script>

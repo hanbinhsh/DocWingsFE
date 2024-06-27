@@ -856,9 +856,6 @@ export default {
         async replyTrashFile(fileId) {await this.replyTrashItem(fileId, 'file');},
         async replyTrashFolder(folderId) {await this.replyTrashItem(folderId, 'folder');},
         async replyTrashSelections() {
-            console.log(this.selectedFiles);
-            console.log(this.selectedFolders);
-            console.log(this.selectedFolders[0]);
             const result = await this.$swal.fire({
                 title: '是否将所选文件和文件夹还原',
                 icon: 'warning',

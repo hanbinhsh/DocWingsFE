@@ -79,9 +79,7 @@ export default {
                     this.files = response.data.data.files;
                     this.folders = response.data.data.folders;
                 })
-                .catch((error) => {
-                    console.error(error);
-                });
+                .catch((error) => {});
         },
         selectFile(file) {
             this.$router.push('/allfiles');

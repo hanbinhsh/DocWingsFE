@@ -236,9 +236,7 @@ export default {
                                 toastr.error("注册失败，电话号码已注册"); // 提示用户注册失败
                             }
                         },
-                        error: function (response) {
-                            console.error(response);
-                        }
+                        error: function (response) {}
                     });
                 }
             }).validate({

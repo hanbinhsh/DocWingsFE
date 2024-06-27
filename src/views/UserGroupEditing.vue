@@ -392,8 +392,6 @@ export default {
             };
             const actionCallback = async (userName) => {
                 const response = await axios.post('/api/findUserByName', { "userName": userName });
-                console.log(userName);
-                console.log(response);
                 if (response.data) {
                     this.$swal.fire('用户名已存在', '请重新输入', 'error');
                     return;
@@ -556,7 +554,6 @@ export default {
         },
         async findGroupNameByUserId(userId) {
             const response = await axios.post('/api/findGroupNameByUserId', { "userId": userId });
-            // console.log(response.data);
             return response.data;
         },
         async updateUserInfo() {

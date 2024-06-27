@@ -30,7 +30,6 @@
         currentFolderId = newFolderId.detail.newFolderId;
       };
       const isTrash = (status) => {
-        console.log(status.detail.status)
         isTrashDisplayed.value = status.detail.status;
       };
       const getUrl = () => {  
@@ -59,12 +58,8 @@
               this.on("success", function () {
                 uploadSuccess();
               });
-              this.on("error", function () {
-                console.log('File upload failed');
-              });
-              this.on("complete", function () {
-                console.log('All files progressed successfully.');
-              });
+              this.on("error", function () {});
+              this.on("complete", function () {});
             },
             // uploadMultiple:true,  // 多文件为列表的形式传向服务器
             url: getUrl(),
