@@ -586,7 +586,7 @@ export default {
             this.allShares = allres.data.data.shares;
             this.shareCount = res.data.data.shareCount;
             this.acceptCount = acres.data.data.acceptCount;
-            this.allCount = allres.date.date.allCount;
+            this.allCount = allres.data.data.allCount;
             await this.$nextTick(() => {
                 this.initializePeity();
             });
