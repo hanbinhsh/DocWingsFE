@@ -48,22 +48,22 @@
                         <li>
                             <a href="userhome"><i class="fa fa-laptop"></i> <span class="nav-label">主页</span></a>
                         </li>
-                        <li :class="{ active: !this.isTrash }" v-if="userAuth!=3">
+                        <li :class="{ active: !this.isTrash }" v-if="userAuth != 3">
                             <a><i class="fa fa-folder-o"></i> <span class="nav-label">文件管理</span><span
                                     class="fa arrow"></span></a>
                             <ul class="nav nav-second-level collapse">
                                 <li :class="{ active: isAllfiles }"><a href="allfiles">所有文件</a></li>
-                                <li :class="{ active: category==0 }"><a href="image">图片</a></li>
-                                <li :class="{ active: category==1 }"><a href="documentation">文档</a></li>
-                                <li :class="{ active: category==3 }"><a href="video">视频</a></li>
-                                <li :class="{ active: category==2 }"><a href="audio">音乐</a></li>
-                                <li :class="{ active: category==4 }"><a href="other">其他</a></li>
+                                <li :class="{ active: category == 0 }"><a href="image">图片</a></li>
+                                <li :class="{ active: category == 1 }"><a href="documentation">文档</a></li>
+                                <li :class="{ active: category == 3 }"><a href="video">视频</a></li>
+                                <li :class="{ active: category == 2 }"><a href="audio">音乐</a></li>
+                                <li :class="{ active: category == 4 }"><a href="other">其他</a></li>
                             </ul>
                         </li>
                         <li>
                             <a href="share"><i class="fa fa-share-square-o"></i> <span class="nav-label">分享</span></a>
                         </li>
-                        <li :class="{ active: this.isTrash }" v-if="userAuth!=3">
+                        <li :class="{ active: this.isTrash }" v-if="userAuth != 3">
                             <a href="trash"><i class="fa fa-trash-o"></i> <span class="nav-label">回收站</span></a>
                         </li>
                         <li v-if="isAdmin()">
@@ -151,14 +151,24 @@
                                     </div>
                                 </form>
                                 <h2>
-                                    {{ (isTrash ? '回收站' : category==0 ? '图片' : category==1 ? '文档' :
-                                    category==3 ? '视频' : category==2 ? '音乐' : category==4 ? '其他' : 
-                                    currentFolder.folderName) + (' (' +
-                                        (this.selectedFiles.length + this.selectedFolders.length <= 0 ? '' :
-                                            this.selectedFiles.length + this.selectedFolders.length + '/') +
-                                        this.currentFFsCount + ')')}} </h2>
+                                    {{ (isTrash ? '回收站' : category == 0 ? '图片' : category == 1 ? '文档' :
+                                        category == 3 ? '视频' : category == 2 ? '音乐' : category == 4 ? '其他' :
+                                            currentFolder.folderName) + (' (' +
+                                                (this.selectedFiles.length + this.selectedFolders.length <= 0 ? '' :
+                                                    this.selectedFiles.length + this.selectedFolders.length + '/') +
+                                                this.currentFFsCount + ')') }} </h2>
                                         <div class="mail-tools tooltip-demo m-t-md">
-                                            <div class="btn-group pull-right">
+                                            <div :class="{ 'disabled': isTrash }" class="btn-group pull-right">
+                                                <div :class="{ 'disabled': isTrash }" class="btn btn-white btn-sm">
+                                                    Page-Size</div>
+                                                <div :class="{ 'disabled': isTrash }" class="btn btn-white btn-sm">
+                                                    <input class="pageSize" type="number" v-model="pageSize"
+                                                        value="{{ pageSize }}">
+                                                </div>
+                                                <button :class="{ 'disabled': isTrash }" class="btn btn-white btn-sm"
+                                                    @click="setPageSize()">
+                                                    <div class="pageSize">ok</div>
+                                                </button>
                                                 <button :class="{ 'disabled': isTrash }" class="btn btn-white btn-sm"
                                                     @click="backPath()"><i class="fa fa-arrow-left"></i></button>
                                                 <button :class="{ 'disabled': isTrash }" class="btn btn-white btn-sm"
@@ -176,11 +186,11 @@
                                                 <i class="fa fa-paste"></i> 粘贴
                                                 <span v-if="isCutting">
                                                     {{ this.currentCutFF.fileName ? this.currentCutFF.fileName :
-                                                    this.currentCutFF.folderName ?? "" }}
+                                                        this.currentCutFF.folderName ?? "" }}
                                                 </span>
                                                 <span v-if="isCuttingSeletion">
                                                     {{
-                                                    currentCuttingSelectFiles.length+currentCuttingSelectFolders.length
+                                                        currentCuttingSelectFiles.length + currentCuttingSelectFolders.length
                                                     }}个文件
                                                 </span>
                                             </button>&nbsp;
@@ -205,7 +215,8 @@
                                                 <button class="btn btn-white btn-sm" @click="downloadSelections()">
                                                     <i class="fa fa-download"></i> 下载
                                                 </button>&nbsp;
-                                                <button v-if="userAuth!=2" class="btn btn-white btn-sm" @click="recycleSelections()">
+                                                <button v-if="userAuth != 2" class="btn btn-white btn-sm"
+                                                    @click="recycleSelections()">
                                                     <i class="fa fa-trash-o"></i> 放入回收站
                                                 </button>&nbsp;
                                                 <button class="btn btn-white btn-sm" @click="cutSelections()">
@@ -217,7 +228,8 @@
                                                 <button class="btn btn-white btn-sm" @click="replyTrashSelections()">
                                                     <i class="fa fa-reply"></i> 恢复
                                                 </button>&nbsp;
-                                                <button v-if="userAuth!=2" class="btn btn-white btn-sm" @click="deleteSelections()">
+                                                <button v-if="userAuth != 2" class="btn btn-white btn-sm"
+                                                    @click="deleteSelections()">
                                                     <i class="fa fa-trash-o"></i> 删除
                                                 </button>&nbsp;
                                             </span>
@@ -226,8 +238,7 @@
                             <div class="mail-box ibox table-responsive">
                                 <table
                                     class="table table-hover table-mail ibox-content footable table-stripped toggle-arrow-tiny"
-                                    data-page-size="13"
-                                    :class="{ 'sk-loading': loading }">
+                                    :data-page-size="pageSize" :class="{ 'sk-loading': loading }">
                                     <div class="sk-spinner sk-spinner-cube-grid">
                                         <div class="sk-cube"></div>
                                         <div class="sk-cube"></div>
@@ -279,11 +290,13 @@
                                                 <div class="btn-group">
                                                     <a v-if="!this.isTrash" @click="shareFolder(folder)">
                                                         <i class="fa fa-share-alt"></i>&nbsp;</a>
-                                                    <a v-if="!this.isTrash&&userAuth!=2" @click="recycleBinFolder(folder.folderId,folder.folderName)">
+                                                    <a v-if="!this.isTrash && userAuth != 2"
+                                                        @click="recycleBinFolder(folder.folderId, folder.folderName)">
                                                         <i class="fa fa-trash-o"></i>&nbsp;</a>
                                                     <a v-if="!this.isTrash" @click="cutFF(folder)"><i
                                                             class="fa fa-scissors"></i>&nbsp;</a>
-                                                    <a v-if="this.isTrash&&userAuth!=2" @click="deleteFolder(folder.folderId,folder.folderName)"><i
+                                                    <a v-if="this.isTrash && userAuth != 2"
+                                                        @click="deleteFolder(folder.folderId, folder.folderName)"><i
                                                             class="fa fa-trash-o"></i>&nbsp;</a>
                                                     <a v-if="this.isTrash" @click="replyTrashFolder(folder.folderId)"><i
                                                             class="fa fa-reply"></i>&nbsp;</a>
@@ -340,11 +353,13 @@
                                                         <i class="fa fa-share-alt"></i>&nbsp;</a>
                                                     <a v-if="!this.isTrash" @click="downloadFile(file)"><i
                                                             class="fa fa-download"></i>&nbsp;</a>
-                                                    <a v-if="!this.isTrash&&userAuth!=2" @click="recycleBinFile(file.fileId,file.fileName)"><i
+                                                    <a v-if="!this.isTrash && userAuth != 2"
+                                                        @click="recycleBinFile(file.fileId, file.fileName)"><i
                                                             class="fa fa-trash-o"></i>&nbsp;</a>
                                                     <a v-if="!this.isTrash" @click="cutFF(file)"><i
                                                             class="fa fa-scissors"></i>&nbsp;</a>
-                                                    <a v-if="this.isTrash&&userAuth!=2" @click="deleteFile(file.fileId,file.fileName)"><i
+                                                    <a v-if="this.isTrash && userAuth != 2"
+                                                        @click="deleteFile(file.fileId, file.fileName)"><i
                                                             class="fa fa-trash-o"></i>&nbsp;</a>
                                                     <a v-if="this.isTrash" @click="replyTrashFile(file.fileId)"><i
                                                             class="fa fa-reply"></i>&nbsp;</a>
@@ -470,9 +485,10 @@ toastr.options = {
 }
 export default {
     name: 'Profile',
-    setup() {},
+    setup() { },
     data() {
         return {
+            pageSize: 13,
             categoryCapacity: {},
             folders: [],
             files: [],
@@ -531,13 +547,18 @@ export default {
         this.checkRoute();
         if (this.isTrash) {
             this.enterPathTrash();
-        } else if(this.isAllfiles) {
+        } else if (this.isAllfiles) {
             this.enterPath(0);
-        }else{
+        } else {
             this.findFilesByCategory(this.category);
         }
     },
     methods: {
+        setPageSize() {
+                console.log(this.pageSize);
+                $('.footable').footable();
+                $('.footable').init();
+        },
         async queryCategoryCapacity() {
             const responseTags = await axios.get('/api/queryCategoryCapacity');
             this.categoryCapacity = responseTags.data.data;
@@ -677,7 +698,7 @@ export default {
             await this.findFFsByParentId(id);
             await this.findFolderById(id);
             this.currentFFsCount = this.folders.length + this.files.length;
-            this.isAllfiles=true;this.category=-1;
+            this.isAllfiles = true; this.category = -1;
             const imageFiles = await axios.get(`/api/findImagesByParentId?parentId=${this.currentFolder.folderId ?? 0}`);
             this.images = imageFiles.data.data.imageList  // 更新图片列表
             this.checkAllFFsCollectionStatus();
@@ -847,7 +868,7 @@ export default {
                 this.$swal.fire('操作取消', '标签未更改', 'info');
             }
         },
-        async recycleBinFile(fileId,fileName) {
+        async recycleBinFile(fileId, fileName) {
             const result = await this.$swal.fire({
                 title: '是否将文件放入回收站',
                 icon: 'warning',
@@ -857,7 +878,7 @@ export default {
             });
             if (result.isConfirmed) {
                 await axios.post('/api/recycleBinFile', { "fileId": fileId, "status": 1 });
-                await axios.post('/api/insertRecycleFileLog', { "userId":this.userData.userId,"fileName": fileName});
+                await axios.post('/api/insertRecycleFileLog', { "userId": this.userData.userId, "fileName": fileName });
                 this.$swal.fire('操作成功', '文件已放入回收站', 'success');
                 this.enterPath(this.currentFolder.folderId);
             }
@@ -865,7 +886,7 @@ export default {
                 this.$swal.fire('操作取消', '文件未放入回收站', 'info');
             }
         },
-        async recycleBinFolder(folderId,folderName) {
+        async recycleBinFolder(folderId, folderName) {
             const result = await this.$swal.fire({
                 title: '是否将文件夹放入回收站',
                 icon: 'warning',
@@ -875,7 +896,7 @@ export default {
             });
             if (result.isConfirmed) {
                 await axios.post('/api/recycleBinFolder', { "folderId": folderId, "status": 1 });
-                await axios.post('/api/insertRecycleFolderLog', { "userId":this.userData.userId,"folderName": folderName});
+                await axios.post('/api/insertRecycleFolderLog', { "userId": this.userData.userId, "folderName": folderName });
                 this.$swal.fire('操作成功', '文件夹已放入回收站', 'success');
                 this.enterPath(this.currentFolder.folderId);
             }
@@ -962,7 +983,7 @@ export default {
                 this.$swal.fire('操作取消', '文件和文件夹未还原', 'info');
             }
         },
-        async deleteFile(fileId,fileName) {
+        async deleteFile(fileId, fileName) {
             const result = await this.$swal.fire({
                 title: '是否将文件删除',
                 icon: 'warning',
@@ -972,7 +993,7 @@ export default {
             });
             if (result.isConfirmed) {
                 await axios.post('/api/deleteFile', { "fileId": fileId });
-                await axios.post('/api/insertDeleteFileLog', { "userId":this.userData.userId,"fileName": fileName});
+                await axios.post('/api/insertDeleteFileLog', { "userId": this.userData.userId, "fileName": fileName });
                 this.$swal.fire('操作成功', '文件已删除', 'success');
                 //更新容量
                 const event = new CustomEvent('update-capacity', {});
@@ -983,7 +1004,7 @@ export default {
                 this.$swal.fire('操作取消', '文件未删除', 'info');
             }
         },
-        async deleteFolder(folderId,folderName) {
+        async deleteFolder(folderId, folderName) {
             const result = await this.$swal.fire({
                 title: '是否将文件夹删除',
                 icon: 'warning',
@@ -993,7 +1014,7 @@ export default {
             });
             if (result.isConfirmed) {
                 await axios.post('/api/deleteFolder', { "folderId": folderId });
-                await axios.post('/api/insertDeleteFolderLog', { "userId":this.userData.userId,"folderName": folderName});
+                await axios.post('/api/insertDeleteFolderLog', { "userId": this.userData.userId, "folderName": folderName });
                 this.$swal.fire('操作成功', '文件夹已删除', 'success');
                 //更新容量
                 const event = new CustomEvent('update-capacity', {});
@@ -1015,11 +1036,11 @@ export default {
             if (result.isConfirmed) {
                 for (const folder of this.selectedFolders) {
                     await axios.post('/api/deleteFolder', { "folderId": folder.folderId });
-                    await axios.post('/api/insertDeleteFolderLog', { "userId":this.userData.userId,"folderId": folder.folderName});
+                    await axios.post('/api/insertDeleteFolderLog', { "userId": this.userData.userId, "folderId": folder.folderName });
                 }
                 for (const file of this.selectedFiles) {
                     await axios.post('/api/deleteFile', { "fileId": file.fileId });
-                    await axios.post('/api/insertDeleteFileLog', { "userId":this.userData.userId,"fileId": file.fileName});
+                    await axios.post('/api/insertDeleteFileLog', { "userId": this.userData.userId, "fileId": file.fileName });
                 }
                 this.$swal.fire('操作成功', '文件和文件夹已删除', 'success');
                 //更新容量
@@ -1418,11 +1439,11 @@ export default {
             if (result.isConfirmed) {
                 for (const folder of this.selectedFolders) {
                     await axios.post('/api/recycleBinFolder', { "folderId": folder.folderId, "status": 1 });
-                    await axios.post('/api/insertRecycleFolderLog', { "userId":this.userData.userId,"folderId": folder.folderName});
+                    await axios.post('/api/insertRecycleFolderLog', { "userId": this.userData.userId, "folderId": folder.folderName });
                 }
                 for (const file of this.selectedFiles) {
                     await axios.post('/api/recycleBinFile', { "fileId": file.fileId, "status": 1 });
-                    await axios.post('/api/insertRecycleFileLog', { "userId":this.userData.userId,"folderfileIdId": file.fileName});
+                    await axios.post('/api/insertRecycleFileLog', { "userId": this.userData.userId, "folderfileIdId": file.fileName });
                 }
                 this.$swal.fire('操作成功', '所选文件和文件夹已放入回收站', 'success');
                 this.enterPath(this.currentFolder.folderId);
