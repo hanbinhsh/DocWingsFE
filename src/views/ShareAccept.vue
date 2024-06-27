@@ -93,6 +93,7 @@
                               <th>名称</th>
                               <th>文件大小</th>
                               <th v-if="share.auth==1">下载</th>
+                              <th>下载次数</th>
                             </tr>
                           </thead>
                           <tbody>
@@ -102,6 +103,7 @@
                               </td>
                               <td></td>
                               <td v-if="share.auth==1"></td>
+                              <td></td>
                             </tr>
                             <tr v-for="(file, index) in files" :key="index" class="read" @dblclick="filePreview(file)">
                               <td>
@@ -124,6 +126,7 @@
                                   <a @click="downloadFile(file)"><i class="fa fa-download"></i>&nbsp;</a>
                                 </div>
                               </td>
+                              <td>{{ this.share.downloadCount[index] }}</td>
                             </tr>
                           </tbody>
                         </table>
@@ -137,7 +140,7 @@
                           <button :class="{ 'disabled': !isFolder }" class="btn btn-white btn-sm"
                             @click="enterPath(this.topFolderId)"><i class="fa fa-home"></i></button>
                         </div>
-                        <button class="btn btn-white btn-sm" @click="updateShare()"><i
+                        <button class="btn btn-white btn-sm" @click="currentFolder ? enterPath(currentFolder.folderId) : updateShare()"><i
                             class="fa fa-refresh"></i></button>
                       </div>
                       <div class="hr-line-dashed"></div>
@@ -159,10 +162,10 @@
                             <a> <i class="fa fa-circle text-info"></i> 有效时间
                               <span class="label label-primary pull-right">{{ formattedLastTime }}</span></a>
                           </li>
-                          <li>
-                            <a> <i class="fa fa-circle text-warning"></i> 下载次数
-                              <span class="label label-primary pull-right">{{ share.downloadCount }}</span></a>
-                          </li>
+                          <!-- <li>
+                            <a> <i class="fa fa-circle text-warning"></i> 其他
+                              <span class="label label-primary pull-right"></span></a>
+                          </li> -->
                         </ul>
                       </div>
                     </div>
@@ -219,6 +222,7 @@ export default {
       folders: [],
       viewerOptions: {},
       files: [],
+      audio_videoTitle:null,
       images: [],
       topFolderId: null,
       userData: JSON.parse(sessionStorage.getItem('userData')) || {},
@@ -348,6 +352,9 @@ export default {
       const response = await axios.get('/api/findFFsByParentId?parentId=' + id);
       this.folders = response.data.data.folders;
       this.files = response.data.data.files;
+      this.files.forEach(element => {
+        this.getDownloadCount(this.share.shareId,element.fileId);
+      });
       const responseFiles = await axios.get('/api/findFolderById?id=' + id);
       this.currentFolder = responseFiles.data.data.folder;
       this.initializePeity();
@@ -376,6 +383,7 @@ export default {
         }
         axios.post('/api/insertLog', { "userId": this.userData.userId ,"act": "下载"+this.share.sharerName+"分享的文件"+file.fileName+",分享Id为"+this.share.shareId+",文件Id为"+file.fileId, "importance": 3});
       });
+      this.currentFolder ? this.enterPath(this.currentFolder.folderId) : this.updateShare()
     },
     async queryShare() {
       const response = await axios.get('/api/getSharesByShareId?shareId=' + this.shareId);
@@ -398,15 +406,15 @@ export default {
         }
         this.exist = true;
         this.share = response.data.data.share;
-        this.getDownloadCount(this.share.shareId,this.share.fileId);
-        this.updateShare();
+        await this.updateShare();
       } else {
         this.exist = false;
       }
     },
     async getDownloadCount(shareId,fileId){
       const result = await axios.post('/api/getDownloadCount' ,{"shareId": shareId, "fileId": fileId});
-      this.share.downloadCount = result.data.count;
+      this.share.downloadCount = []
+      this.share.downloadCount.push(result.data.count);
     },
     async updateShare() {
       if (this.share.isFolder == 0) {
@@ -416,6 +424,9 @@ export default {
           return;
         } else {
           this.files = [response.data.data.file];
+          this.files.forEach(element => {
+            this.getDownloadCount(this.share.shareId,element.fileId);
+          });
         }
       } else {
         const response = await axios.get('/api/findFolderById?id=' + this.share.folderId);

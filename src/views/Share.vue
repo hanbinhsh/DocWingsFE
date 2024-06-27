@@ -39,7 +39,6 @@
                     </ul>
                 </div>
             </nav>
-
             <div id="page-wrapper" class="gray-bg">
                 <TopBar />
                 <div class="row wrapper border-bottom white-bg page-heading">
@@ -112,19 +111,22 @@
                                                                         <div class="sk-cube"></div>
                                                                     </div>
                                                                     <thead>
-                                                                        <td>状态</td>
-                                                                        <td></td><!--图标-->
-                                                                        <td>名称</td>
-                                                                        <td>权限</td>
-                                                                        <td></td><!--更改权限-->
-                                                                        <td>接收者</td>
-                                                                        <td></td><!--更改接收者-->
-                                                                        <td>接收用户组</td>
-                                                                        <td></td><!--更改接收用户组-->
-                                                                        <td>分享时间</td>
-                                                                        <td>到期时间</td>
-                                                                        <td></td><!--更改到期时间-->
-                                                                        <td>操作</td>
+                                                                        <tr>
+                                                                            <th>状态</th>
+                                                                            <th></th><!--图标-->
+                                                                            <th>名称</th>
+                                                                            <th>权限</th>
+                                                                            <th></th><!--更改权限-->
+                                                                            <th>接收者</th>
+                                                                            <th></th><!--更改接收者-->
+                                                                            <th>接收用户组</th>
+                                                                            <th></th><!--更改接收用户组-->
+                                                                            <th>分享时间</th>
+                                                                            <th>到期时间</th>
+                                                                            <th></th><!--更改到期时间-->
+                                                                            <th>下载次数</th>
+                                                                            <th>操作</th>
+                                                                        </tr>
                                                                     </thead>
                                                                     <tbody>
                                                                         <tr v-for="(share, index) in shares"
@@ -185,19 +187,19 @@
                                                                                     }}/1</span>
                                                                             </td>
                                                                             <td></td>
+                                                                            <td v-if="share.isFolder == 1"></td>
+                                                                            <td v-if="!share.isFolder == 1" :key="new Date().getTime()">&nbsp;&nbsp;&nbsp;
+                                                                                {{ share.downloadCount }}
+                                                                            </td>
                                                                             <td>
                                                                                 <div class="btn-group">
-                                                                                    <a
-                                                                                        @click.prevent="updateShare(share)"><i
+                                                                                    <a @click.prevent="updateShare(share)"><i
                                                                                             class="fa fa-edit"></i>&nbsp;</a>
-                                                                                    <a
-                                                                                        @click.prevent="deleteShare(share)"><i
+                                                                                    <a @click.prevent="deleteShare(share)"><i
                                                                                             class="fa fa-trash-o"></i>&nbsp;</a>
-                                                                                    <a
-                                                                                        @click="enterSharePage(share.shareId)"><i
+                                                                                    <a @click="enterSharePage(share.shareId)"><i
                                                                                             class="fa fa-eye"></i>&nbsp;</a>
-                                                                                    <a
-                                                                                        @click="copySharePage(share.shareId)"><i
+                                                                                    <a @click="copySharePage(share.shareId)"><i
                                                                                             class="fa fa-copy"></i>&nbsp;</a>
                                                                                 </div>
                                                                             </td>
@@ -211,7 +213,6 @@
                                                                         </tr>
                                                                     </tfoot>
                                                                 </table>
-
                                                             </div>
                                                         </div>
                                                     </div>
@@ -219,7 +220,6 @@
                                             </div>
                                         </div>
                                     </div>
-
                                 </div>
                                 <div id="tab-2" class="tab-pane">
                                     <div class="panel-body">
@@ -275,15 +275,17 @@
                                                                         <div class="sk-cube"></div>
                                                                     </div>
                                                                     <thead>
-                                                                        <td>状态</td>
-                                                                        <td></td><!--图标-->
-                                                                        <td>名称</td>
-                                                                        <td>权限</td>
-                                                                        <td>接收者</td>
-                                                                        <td>接收用户组</td>
-                                                                        <td>分享时间</td>
-                                                                        <td>到期时间</td>
-                                                                        <td>操作</td>
+                                                                        <tr>
+                                                                            <th>状态</th>
+                                                                            <th></th><!--图标-->
+                                                                            <th>名称</th>
+                                                                            <th>权限</th>
+                                                                            <th>接收者</th>
+                                                                            <th>接收用户组</th>
+                                                                            <th>分享时间</th>
+                                                                            <th>到期时间</th>
+                                                                            <th>操作</th>
+                                                                        </tr>
                                                                     </thead>
                                                                     <tbody>
                                                                         <tr v-for="(share, index) in acceptions"
@@ -342,11 +344,9 @@
                                                                             </td>
                                                                             <td>
                                                                                 <div class="btn-group">
-                                                                                    <a
-                                                                                        @click="enterSharePage(share.shareId)"><i
+                                                                                    <a @click="enterSharePage(share.shareId)"><i
                                                                                             class="fa fa-eye"></i>&nbsp;</a>
-                                                                                    <a
-                                                                                        @click="copySharePage(share.shareId)"><i
+                                                                                    <a @click="copySharePage(share.shareId)"><i
                                                                                             class="fa fa-copy"></i>&nbsp;</a>
                                                                                 </div>
                                                                             </td>
@@ -422,15 +422,17 @@
                                                                         <div class="sk-cube"></div>
                                                                     </div>
                                                                     <thead>
-                                                                        <td>状态</td>
-                                                                        <td></td><!--图标-->
-                                                                        <td>名称</td>
-                                                                        <td>权限</td>
-                                                                        <td>接收者</td>
-                                                                        <td>接收用户组</td>
-                                                                        <td>分享时间</td>
-                                                                        <td>到期时间</td>
-                                                                        <td>操作</td>
+                                                                        <tr>
+                                                                            <th>状态</th>
+                                                                            <th></th><!--图标-->
+                                                                            <th>名称</th>
+                                                                            <th>权限</th>
+                                                                            <th>接收者</th>
+                                                                            <th>接收用户组</th>
+                                                                            <th>分享时间</th>
+                                                                            <th>到期时间</th>
+                                                                            <th>操作</th>
+                                                                        </tr>
                                                                     </thead>
                                                                     <tbody>
                                                                         <tr v-for="(share, index) in allShares"
@@ -489,11 +491,9 @@
                                                                             </td>
                                                                             <td>
                                                                                 <div class="btn-group">
-                                                                                    <a
-                                                                                        @click="enterSharePage(share.shareId)"><i
+                                                                                    <a @click="enterSharePage(share.shareId)"><i
                                                                                             class="fa fa-eye"></i>&nbsp;</a>
-                                                                                    <a
-                                                                                        @click="copySharePage(share.shareId)"><i
+                                                                                    <a @click="copySharePage(share.shareId)"><i
                                                                                             class="fa fa-copy"></i>&nbsp;</a>
                                                                                 </div>
                                                                             </td>
@@ -567,6 +567,8 @@ export default {
             shareCount: 0,
             acceptCount: 0,
             loading: false,
+            allShares: null,
+            allCount: null,
         }
     },
     created() {
@@ -582,7 +584,7 @@ export default {
             
             const acres = await axios.get("api/getMyAcceptByUserIdGroupId?userId=" + this.userData.userId + "&groupId=" + this.userData.groupId);
             this.acceptions = acres.data.data.shares;
-            const allres = await axios.get("api/getAllShares");
+            const allres = await axios.get("/api/getAllShares");
             this.allShares = allres.data.data.shares;
             this.shareCount = res.data.data.shareCount;
             this.acceptCount = acres.data.data.acceptCount;
