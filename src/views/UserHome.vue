@@ -277,7 +277,7 @@ export default {
             categoryCapacity:{},
             viewerOptions: {},
             audio_videoTitle: null,
-            showPlayer: true,
+            showPlayer: false,
             audioOptions: {
                 autoplay: false,
                 controls: true,
