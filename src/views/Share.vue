@@ -491,6 +491,10 @@
                                                                             </td>
                                                                             <td>
                                                                                 <div class="btn-group">
+                                                                                    <a @click.prevent="updateShare(share)"><i
+                                                                                            class="fa fa-edit"></i>&nbsp;</a>
+                                                                                    <a @click.prevent="deleteShare(share)"><i
+                                                                                            class="fa fa-trash-o"></i>&nbsp;</a>
                                                                                     <a @click="enterSharePage(share.shareId)"><i
                                                                                             class="fa fa-eye"></i>&nbsp;</a>
                                                                                     <a @click="copySharePage(share.shareId)"><i
