@@ -46,8 +46,8 @@
                         <h2>分享</h2>
                     </div>
                 </div>
-                <div class="row">
-                    <div class="col-lg-6" style="width:100%">
+                <div class="row m-t-lg">
+                    <div class="col-lg-12">
                         <div class="tabs-container">
                             <ul class="nav nav-tabs">
                                 <li class="active"><a data-toggle="tab" href="tabs.html#tab-1"> 我的分享</a></li>
@@ -57,22 +57,14 @@
                             </ul>
                             <div class="tab-content">
                                 <div id="tab-1" class="tab-pane active">
-                                    <div class="panel-body">
+                                    <div class="panel-body" style="padding-bottom: 0px">
                                         <div class="wrapper wrapper-content animated fadeInRight"
                                             style="padding-bottom: 0px" v-if="userAuth != 3">
                                             <div class="row">
                                                 <div class="col-lg-12">
                                                     <div class="ibox float-e-margins">
-                                                        <div class="ibox-title">
-                                                            <h5>分享列表</h5>
-                                                            <div class="ibox-tools">
-                                                                <a class="collapse-link">
-                                                                    <i class="fa fa-chevron-up"></i>
-                                                                </a>
-                                                            </div>
-                                                        </div>
-                                                        <div class="ibox-content">
-                                                            <div class="m-b-lg">
+                                                        <div>
+                                                            <div>
                                                                 <div class="input-group">
                                                                     <input type="text" placeholder="输入要查找的分享......"
                                                                         class=" form-control" id="filter1">
@@ -94,7 +86,7 @@
                                                                     <strong>共{{ this.shareCount }}条分享</strong>
                                                                 </div>
                                                             </div>
-                                                            <div class="table-responsive ibox">
+                                                            <div class="table-responsive ibox" style="margin-bottom: 0px">
                                                                 <table
                                                                     class="table table-hover issue-tracker ibox-content footable table-stripped toggle-arrow-tiny"
                                                                     data-page-size="8" data-filter=#filter1>
@@ -222,20 +214,13 @@
                                     </div>
                                 </div>
                                 <div id="tab-2" class="tab-pane">
-                                    <div class="panel-body">
-                                        <div class="wrapper wrapper-content animated fadeInRight">
+                                    <div class="panel-body"  style="padding-bottom: 0px">
+                                        <div class="wrapper wrapper-content animated fadeInRight"
+                                        style="padding-bottom: 0px">
                                             <div class="row">
-                                                <div class="col-lg-12">
-                                                    <div class="ibox float-e-margins">
-                                                        <div class="ibox-title">
-                                                            <h5>我收到的</h5>
-                                                            <div class="ibox-tools">
-                                                                <a class="collapse-link">
-                                                                    <i class="fa fa-chevron-up"></i>
-                                                                </a>
-                                                            </div>
-                                                        </div>
-                                                        <div class="ibox-content">
+                                                <div>
+                                                    <div>
+                                                        <div>
                                                             <div class="m-b-lg">
                                                                 <div class="input-group">
                                                                     <input type="text" placeholder="输入要查找的分享......"
@@ -258,7 +243,7 @@
                                                                     <strong>共{{ this.acceptCount }}条收到的分享</strong>
                                                                 </div>
                                                             </div>
-                                                            <div class="table-responsive ibox">
+                                                            <div class="table-responsive ibox" style="margin-bottom: 0px">
                                                                 <table
                                                                     class="table table-hover issue-tracker ibox-content footable table table-stripped  toggle-arrow-tiny"
                                                                     data-page-size="8" data-filter=#filter2>
@@ -369,20 +354,13 @@
                                     </div>
                                 </div>
                                 <div id="tab-3" class="tab-pane">
-                                    <div class="panel-body">
-                                        <div class="wrapper wrapper-content animated fadeInRight">
+                                    <div class="panel-body"  style="padding-bottom: 0px">
+                                        <div class="wrapper wrapper-content animated fadeInRight"
+                                        style="padding-bottom: 0px">
                                             <div class="row">
-                                                <div class="col-lg-12">
-                                                    <div class="ibox float-e-margins">
-                                                        <div class="ibox-title">
-                                                            <h5>所有分享</h5>
-                                                            <div class="ibox-tools">
-                                                                <a class="collapse-link">
-                                                                    <i class="fa fa-chevron-up"></i>
-                                                                </a>
-                                                            </div>
-                                                        </div>
-                                                        <div class="ibox-content">
+                                                <div>
+                                                    <div>
+                                                        <div>
                                                             <div class="m-b-lg">
                                                                 <div class="input-group">
                                                                     <input type="text" placeholder="输入要查找的分享......"
@@ -405,7 +383,7 @@
                                                                     <strong>共{{ this.allCount }}条收到的分享</strong>
                                                                 </div>
                                                             </div>
-                                                            <div class="table-responsive ibox">
+                                                            <div class="table-responsive ibox" style="margin-bottom: 0px">
                                                                 <table
                                                                     class="table table-hover issue-tracker ibox-content footable table table-stripped  toggle-arrow-tiny"
                                                                     data-page-size="8" data-filter=#filter3>
