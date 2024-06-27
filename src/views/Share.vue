@@ -222,7 +222,7 @@
                                     </div>
                                     <div class="table-responsive ibox">
                                         <table
-                                            class="table table-hover issue-tracker ibox-content footable table table-stripped  toggle-arrow-tiny"
+                                            class="table table-hover issue-tracker ibox-content footable table table-stripped toggle-arrow-tiny"
                                             data-page-size="8" data-filter=#filter2>
                                             <div class="sk-spinner sk-spinner-cube-grid" v-show="loading">
                                                 <div class="sk-cube"></div>
