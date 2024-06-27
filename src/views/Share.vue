@@ -173,10 +173,15 @@
                                                     </td>
                                                 </tr>
                                             </tbody>
+                                            <tfoot>
+                                                <tr>
+                                                    <td colspan="14">
+                                                        <ul class="pagination pull-right"></ul>
+                                                    </td>
+                                                </tr>
+                                            </tfoot>
                                         </table>
-                                        <div class="col-sm-12">
-                                            <ul class="pagination pull-right"></ul>
-                                        </div>
+
                                     </div>
                                 </div>
                             </div>
@@ -215,7 +220,8 @@
                                     </div>
                                     <div class="table-responsive ibox">
                                         <table
-                                            class="table table-hover issue-tracker ibox-content">
+                                            class="table table-hover issue-tracker ibox-content footable table table-stripped  toggle-arrow-tiny"
+                                            data-page-size="8">
                                             <div class="sk-spinner sk-spinner-cube-grid" v-show="loading">
                                                 <div class="sk-cube"></div>
                                                 <div class="sk-cube"></div>
@@ -295,6 +301,13 @@
                                                     </td>
                                                 </tr>
                                             </tbody>
+                                            <tfoot>
+                                                <tr>
+                                                    <td colspan="14">
+                                                        <ul class="pagination pull-right"></ul>
+                                                    </td>
+                                                </tr>
+                                            </tfoot>
                                         </table>
                                     </div>
                                 </div>
@@ -473,6 +486,9 @@ export default {
                     this.$swal.fire('时间必须为数字', '请重新输入', 'error');
                     return;
                 }
+                if (formValues.accepter == '所有人') {
+                    formValues.accepter = '';
+                }
                 if (formValues.accepter) {
                     if (formValues.accepter == this.userData.userName) {
                         this.$swal.fire('不能分享给自己', '请重新输入', 'error');
@@ -552,6 +568,7 @@ export default {
     updated() {
         this.$nextTick(() => {
             $('.footable').footable();
+            $('.footable').init();
         });
     },
 }
