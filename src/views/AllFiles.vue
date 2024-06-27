@@ -139,17 +139,17 @@
                         </div>
                         <div class="col-lg-10 animated fadeInRight">
                             <div class="mail-box-header">
-                                <form method="get" action="index.html" class="pull-right mail-search">
+                                <div class="pull-right mail-search">
                                     <div class="input-group">
-                                        <input type="text" class="form-control input-sm" name="search"
-                                            placeholder="搜索内容">
+                                        <input type="text" class="form-control input-sm m-b-xs" id="filter"
+                                            placeholder="搜索内容......">
                                         <div class="input-group-btn">
                                             <button type="submit" class="btn btn-sm btn-primary">
                                                 搜索
                                             </button>
                                         </div>
                                     </div>
-                                </form>
+                                </div>
                                 <h2>
                                     {{ (isTrash ? '回收站' : category == 0 ? '图片' : category == 1 ? '文档' :
                                         category == 3 ? '视频' : category == 2 ? '音乐' : category == 4 ? '其他' :
@@ -157,88 +157,80 @@
                                                 (this.selectedFiles.length + this.selectedFolders.length <= 0 ? '' :
                                                     this.selectedFiles.length + this.selectedFolders.length + '/') +
                                                 this.currentFFsCount + ')') }} </h2>
-                                        <div class="mail-tools tooltip-demo m-t-md">
-                                            <div :class="{ 'disabled': isTrash }" class="btn-group pull-right">
-                                                <div :class="{ 'disabled': isTrash }" class="btn btn-white btn-sm">
-                                                    Page-Size</div>
-                                                <div :class="{ 'disabled': isTrash }" class="btn btn-white btn-sm">
-                                                    <input class="pageSize" type="number" v-model="pageSize"
-                                                        value="{{ pageSize }}">
-                                                </div>
-                                                <button :class="{ 'disabled': isTrash }" class="btn btn-white btn-sm"
-                                                    @click="setPageSize()">
-                                                    <div class="pageSize">ok</div>
-                                                </button>
-                                                <button :class="{ 'disabled': isTrash }" class="btn btn-white btn-sm"
-                                                    @click="backPath()"><i class="fa fa-arrow-left"></i></button>
-                                                <button :class="{ 'disabled': isTrash }" class="btn btn-white btn-sm"
-                                                    @click="enterPath(0)"><i class="fa fa-home"></i></button>
-                                            </div>
-                                            <button class="btn btn-white btn-sm" data-toggle="tooltip"
-                                                data-placement="bottom" title="刷新页面"
-                                                @click="isTrash ? this.enterPathTrash() : this.enterPath(currentFolder.folderId)">
-                                                <i class="fa fa-refresh"></i> 刷新
-                                            </button>&nbsp;
-                                            <button class="btn btn-white btn-sm" data-toggle="tooltip"
-                                                data-placement="bottom" title="粘贴文件"
-                                                @click="isCuttingSeletion ? pasteSelections() : pasteFile()"
-                                                :class="{ 'disabled': isTrash }">
-                                                <i class="fa fa-paste"></i> 粘贴
-                                                <span v-if="isCutting">
-                                                    {{ this.currentCutFF.fileName ? this.currentCutFF.fileName :
-                                                        this.currentCutFF.folderName ?? "" }}
-                                                </span>
-                                                <span v-if="isCuttingSeletion">
-                                                    {{
-                                                        currentCuttingSelectFiles.length + currentCuttingSelectFolders.length
-                                                    }}个文件
-                                                </span>
-                                            </button>&nbsp;
-                                            <button class="btn btn-white btn-sm" @click="allCheckbox()">
-                                                <i class="fa fa-check-square"></i> 全选
-                                            </button>&nbsp;
-                                            <button v-if="this.selectedFiles.length + this.selectedFolders.length > 0"
-                                                class="btn btn-white btn-sm" @click="cancelCheckbox()">
-                                                <i class="fa fa-square-o"></i> 取消多选
-                                            </button>&nbsp;
-                                            <span
-                                                v-if="this.selectedFiles.length + this.selectedFolders.length > 0 && !this.isTrash">
-                                                <button class="btn btn-white btn-sm" @click="collectSelections()">
-                                                    <i class="fa fa-star"></i> 收藏
-                                                </button>&nbsp;
-                                                <button class="btn btn-white btn-sm" @click="cancelCollectSelections()">
-                                                    <i class="fa fa-star-o"></i> 取消收藏
-                                                </button>&nbsp;
-                                                <button class="btn btn-white btn-sm" @click="shareSelections()">
-                                                    <i class="fa fa-share-alt"></i> 分享
-                                                </button>&nbsp;
-                                                <button class="btn btn-white btn-sm" @click="downloadSelections()">
-                                                    <i class="fa fa-download"></i> 下载
-                                                </button>&nbsp;
-                                                <button v-if="userAuth != 2" class="btn btn-white btn-sm"
-                                                    @click="recycleSelections()">
-                                                    <i class="fa fa-trash-o"></i> 放入回收站
-                                                </button>&nbsp;
-                                                <button class="btn btn-white btn-sm" @click="cutSelections()">
-                                                    <i class="fa fa-scissors"></i> 剪切
-                                                </button>&nbsp;
-                                            </span>
-                                            <span
-                                                v-if="this.selectedFiles.length + this.selectedFolders.length > 0 && this.isTrash">
-                                                <button class="btn btn-white btn-sm" @click="replyTrashSelections()">
-                                                    <i class="fa fa-reply"></i> 恢复
-                                                </button>&nbsp;
-                                                <button v-if="userAuth != 2" class="btn btn-white btn-sm"
-                                                    @click="deleteSelections()">
-                                                    <i class="fa fa-trash-o"></i> 删除
-                                                </button>&nbsp;
-                                            </span>
-                                        </div>
+                                <div class="mail-tools tooltip-demo m-t-md">
+                                    <div :class="{ 'disabled': isTrash }" class="btn-group pull-right">
+                                        <button :class="{ 'disabled': isTrash }" class="btn btn-white btn-sm"
+                                            @click="backPath()"><i class="fa fa-arrow-left"></i></button>
+                                        <button :class="{ 'disabled': isTrash }" class="btn btn-white btn-sm"
+                                            @click="enterPath(0)"><i class="fa fa-home"></i></button>
+                                    </div>
+                                    <button class="btn btn-white btn-sm" data-toggle="tooltip"
+                                        data-placement="bottom" title="刷新页面"
+                                        @click="isTrash ? this.enterPathTrash() : this.enterPath(currentFolder.folderId)">
+                                        <i class="fa fa-refresh"></i> 刷新
+                                    </button>&nbsp;
+                                    <button class="btn btn-white btn-sm" data-toggle="tooltip"
+                                        data-placement="bottom" title="粘贴文件"
+                                        @click="isCuttingSeletion ? pasteSelections() : pasteFile()"
+                                        :class="{ 'disabled': isTrash }">
+                                        <i class="fa fa-paste"></i> 粘贴
+                                        <span v-if="isCutting">
+                                            {{ this.currentCutFF.fileName ? this.currentCutFF.fileName :
+                                                this.currentCutFF.folderName ?? "" }}
+                                        </span>
+                                        <span v-if="isCuttingSeletion">
+                                            {{
+                                                currentCuttingSelectFiles.length + currentCuttingSelectFolders.length
+                                            }}个文件
+                                        </span>
+                                    </button>&nbsp;
+                                    <button class="btn btn-white btn-sm" @click="allCheckbox()">
+                                        <i class="fa fa-check-square"></i> 全选
+                                    </button>&nbsp;
+                                    <button v-if="this.selectedFiles.length + this.selectedFolders.length > 0"
+                                        class="btn btn-white btn-sm" @click="cancelCheckbox()">
+                                        <i class="fa fa-square-o"></i> 取消多选
+                                    </button>&nbsp;
+                                    <span
+                                        v-if="this.selectedFiles.length + this.selectedFolders.length > 0 && !this.isTrash">
+                                        <button class="btn btn-white btn-sm" @click="collectSelections()">
+                                            <i class="fa fa-star"></i> 收藏
+                                        </button>&nbsp;
+                                        <button class="btn btn-white btn-sm" @click="cancelCollectSelections()">
+                                            <i class="fa fa-star-o"></i> 取消收藏
+                                        </button>&nbsp;
+                                        <button class="btn btn-white btn-sm" @click="shareSelections()">
+                                            <i class="fa fa-share-alt"></i> 分享
+                                        </button>&nbsp;
+                                        <button class="btn btn-white btn-sm" @click="downloadSelections()">
+                                            <i class="fa fa-download"></i> 下载
+                                        </button>&nbsp;
+                                        <button v-if="userAuth != 2" class="btn btn-white btn-sm"
+                                            @click="recycleSelections()">
+                                            <i class="fa fa-trash-o"></i> 放入回收站
+                                        </button>&nbsp;
+                                        <button class="btn btn-white btn-sm" @click="cutSelections()">
+                                            <i class="fa fa-scissors"></i> 剪切
+                                        </button>&nbsp;
+                                    </span>
+                                    <span
+                                        v-if="this.selectedFiles.length + this.selectedFolders.length > 0 && this.isTrash">
+                                        <button class="btn btn-white btn-sm" @click="replyTrashSelections()">
+                                            <i class="fa fa-reply"></i> 恢复
+                                        </button>&nbsp;
+                                        <button v-if="userAuth != 2" class="btn btn-white btn-sm"
+                                            @click="deleteSelections()">
+                                            <i class="fa fa-trash-o"></i> 删除
+                                        </button>&nbsp;
+                                    </span>
+                                </div>
                             </div>
                             <div class="mail-box ibox table-responsive">
                                 <table
                                     class="table table-hover table-mail ibox-content footable table-stripped toggle-arrow-tiny"
-                                    :data-page-size="pageSize" :class="{ 'sk-loading': loading }">
+                                    data-page-size="13" :class="{ 'sk-loading': loading }" 
+                                    data-filter=#filter data-sorting="true" data-paging="true"
+                                    data-filtering="true">
                                     <div class="sk-spinner sk-spinner-cube-grid">
                                         <div class="sk-cube"></div>
                                         <div class="sk-cube"></div>
@@ -447,6 +439,7 @@ div:where(.swal2-container) div:where(.swal2-popup) {
 
 <script>
 import $ from 'jquery'
+import jQuery from 'jquery'
 import "../assets/js/plugins/metisMenu/jquery.metisMenu.js"
 import "../assets/js/plugins/slimscroll/jquery.slimscroll.min.js"
 import "../assets/js/inspinia.js"
@@ -553,11 +546,6 @@ export default {
         }
     },
     methods: {
-        setPageSize() {
-                console.log(this.pageSize);
-                $('.footable').footable();
-                $('.footable').init();
-        },
         async queryCategoryCapacity() {
             const responseTags = await axios.get('/api/queryCategoryCapacity');
             this.categoryCapacity = responseTags.data.data;
@@ -1504,7 +1492,6 @@ export default {
     updated() {
         this.$nextTick(() => {
             $('.footable').footable();
-            $('.footable').init();
         });
     },
 }
