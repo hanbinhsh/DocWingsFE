@@ -63,7 +63,7 @@
                                 <div class="ibox-content">
                                     <div class="m-b-lg">
                                         <div class="input-group">
-                                            <input type="text" placeholder="输入要查找的分享......" class=" form-control">
+                                            <input type="text" placeholder="输入要查找的分享......" class=" form-control" id="filter1">
                                             <span class="input-group-btn">
                                                 <button type="button" class="btn btn-white"> 查找</button>
                                             </span>
@@ -81,7 +81,7 @@
                                     <div class="table-responsive ibox">
                                         <table
                                             class="table table-hover issue-tracker ibox-content footable table-stripped toggle-arrow-tiny"
-                                            data-page-size="8">
+                                            data-page-size="8" data-filter=#filter1>
                                             <div class="sk-spinner sk-spinner-cube-grid" v-show="loading">
                                                 <div class="sk-cube"></div>
                                                 <div class="sk-cube"></div>
@@ -94,21 +94,19 @@
                                                 <div class="sk-cube"></div>
                                             </div>
                                             <thead>
-                                                <tr>
-                                                    <th>状态</th>
-                                                    <th></th><!--图标-->
-                                                    <th>名称</th>
-                                                    <th>权限</th>
-                                                    <th></th><!--更改权限-->
-                                                    <th>接收者</th>
-                                                    <th></th><!--更改接收者-->
-                                                    <th>接收用户组</th>
-                                                    <th></th><!--更改接收用户组-->
-                                                    <th>分享时间</th>
-                                                    <th>到期时间</th>
-                                                    <th></th><!--更改到期时间-->
-                                                    <th>操作</th>
-                                                </tr>
+                                                <td>状态</td>
+                                                <td></td><!--图标-->
+                                                <td>名称</td>
+                                                <td>权限</td>
+                                                <td></td><!--更改权限-->
+                                                <td>接收者</td>
+                                                <td></td><!--更改接收者-->
+                                                <td>接收用户组</td>
+                                                <td></td><!--更改接收用户组-->
+                                                <td>分享时间</td>
+                                                <td>到期时间</td>
+                                                <td></td><!--更改到期时间-->
+                                                <td>操作</td>
                                             </thead>
                                             <tbody>
                                                 <tr v-for="(share, index) in shares" :key="index" @dblclick=""
@@ -205,7 +203,7 @@
                                 <div class="ibox-content">
                                     <div class="m-b-lg">
                                         <div class="input-group">
-                                            <input type="text" placeholder="输入要查找的分享......" class=" form-control">
+                                            <input type="text" placeholder="输入要查找的分享......" class=" form-control" id="filter2">
                                             <span class="input-group-btn">
                                                 <button type="button" class="btn btn-white"> 查找</button>
                                             </span>
@@ -223,7 +221,7 @@
                                     <div class="table-responsive ibox">
                                         <table
                                             class="table table-hover issue-tracker ibox-content footable table table-stripped  toggle-arrow-tiny"
-                                            data-page-size="8">
+                                            data-page-size="8" data-filter=#filter2>
                                             <div class="sk-spinner sk-spinner-cube-grid" v-show="loading">
                                                 <div class="sk-cube"></div>
                                                 <div class="sk-cube"></div>
@@ -236,17 +234,15 @@
                                                 <div class="sk-cube"></div>
                                             </div>
                                             <thead>
-                                                <tr>
-                                                    <th>状态</th>
-                                                    <th></th><!--图标-->
-                                                    <th>名称</th>
-                                                    <th>权限</th>
-                                                    <th>接收者</th>
-                                                    <th>接收用户组</th>
-                                                    <th>分享时间</th>
-                                                    <th>到期时间</th>
-                                                    <th>操作</th>
-                                                </tr>
+                                                <td>状态</td>
+                                                <td></td><!--图标-->
+                                                <td>名称</td>
+                                                <td>权限</td>
+                                                <td>接收者</td>
+                                                <td>接收用户组</td>
+                                                <td>分享时间</td>
+                                                <td>到期时间</td>
+                                                <td>操作</td>
                                             </thead>
                                             <tbody>
                                                 <tr v-for="(share, index) in acceptions" :key="index" @dblclick=""
@@ -573,6 +569,7 @@ export default {
         this.$nextTick(() => {
             $('.footable').footable();
             $('.footable').init();
+
         });
     },
 }
