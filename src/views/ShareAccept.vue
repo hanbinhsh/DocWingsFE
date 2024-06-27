@@ -159,10 +159,10 @@
                             <a> <i class="fa fa-circle text-info"></i> 有效时间
                               <span class="label label-primary pull-right">{{ formattedLastTime }}</span></a>
                           </li>
-                          <!-- <li>
-                            <a> <i class="fa fa-circle text-warning"></i> 其他
-                              <span class="label label-primary pull-right"></span></a>
-                          </li> -->
+                          <li>
+                            <a> <i class="fa fa-circle text-warning"></i> 下载次数
+                              <span class="label label-primary pull-right">{{ share.downloadCount }}</span></a>
+                          </li>
                         </ul>
                       </div>
                     </div>
@@ -374,6 +374,7 @@ export default {
           URL.revokeObjectURL(elink.href);
           document.body.removeChild(elink);
         }
+        axios.post('/api/insertLog', { "userId": this.userData.userId ,"act": "下载"+this.share.sharerName+"分享的文件"+file.fileName+",分享Id为"+this.share.shareId+",文件Id为"+file.fileId, "importance": 3});
       });
     },
     async queryShare() {
@@ -397,10 +398,15 @@ export default {
         }
         this.exist = true;
         this.share = response.data.data.share;
+        this.getDownloadCount(this.share.shareId,this.share.fileId);
         this.updateShare();
       } else {
         this.exist = false;
       }
+    },
+    async getDownloadCount(shareId,fileId){
+      const result = await axios.post('/api/getDownloadCount' ,{"shareId": shareId, "fileId": fileId});
+      this.share.downloadCount = result.data.count;
     },
     async updateShare() {
       if (this.share.isFolder == 0) {

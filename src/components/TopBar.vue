@@ -4,7 +4,7 @@
             <div class="navbar-header" @mouseleave="closeDropdown">
                 <a style="height:30px" class="navbar-minimalize minimalize-styl-2 btn btn-primary "><i
                         style="margin-top:4px" class="fa fa-bars"></i> </a>
-                <form role="search" class="navbar-form-custom" action="search_results.html">
+                <div role="search" class="navbar-form-custom">
                     <div class="form-group" v-if="userAuth != 3">
                         <input type="text" placeholder="输入要查找的文件......" class="form-control" name="top-search"
                             v-model="name" id="top-search" @input="searchFile">
@@ -34,7 +34,7 @@
                             </li>
                         </ul>
                     </div>
-                </form>
+                </div>
             </div>
             <ul class="nav navbar-top-links navbar-right">
                 <li>

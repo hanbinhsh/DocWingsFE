@@ -230,7 +230,8 @@
                                     class="table table-hover table-mail ibox-content footable table-stripped toggle-arrow-tiny"
                                     data-page-size="13" :class="{ 'sk-loading': loading }" 
                                     data-filter=#filter data-sorting="true" data-paging="true"
-                                    data-filtering="true">
+                                    data-filtering="true"
+                                    style="margin-bottom: 0px">
                                     <div class="sk-spinner sk-spinner-cube-grid">
                                         <div class="sk-cube"></div>
                                         <div class="sk-cube"></div>

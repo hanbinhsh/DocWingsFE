@@ -579,6 +579,7 @@ export default {
             this.showLoading()
             const res = await axios.get("api/getSharesByUserId?userId=" + this.userData.userId);
             this.shares = res.data.data.shares;
+            
             const acres = await axios.get("api/getMyAcceptByUserIdGroupId?userId=" + this.userData.userId + "&groupId=" + this.userData.groupId);
             this.acceptions = acres.data.data.shares;
             const allres = await axios.get("api/getAllShares");
@@ -589,7 +590,16 @@ export default {
             await this.$nextTick(() => {
                 this.initializePeity();
             });
+            this.shares.forEach(share => {
+                if (!share.isFolder) {
+                    this.getDownloadCount(share);
+                }
+            });
             this.hideLoading()
+        },
+        async getDownloadCount(share){
+            const result = await axios.post('api/getDownloadCount' ,{"shareId": share.shareId, "fileId": share.fileId});
+            share.downloadCount = result.data.count;
         },
         initializePeity() {
             $('span.pie').peity('pie', {
@@ -776,7 +786,6 @@ export default {
         this.$nextTick(() => {
             $('.footable').footable();
             $('.footable').init();
-
         });
     },
 }
