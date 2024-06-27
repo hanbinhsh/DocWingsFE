@@ -104,6 +104,7 @@
                                                 <td>分享时间</td>
                                                 <td>到期时间</td>
                                                 <td></td><!--更改到期时间-->
+                                                <td>下载次数</td>
                                                 <td>操作</td>
                                             </thead>
                                             <tbody>
@@ -157,6 +158,10 @@
                                                             }}/1</span>
                                                     </td>
                                                     <td></td>
+                                                    <td v-if="share.isFolder == 1"></td>
+                                                    <td v-if="!share.isFolder == 1" :key="new Date().getTime()">&nbsp;&nbsp;&nbsp;
+                                                        {{ share.downloadCount }}
+                                                    </td>
                                                     <td>
                                                         <div class="btn-group">
                                                             <a @click.prevent="updateShare(share)"><i class="fa fa-edit"></i>&nbsp;</a>
@@ -353,6 +358,7 @@ export default {
             this.showLoading()
             const res = await axios.get("api/getSharesByUserId?userId=" + this.userData.userId);
             this.shares = res.data.data.shares;
+            
             const acres = await axios.get("api/getMyAcceptByUserIdGroupId?userId=" + this.userData.userId + "&groupId=" + this.userData.groupId);
             this.acceptions = acres.data.data.shares;
             this.shareCount = res.data.data.shareCount;
@@ -360,7 +366,16 @@ export default {
             await this.$nextTick(() => {
                 this.initializePeity();
             });
+            this.shares.forEach(share => {
+                if (!share.isFolder) {
+                    this.getDownloadCount(share);
+                }
+            });
             this.hideLoading()
+        },
+        async getDownloadCount(share){
+            const result = await axios.post('api/getDownloadCount' ,{"shareId": share.shareId, "fileId": share.fileId});
+            share.downloadCount = result.data.count;
         },
         initializePeity() {
             $('span.pie').peity('pie', {
