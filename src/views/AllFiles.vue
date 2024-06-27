@@ -244,18 +244,18 @@
                                     </div>
                                     <thead>
                                         <tr>
-                                            <th></th>
+                                            <th data-filterable="false" data-sortable="false"></th>
                                             <th>名称</th>
-                                            <th v-if="!this.isTrash"></th> <!--重命名-->
+                                            <th v-if="!this.isTrash" data-filterable="false" data-sortable="false"></th> <!--重命名-->
                                             <th>标签</th>
-                                            <th v-if="!this.isTrash"></th> <!--重命名标签-->
+                                            <th v-if="!this.isTrash" data-filterable="false" data-sortable="false"></th> <!--重命名标签-->
                                             <th>文件大小</th>
                                             <th>上次修改者</th>
                                             <th>上次修改时间</th>
                                             <th>创建者</th>
                                             <th>创建日期</th>
-                                            <th>操作</th>
-                                            <th>多选</th>
+                                            <th data-filterable="false" data-sortable="false">操作</th>
+                                            <th data-filterable="false" data-sortable="false">多选</th>
                                         </tr>
                                     </thead>
                                     <tbody>
