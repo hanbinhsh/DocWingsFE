@@ -402,7 +402,7 @@
                                                                         <a href="allfiles"
                                                                             class="btn btn-primary btn-sm">新建分享</a>
                                                                     </div>
-                                                                    <strong>共{{ this.allCount }}条收到的分享</strong>
+                                                                    <strong>共{{ this.allCount }}条分享</strong>
                                                                 </div>
                                                             </div>
                                                             <div class="table-responsive ibox">
