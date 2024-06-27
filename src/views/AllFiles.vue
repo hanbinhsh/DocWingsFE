@@ -766,6 +766,7 @@ export default {
             if (newName) {
                 // 调用 API 来更新文件名
                 await axios.post('/api/renameFile', { "fileId": file.fileId, "fileName": newName, "userId": this.userData.userId });
+                await axios.post('/api/insertLog', { "userId": this.userData.userId ,"act": "重命名文件"+file.fileName+"为"+newName, "importance": 2});
                 this.$swal.fire('文件名已更新', `文件名已更新为:${newName}`, 'success');
                 this.enterPath(this.currentFolder.folderId);
             }
@@ -792,6 +793,7 @@ export default {
             if (newName) {
                 // 调用 API 来更新文件名
                 await axios.post('/api/renameFolder', { "folderId": folder.folderId, "folderName": newName, "userId": this.userData.userId });
+                await axios.post('/api/insertLog', { "userId": this.userData.userId ,"act": "重命名文件夹"+folder.folderName+"为"+newName, "importance": 2});
                 this.$swal.fire('文件夹名已更新', `文件夹名已更新为:${newName}`, 'success');
                 this.enterPath(this.currentFolder.folderId);
             }
@@ -816,6 +818,12 @@ export default {
             });
             if (newName) {
                 await axios.post('/api/renameFileTag', { "fileId": file.fileId, "tag": newName, "userId": this.userData.userId });
+                if(file.tag){
+                    await axios.post('/api/insertLog', { "userId": this.userData.userId ,"act": "更改文件"+file.fileName+"标签"+file.tag+"为"+newName, "importance": 3});
+                }
+                else{
+                    await axios.post('/api/insertLog', { "userId": this.userData.userId ,"act": "为文件"+file.fileName+"添加标签为"+newName, "importance": 3});
+                }
                 this.$swal.fire('标签已更改', `标签已更改为:${newName}`, 'success');
                 this.enterPath(this.currentFolder.folderId);
             }
@@ -840,6 +848,12 @@ export default {
             });
             if (newName) {
                 await axios.post('/api/renameFolderTag', { "folderId": folder.folderId, "tag": newName, "userId": this.userData.userId });
+                if(folder.tag){
+                    await axios.post('/api/insertLog', { "userId": this.userData.userId ,"act": "更改文件夹"+folder.folderName+"标签"+folder.tag+"为"+newName, "importance": 3});
+                }
+                else{
+                    await axios.post('/api/insertLog', { "userId": this.userData.userId ,"act": "为文件夹"+folder.folderName+"添加标签为"+newName, "importance": 3});
+                }
                 this.$swal.fire('标签已更改', `标签已更改为:${newName}`, 'success');
                 this.enterPath(this.currentFolder.folderId);
             }
