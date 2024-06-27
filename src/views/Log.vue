@@ -5,10 +5,10 @@
                 <div class="sidebar-collapse">
                     <ul class="nav metismenu" id="side-menu">
                         <UserItem />
-                        <li v-if="userAuth!=3">
+                        <li v-if="userAuth != 3">
                             <a href="userhome"><i class="fa fa-laptop"></i> <span class="nav-label">主页</span></a>
                         </li>
-                        <li v-if="userAuth!=3">
+                        <li v-if="userAuth != 3">
                             <a><i class="fa fa-folder-o"></i> <span class="nav-label">文件管理</span><span
                                     class="fa arrow"></span></a>
                             <ul class="nav nav-second-level collapse">
@@ -23,7 +23,7 @@
                         <li>
                             <a href="share"><i class="fa fa-share-square-o"></i> <span class="nav-label">分享</span></a>
                         </li>
-                        <li v-if="userAuth!=3">
+                        <li v-if="userAuth != 3">
                             <a href="trash"><i class="fa fa-trash-o"></i> <span class="nav-label">回收站</span></a>
                         </li>
                         <li v-if="isAdmin()">
@@ -55,7 +55,9 @@
                                     <div class="row m-t-sm">
                                         <div class="col-lg-12">
                                             <div class="tab-content">
-                                                <table class="table table-striped">
+                                                <table
+                                                    class="table table-striped footable table-stripped toggle-arrow-tiny"
+                                                    data-page-size=15>
                                                     <thead>
                                                         <tr>
                                                             <th>用户名</th>
@@ -78,6 +80,9 @@
                                                         </tr>
                                                     </tbody>
                                                 </table>
+                                                <div class="col-sm-12">
+                                                    <ul class="pagination pull-right"></ul>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -173,6 +178,12 @@ export default {
                 }, 2000);
             }
         }
-    }
+    },
+    updated() {
+        this.$nextTick(() => {
+            $('.footable').footable();
+            $('.footable').init();
+        });
+    },
 }
 </script>

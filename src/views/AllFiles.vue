@@ -448,7 +448,6 @@ div:where(.swal2-container) div:where(.swal2-popup) {
 <script>
 import $ from 'jquery'
 import "../assets/js/plugins/metisMenu/jquery.metisMenu.js"
-import "../assets/js/plugins/metisMenu/jquery.metisMenu.js"
 import "../assets/js/plugins/slimscroll/jquery.slimscroll.min.js"
 import "../assets/js/inspinia.js"
 import "../assets/js/plugins/pace/pace.min.js"
