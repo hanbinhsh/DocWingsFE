@@ -57,7 +57,8 @@
                                             <div class="tab-content">
                                                 <table
                                                     class="table table-striped footable table-stripped toggle-arrow-tiny"
-                                                    data-page-size=15>
+                                                    data-page-size=15 :class="{ 'sk-loading': loading }" >
+                                                    <Spinner :loading="loading"/>
                                                     <thead>
                                                         <tr>
                                                             <th>用户名</th>

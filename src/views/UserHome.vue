@@ -208,17 +208,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="sk-spinner sk-spinner-cube-grid" v-show="loading">
-                                <div class="sk-cube"></div>
-                                <div class="sk-cube"></div>
-                                <div class="sk-cube"></div>
-                                <div class="sk-cube"></div>
-                                <div class="sk-cube"></div>
-                                <div class="sk-cube"></div>
-                                <div class="sk-cube"></div>
-                                <div class="sk-cube"></div>
-                                <div class="sk-cube"></div>
-                            </div>
+                            <Spinner :loading="loading"/>
                         </div>
                     </div>
                 </div>

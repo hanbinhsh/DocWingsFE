@@ -3,6 +3,7 @@ import App from './App.vue'
 import router from './router'
 import store from './store'
 import sweetAlertPlugin from './plugins/sweet-alert.js';
+import Spinner from './components/Spinner.vue';
 import ElementPlus from 'element-plus';
 import Viewer from 'v-viewer'
 import axios from 'axios'
@@ -17,4 +18,4 @@ import './assets/font-awesome/css/font-awesome.css';
 import './assets/css/animate.css';
 import './assets/css/style.css';
 
-createApp(App).use(store).use(router).use(sweetAlertPlugin).use(ElementPlus).use(Viewer).mount('#app')
+createApp(App).use(store).use(router).component('Spinner', Spinner).use(sweetAlertPlugin).use(ElementPlus).use(Viewer).mount('#app')

@@ -61,130 +61,98 @@
                                         <div class="wrapper wrapper-content animated fadeInRight"
                                         style="padding-bottom: 0px">
                                             <div class="row">
-                                                <div class="m-b-lg">
-                                                    <div class="input-group">
-                                                        <input type="text" placeholder="输入要查找的分享......"
-                                                            class=" form-control" id="filter2">
-                                                        <span class="input-group-btn">
-                                                            <button type="button" class="btn btn-white">
-                                                                查找</button>
-                                                        </span>
-                                                    </div>
-                                                    <div class="m-t-md">
-                                                        <div class="pull-right">
-                                                            <button class="btn btn-white btn-sm"
-                                                                data-toggle="tooltip" data-placement="left"
-                                                                title="刷新页面" @click="getShares()"><i
-                                                                    class="fa fa-refresh"></i>
-                                                                刷新</button>&nbsp;
-                                                            <a href="allfiles"
-                                                                class="btn btn-primary btn-sm">新建分享</a>
+                                                <div class="col-lg-12">
+                                                    <div class="m-b-lg">
+                                                        <div class="input-group">
+                                                            <input type="text" placeholder="输入要查找的分享......"
+                                                                class=" form-control" id="filter2">
+                                                            <span class="input-group-btn">
+                                                                <button type="button" class="btn btn-white">
+                                                                    查找</button>
+                                                            </span>
                                                         </div>
-                                                        <strong>共{{ this.acceptCount }}条收到的分享</strong>
-                                                    </div>
-                                                </div>
-                                                <div class="table-responsive ibox" style="margin-bottom: 0px">
-                                                    <table
-                                                        class="table table-hover issue-tracker ibox-content footable table table-stripped  toggle-arrow-tiny"
-                                                        data-page-size="8" data-filter=#filter2>
-                                                        <div class="sk-spinner sk-spinner-cube-grid"
-                                                            v-show="loading">
-                                                            <div class="sk-cube"></div>
-                                                            <div class="sk-cube"></div>
-                                                            <div class="sk-cube"></div>
-                                                            <div class="sk-cube"></div>
-                                                            <div class="sk-cube"></div>
-                                                            <div class="sk-cube"></div>
-                                                            <div class="sk-cube"></div>
-                                                            <div class="sk-cube"></div>
-                                                            <div class="sk-cube"></div>
+                                                        <div class="m-t-md">
+                                                            <div class="pull-right">
+                                                                <button class="btn btn-white btn-sm"
+                                                                    data-toggle="tooltip" data-placement="left"
+                                                                    title="刷新页面" @click="getShares()"><i
+                                                                        class="fa fa-refresh"></i>
+                                                                    刷新</button>&nbsp;
+                                                                <a v-if="userAuth != 3" href="allfiles"
+                                                                    class="btn btn-primary btn-sm">新建分享</a>
+                                                            </div>
+                                                            <strong>共{{ this.acceptions.length }}条收到的分享</strong>
                                                         </div>
-                                                        <thead>
-                                                            <tr>
-                                                                <th>状态</th>
-                                                                <th></th><!--图标-->
-                                                                <th>名称</th>
-                                                                <th>权限</th>
-                                                                <th>接收者</th>
-                                                                <th>接收用户组</th>
-                                                                <th>分享时间</th>
-                                                                <th>到期时间</th>
-                                                                <th>操作</th>
-                                                            </tr>
-                                                        </thead>
-                                                        <tbody>
-                                                            <tr v-for="(share, index) in acceptions"
-                                                                :key="index" @dblclick="" class="read">
-                                                                <td>
-                                                                    <span v-if="share.validate == 0"
-                                                                        class="label label-danger">已过期</span>
-                                                                    <span v-if="share.validate == 1"
-                                                                        class="label label-primary">正常</span>
-                                                                    <span v-if="share.validate == 2"
-                                                                        class="label label-info">无限</span>
-                                                                </td>
-                                                                <td>
-                                                                    <i v-if="share.isFolder == 1"
-                                                                        class="fa fa-folder-o"></i>
-                                                                    <i v-else-if="share.fileType.startsWith('image/')"
-                                                                        class="fa fa-file-image-o"></i>
-                                                                    <i v-else-if="share.fileType.includes('pdf')"
-                                                                        class="fa fa-file-pdf-o"></i>
-                                                                    <i v-else-if="share.fileType.includes('word')"
-                                                                        class="fa fa-file-word-o"></i>
-                                                                    <i v-else-if="share.fileType.includes('excel')"
-                                                                        class="fa fa-file-excel-o"></i>
-                                                                    <i v-else-if="share.fileType.includes('sheet')"
-                                                                        class="fa fa-file-excel-o"></i>
-                                                                    <i v-else-if="share.fileType.includes('powerpoint')"
-                                                                        class="fa fa-file-powerpoint-o"></i>
-                                                                    <i v-else-if="share.fileType.includes('presentation')"
-                                                                        class="fa fa-file-powerpoint-o"></i>
-                                                                    <i v-else-if="share.fileType.startsWith('video/')"
-                                                                        class="fa fa-file-movie-o"></i>
-                                                                    <i v-else-if="share.fileType.startsWith('audio/')"
-                                                                        class="fa fa-file-audio-o"></i>
-                                                                    <i v-else-if="share.fileType.includes('compressed')"
-                                                                        class="fa fa-file-archive-o"></i>
-                                                                    <i v-else class="fa fa-file-o"></i>
-                                                                </td>
-                                                                <td v-if="share.isFolder == 0">{{
-                                                                    share.fileName }}</td>
-                                                                <td v-if="share.isFolder == 1">{{
-                                                                    share.folderName }}</td>
-                                                                <td>{{ share.auth == 1 ? '全部权限' : '仅查看' }}
-                                                                </td>
-                                                                <td>{{ share.accepterName }}</td>
-                                                                <td>{{ share.acceptGroupName }}</td>
-                                                                <td>{{ new
-                                                                    Date(share.shareTime).toLocaleString()
-                                                                    }}</td>
-                                                                <td v-if="share.dueTime == null">无限</td>
-                                                                <td v-if="share.dueTime != null">
-                                                                    {{ new
-                                                                        Date(share.dueTime).toLocaleString() }}
-                                                                    <span v-if="share.lastRatio > 0"
-                                                                        class="pie">{{ share.lastRatio
-                                                                        }}/1</span>
-                                                                </td>
-                                                                <td>
-                                                                    <div class="btn-group">
-                                                                        <a @click="enterSharePage(share.shareId)"><i
-                                                                                class="fa fa-eye"></i>&nbsp;</a>
-                                                                        <a @click="copySharePage(share.shareId)"><i
-                                                                                class="fa fa-copy"></i>&nbsp;</a>
-                                                                    </div>
-                                                                </td>
-                                                            </tr>
-                                                        </tbody>
-                                                        <tfoot>
-                                                            <tr>
-                                                                <td colspan="14">
-                                                                    <ul class="pagination pull-right"></ul>
-                                                                </td>
-                                                            </tr>
-                                                        </tfoot>
-                                                    </table>
+                                                    </div>
+                                                    <div class="table-responsive ibox" style="margin-bottom: 0px">
+                                                        <table
+                                                            class="table table-hover issue-tracker ibox-content footable table table-stripped toggle-arrow-tiny"
+                                                            data-page-size="8" data-filter=#filter2 :class="{ 'sk-loading': loading }" >
+                                                            <Spinner :loading="loading"/>
+                                                            <thead>
+                                                                <tr>
+                                                                    <th>状态</th>
+                                                                    <th></th><!--图标-->
+                                                                    <th>名称</th>
+                                                                    <th>权限</th>
+                                                                    <th>接收者</th>
+                                                                    <th>接收用户组</th>
+                                                                    <th>分享时间</th>
+                                                                    <th>到期时间</th>
+                                                                    <th>操作</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                                <tr v-for="(share, index) in acceptions"
+                                                                    :key="index" @dblclick="" class="read">
+                                                                    <td>
+                                                                        <span v-if="share.validate == 0"
+                                                                            class="label label-danger">已过期</span>
+                                                                        <span v-if="share.validate == 1"
+                                                                            class="label label-primary">正常</span>
+                                                                        <span v-if="share.validate == 2"
+                                                                            class="label label-info">无限</span>
+                                                                    </td>
+                                                                    <td>
+                                                                        <i :class="getFileIconClass(share)"></i>                                                                    </td>
+                                                                    <td v-if="share.isFolder == 0">{{
+                                                                        share.fileName }}</td>
+                                                                    <td v-if="share.isFolder == 1">{{
+                                                                        share.folderName }}</td>
+                                                                    <td>{{ share.auth == 1 ? '全部权限' : '仅查看' }}
+                                                                    </td>
+                                                                    <td>{{ share.accepterName }}</td>
+                                                                    <td>{{ share.acceptGroupName }}</td>
+                                                                    <td>{{ new
+                                                                        Date(share.shareTime).toLocaleString()
+                                                                        }}</td>
+                                                                    <td v-if="share.dueTime == null">无限</td>
+                                                                    <td v-if="share.dueTime != null">
+                                                                        {{ new
+                                                                            Date(share.dueTime).toLocaleString() }}
+                                                                        <span v-if="share.lastRatio > 0"
+                                                                            class="pie">{{ share.lastRatio
+                                                                            }}/1</span>
+                                                                    </td>
+                                                                    <td>
+                                                                        <div class="btn-group">
+                                                                            <a @click="enterSharePage(share.shareId)"><i
+                                                                                    class="fa fa-eye"></i>&nbsp;</a>
+                                                                            <a @click="copySharePage(share.shareId)"><i
+                                                                                    class="fa fa-copy"></i>&nbsp;</a>
+                                                                        </div>
+                                                                    </td>
+                                                                </tr>
+                                                            </tbody>
+                                                            <tfoot>
+                                                                <tr>
+                                                                    <td colspan="14">
+                                                                        <ul class="pagination pull-right"></ul>
+                                                                    </td>
+                                                                </tr>
+                                                            </tfoot>
+                                                        </table>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
@@ -196,10 +164,10 @@
                                             style="padding-bottom: 0px" v-if="userAuth != 3">
                                             <div class="row">
                                                 <div class="col-lg-12">
-                                                    <div class="ibox float-e-margins">
+                                                    <div class="m-b-lg">
                                                         <div class="input-group">
                                                             <input type="text" placeholder="输入要查找的分享......"
-                                                                class=" form-control" id="filter1">
+                                                                class="form-control" id="filter1">
                                                             <span class="input-group-btn">
                                                                 <button type="button" class="btn btn-white">
                                                                     查找</button>
@@ -220,20 +188,9 @@
                                                     </div>
                                                     <div class="table-responsive ibox" style="margin-bottom: 0px">
                                                         <table
-                                                            class="table table-hover issue-tracker ibox-content footable table-stripped toggle-arrow-tiny"
-                                                            data-page-size="8" data-filter=#filter1>
-                                                            <div class="sk-spinner sk-spinner-cube-grid"
-                                                                v-show="loading">
-                                                                <div class="sk-cube"></div>
-                                                                <div class="sk-cube"></div>
-                                                                <div class="sk-cube"></div>
-                                                                <div class="sk-cube"></div>
-                                                                <div class="sk-cube"></div>
-                                                                <div class="sk-cube"></div>
-                                                                <div class="sk-cube"></div>
-                                                                <div class="sk-cube"></div>
-                                                                <div class="sk-cube"></div>
-                                                            </div>
+                                                            class="table table-hover issue-tracker ibox-content footable table table-stripped toggle-arrow-tiny"
+                                                            data-page-size="8" data-filter=#filter1 :class="{ 'sk-loading': loading }" >
+                                                            <Spinner :loading="loading"/>
                                                             <thead>
                                                                 <tr>
                                                                     <th>状态</th>
@@ -264,29 +221,7 @@
                                                                             class="label label-info">无限</span>
                                                                     </td>
                                                                     <td>
-                                                                        <i v-if="share.isFolder == 1"
-                                                                            class="fa fa-folder-o"></i>
-                                                                        <i v-else-if="share.fileType.startsWith('image/')"
-                                                                            class="fa fa-file-image-o"></i>
-                                                                        <i v-else-if="share.fileType.includes('pdf')"
-                                                                            class="fa fa-file-pdf-o"></i>
-                                                                        <i v-else-if="share.fileType.includes('word')"
-                                                                            class="fa fa-file-word-o"></i>
-                                                                        <i v-else-if="share.fileType.includes('excel')"
-                                                                            class="fa fa-file-excel-o"></i>
-                                                                        <i v-else-if="share.fileType.includes('sheet')"
-                                                                            class="fa fa-file-excel-o"></i>
-                                                                        <i v-else-if="share.fileType.includes('powerpoint')"
-                                                                            class="fa fa-file-powerpoint-o"></i>
-                                                                        <i v-else-if="share.fileType.includes('presentation')"
-                                                                            class="fa fa-file-powerpoint-o"></i>
-                                                                        <i v-else-if="share.fileType.startsWith('video/')"
-                                                                            class="fa fa-file-movie-o"></i>
-                                                                        <i v-else-if="share.fileType.startsWith('audio/')"
-                                                                            class="fa fa-file-audio-o"></i>
-                                                                        <i v-else-if="share.fileType.includes('compressed')"
-                                                                            class="fa fa-file-archive-o"></i>
-                                                                        <i v-else class="fa fa-file-o"></i>
+                                                                        <i :class="getFileIconClass(share)"></i>
                                                                     </td>
                                                                     <td v-if="share.isFolder == 0">{{
                                                                         share.fileName }}</td>
@@ -348,134 +283,103 @@
                                         <div class="wrapper wrapper-content animated fadeInRight"
                                         style="padding-bottom: 0px">
                                             <div class="row">
-                                                <div class="m-b-lg">
-                                                    <div class="input-group">
-                                                        <input type="text" placeholder="输入要查找的分享......"
-                                                            class=" form-control" id="filter3">
-                                                        <span class="input-group-btn">
-                                                            <button type="button" class="btn btn-white">
-                                                                查找</button>
-                                                        </span>
-                                                    </div>
-                                                    <div class="m-t-md">
-                                                        <div class="pull-right">
-                                                            <button class="btn btn-white btn-sm"
-                                                                data-toggle="tooltip" data-placement="left"
-                                                                title="刷新页面" @click="getShares()"><i
-                                                                    class="fa fa-refresh"></i>
-                                                                刷新</button>&nbsp;
-                                                            <a href="allfiles"
-                                                                class="btn btn-primary btn-sm">新建分享</a>
+                                                <div class="col-lg-12">
+                                                    <div class="m-b-lg">
+                                                        <div class="input-group">
+                                                            <input type="text" placeholder="输入要查找的分享......"
+                                                                class=" form-control" id="filter3">
+                                                            <span class="input-group-btn">
+                                                                <button type="button" class="btn btn-white">
+                                                                    查找</button>
+                                                            </span>
                                                         </div>
-                                                        <strong>共{{ this.allShares.length }}条分享</strong>
-                                                    </div>
-                                                </div>
-                                                <div class="table-responsive ibox" style="margin-bottom: 0px">
-                                                    <table
-                                                        class="table table-hover issue-tracker ibox-content footable table table-stripped  toggle-arrow-tiny"
-                                                        data-page-size="8" data-filter=#filter3>
-                                                        <div class="sk-spinner sk-spinner-cube-grid"
-                                                            v-show="loading">
-                                                            <div class="sk-cube"></div>
-                                                            <div class="sk-cube"></div>
-                                                            <div class="sk-cube"></div>
-                                                            <div class="sk-cube"></div>
-                                                            <div class="sk-cube"></div>
-                                                            <div class="sk-cube"></div>
-                                                            <div class="sk-cube"></div>
-                                                            <div class="sk-cube"></div>
-                                                            <div class="sk-cube"></div>
+                                                        <div class="m-t-md">
+                                                            <div class="pull-right">
+                                                                <button class="btn btn-white btn-sm"
+                                                                    data-toggle="tooltip" data-placement="left"
+                                                                    title="刷新页面" @click="getShares()"><i
+                                                                        class="fa fa-refresh"></i>
+                                                                    刷新</button>&nbsp;
+                                                                <a href="allfiles"
+                                                                    class="btn btn-primary btn-sm">新建分享</a>
+                                                            </div>
+                                                            <strong>共{{ this.allShares.length }}条分享</strong>
                                                         </div>
-                                                        <thead>
-                                                            <tr>
-                                                                <th>状态</th>
-                                                                <th></th><!--图标-->
-                                                                <th>名称</th>
-                                                                <th>权限</th>
-                                                                <th>接收者</th>
-                                                                <th>接收用户组</th>
-                                                                <th>分享时间</th>
-                                                                <th>到期时间</th>
-                                                                <th>操作</th>
-                                                            </tr>
-                                                        </thead>
-                                                        <tbody>
-                                                            <tr v-for="(share, index) in allShares"
-                                                                :key="index" @dblclick="" class="read">
-                                                                <td>
-                                                                    <span v-if="share.validate == 0"
-                                                                        class="label label-danger">已过期</span>
-                                                                    <span v-if="share.validate == 1"
-                                                                        class="label label-primary">正常</span>
-                                                                    <span v-if="share.validate == 2"
-                                                                        class="label label-info">无限</span>
-                                                                </td>
-                                                                <td>
-                                                                    <i v-if="share.isFolder == 1"
-                                                                        class="fa fa-folder-o"></i>
-                                                                    <i v-else-if="share.fileType.startsWith('image/')"
-                                                                        class="fa fa-file-image-o"></i>
-                                                                    <i v-else-if="share.fileType.includes('pdf')"
-                                                                        class="fa fa-file-pdf-o"></i>
-                                                                    <i v-else-if="share.fileType.includes('word')"
-                                                                        class="fa fa-file-word-o"></i>
-                                                                    <i v-else-if="share.fileType.includes('excel')"
-                                                                        class="fa fa-file-excel-o"></i>
-                                                                    <i v-else-if="share.fileType.includes('sheet')"
-                                                                        class="fa fa-file-excel-o"></i>
-                                                                    <i v-else-if="share.fileType.includes('powerpoint')"
-                                                                        class="fa fa-file-powerpoint-o"></i>
-                                                                    <i v-else-if="share.fileType.includes('presentation')"
-                                                                        class="fa fa-file-powerpoint-o"></i>
-                                                                    <i v-else-if="share.fileType.startsWith('video/')"
-                                                                        class="fa fa-file-movie-o"></i>
-                                                                    <i v-else-if="share.fileType.startsWith('audio/')"
-                                                                        class="fa fa-file-audio-o"></i>
-                                                                    <i v-else-if="share.fileType.includes('compressed')"
-                                                                        class="fa fa-file-archive-o"></i>
-                                                                    <i v-else class="fa fa-file-o"></i>
-                                                                </td>
-                                                                <td v-if="share.isFolder == 0">{{
-                                                                    share.fileName }}</td>
-                                                                <td v-if="share.isFolder == 1">{{
-                                                                    share.folderName }}</td>
-                                                                <td>{{ share.auth == 1 ? '全部权限' : '仅查看' }}
-                                                                </td>
-                                                                <td>{{ share.accepterName }}</td>
-                                                                <td>{{ share.acceptGroupName }}</td>
-                                                                <td>{{ new
-                                                                    Date(share.shareTime).toLocaleString()
-                                                                    }}</td>
-                                                                <td v-if="share.dueTime == null">无限</td>
-                                                                <td v-if="share.dueTime != null">
-                                                                    {{ new
-                                                                        Date(share.dueTime).toLocaleString() }}
-                                                                    <span v-if="share.lastRatio > 0"
-                                                                        class="pie">{{ share.lastRatio
-                                                                        }}/1</span>
-                                                                </td>
-                                                                <td>
-                                                                    <div class="btn-group">
-                                                                        <a @click.prevent="updateShare(share)"><i
-                                                                                class="fa fa-edit"></i>&nbsp;</a>
-                                                                        <a @click.prevent="deleteShare(share)"><i
-                                                                                class="fa fa-trash-o"></i>&nbsp;</a>
-                                                                        <a @click="enterSharePage(share.shareId)"><i
-                                                                                class="fa fa-eye"></i>&nbsp;</a>
-                                                                        <a @click="copySharePage(share.shareId)"><i
-                                                                                class="fa fa-copy"></i>&nbsp;</a>
-                                                                    </div>
-                                                                </td>
-                                                            </tr>
-                                                        </tbody>
-                                                        <tfoot>
-                                                            <tr>
-                                                                <td colspan="14">
-                                                                    <ul class="pagination pull-right"></ul>
-                                                                </td>
-                                                            </tr>
-                                                        </tfoot>
-                                                    </table>
+                                                    </div>
+                                                    <div class="table-responsive ibox" style="margin-bottom: 0px">
+                                                        <table
+                                                            class="table table-hover issue-tracker ibox-content footable table table-stripped toggle-arrow-tiny"
+                                                            data-page-size="8" data-filter=#filter3 :class="{ 'sk-loading': loading }" >
+                                                            <Spinner :loading="loading"/>
+                                                            <thead>
+                                                                <tr>
+                                                                    <th>状态</th>
+                                                                    <th></th><!--图标-->
+                                                                    <th>名称</th>
+                                                                    <th>权限</th>
+                                                                    <th>接收者</th>
+                                                                    <th>接收用户组</th>
+                                                                    <th>分享时间</th>
+                                                                    <th>到期时间</th>
+                                                                    <th>操作</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                                <tr v-for="(share, index) in allShares"
+                                                                    :key="index" @dblclick="" class="read">
+                                                                    <td>
+                                                                        <span v-if="share.validate == 0"
+                                                                            class="label label-danger">已过期</span>
+                                                                        <span v-if="share.validate == 1"
+                                                                            class="label label-primary">正常</span>
+                                                                        <span v-if="share.validate == 2"
+                                                                            class="label label-info">无限</span>
+                                                                    </td>
+                                                                    <td>
+                                                                        <i :class="getFileIconClass(share)"></i>
+                                                                    </td>
+                                                                    <td v-if="share.isFolder == 0">{{
+                                                                        share.fileName }}</td>
+                                                                    <td v-if="share.isFolder == 1">{{
+                                                                        share.folderName }}</td>
+                                                                    <td>{{ share.auth == 1 ? '全部权限' : '仅查看' }}
+                                                                    </td>
+                                                                    <td>{{ share.accepterName }}</td>
+                                                                    <td>{{ share.acceptGroupName }}</td>
+                                                                    <td>{{ new
+                                                                        Date(share.shareTime).toLocaleString()
+                                                                        }}</td>
+                                                                    <td v-if="share.dueTime == null">无限</td>
+                                                                    <td v-if="share.dueTime != null">
+                                                                        {{ new
+                                                                            Date(share.dueTime).toLocaleString() }}
+                                                                        <span v-if="share.lastRatio > 0"
+                                                                            class="pie">{{ share.lastRatio
+                                                                            }}/1</span>
+                                                                    </td>
+                                                                    <td>
+                                                                        <div class="btn-group">
+                                                                            <a @click.prevent="updateShare(share)"><i
+                                                                                    class="fa fa-edit"></i>&nbsp;</a>
+                                                                            <a @click.prevent="deleteShare(share)"><i
+                                                                                    class="fa fa-trash-o"></i>&nbsp;</a>
+                                                                            <a @click="enterSharePage(share.shareId)"><i
+                                                                                    class="fa fa-eye"></i>&nbsp;</a>
+                                                                            <a @click="copySharePage(share.shareId)"><i
+                                                                                    class="fa fa-copy"></i>&nbsp;</a>
+                                                                        </div>
+                                                                    </td>
+                                                                </tr>
+                                                            </tbody>
+                                                            <tfoot>
+                                                                <tr>
+                                                                    <td colspan="14">
+                                                                        <ul class="pagination pull-right"></ul>
+                                                                    </td>
+                                                                </tr>
+                                                            </tfoot>
+                                                        </table>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
@@ -490,9 +394,7 @@
         </div>
     </div>
 </template>
-
 <style scoped></style>
-
 <script>
 import $ from 'jquery'
 import '../assets/js/plugins/footable/footable.all.min.js'
@@ -530,8 +432,6 @@ export default {
             userAuth: sessionStorage.getItem("authData") || 3,
             shares: {},
             acceptions: {},
-            shareCount: 0,
-            acceptCount: 0,
             loading: false,
             allShares: {},
         }
@@ -550,8 +450,6 @@ export default {
             this.acceptions = acres.data.data.shares;
             const allres = await axios.get("/api/getAllShares");
             this.allShares = allres.data.data.shares;
-            this.shareCount = res.data.data.shareCount;
-            this.acceptCount = acres.data.data.acceptCount;
             await this.$nextTick(() => {
                 this.initializePeity();
             });
@@ -713,7 +611,6 @@ export default {
                 };
                 await axios.post('api/updateShare', [shareData])
                 this.$swal.fire('修改成功', '', 'success');
-
             }
             await this.getShares();
         },
@@ -733,7 +630,30 @@ export default {
                 this.$swal.fire('操作取消', '分享未删除', 'info');
             }
             await this.getShares();
-        }
+        },
+        getFileIconClass(share) {
+            if (share.isFolder == 1) {
+            return 'fa fa-folder-o';
+            } else if (share.fileType.startsWith('image/')) {
+            return 'fa fa-file-image-o';
+            } else if (share.fileType.includes('pdf')) {
+            return 'fa fa-file-pdf-o';
+            } else if (share.fileType.includes('word')) {
+            return 'fa fa-file-word-o';
+            } else if (share.fileType.includes('excel') || share.fileType.includes('sheet')) {
+            return 'fa fa-file-excel-o';
+            } else if (share.fileType.includes('powerpoint') || share.fileType.includes('presentation')) {
+            return 'fa fa-file-powerpoint-o';
+            } else if (share.fileType.startsWith('video/')) {
+            return 'fa fa-file-movie-o';
+            } else if (share.fileType.startsWith('audio/')) {
+            return 'fa fa-file-audio-o';
+            } else if (share.fileType.includes('compressed')) {
+            return 'fa fa-file-archive-o';
+            } else {
+            return 'fa fa-file-o';
+            }
+        },
     },
     watch: {
         shares() {
