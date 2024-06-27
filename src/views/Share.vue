@@ -380,7 +380,7 @@
                                                                         <a href="allfiles"
                                                                             class="btn btn-primary btn-sm">新建分享</a>
                                                                     </div>
-                                                                    <strong>共{{ this.allCount }}条收到的分享</strong>
+                                                                    <strong>共{{ this.allCount }}条分享</strong>
                                                                 </div>
                                                             </div>
                                                             <div class="table-responsive ibox" style="margin-bottom: 0px">
@@ -469,6 +469,10 @@
                                                                             </td>
                                                                             <td>
                                                                                 <div class="btn-group">
+                                                                                    <a @click.prevent="updateShare(share)"><i
+                                                                                            class="fa fa-edit"></i>&nbsp;</a>
+                                                                                    <a @click.prevent="deleteShare(share)"><i
+                                                                                            class="fa fa-trash-o"></i>&nbsp;</a>
                                                                                     <a @click="enterSharePage(share.shareId)"><i
                                                                                             class="fa fa-eye"></i>&nbsp;</a>
                                                                                     <a @click="copySharePage(share.shareId)"><i
