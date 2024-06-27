@@ -63,7 +63,7 @@
                                 <div class="ibox-content">
                                     <div class="m-b-lg">
                                         <div class="input-group">
-                                            <input type="text" placeholder="输入要查找的分享......" class=" form-control">
+                                            <input type="text" placeholder="输入要查找的分享......" class=" form-control" id="filter1">
                                             <span class="input-group-btn">
                                                 <button type="button" class="btn btn-white"> 查找</button>
                                             </span>
@@ -79,7 +79,9 @@
                                         </div>
                                     </div>
                                     <div class="table-responsive ibox">
-                                        <table class="table table-hover issue-tracker ibox-content">
+                                        <table
+                                            class="table table-hover issue-tracker ibox-content footable table-stripped toggle-arrow-tiny"
+                                            data-page-size="8" data-filter=#filter1>
                                             <div class="sk-spinner sk-spinner-cube-grid" v-show="loading">
                                                 <div class="sk-cube"></div>
                                                 <div class="sk-cube"></div>
@@ -92,20 +94,22 @@
                                                 <div class="sk-cube"></div>
                                             </div>
                                             <thead>
-                                                <td>状态</td>
-                                                <td></td><!--图标-->
-                                                <td>名称</td>
-                                                <td>权限</td>
-                                                <td></td><!--更改权限-->
-                                                <td>接收者</td>
-                                                <td></td><!--更改接收者-->
-                                                <td>接收用户组</td>
-                                                <td></td><!--更改接收用户组-->
-                                                <td>分享时间</td>
-                                                <td>到期时间</td>
-                                                <td></td><!--更改到期时间-->
-                                                <td>下载次数</td>
-                                                <td>操作</td>
+                                                <tr>
+                                                    <th>状态</th>
+                                                    <th></th><!--图标-->
+                                                    <th>名称</th>
+                                                    <th>权限</th>
+                                                    <th></th><!--更改权限-->
+                                                    <th>接收者</th>
+                                                    <th></th><!--更改接收者-->
+                                                    <th>接收用户组</th>
+                                                    <th></th><!--更改接收用户组-->
+                                                    <th>分享时间</th>
+                                                    <th>到期时间</th>
+                                                    <th></th><!--更改到期时间-->
+                                                    <td>下载次数</td>
+                                                <th>操作</th>
+                                                </tr>
                                             </thead>
                                             <tbody>
                                                 <tr v-for="(share, index) in shares" :key="index" @dblclick=""
@@ -164,8 +168,10 @@
                                                     </td>
                                                     <td>
                                                         <div class="btn-group">
-                                                            <a @click.prevent="updateShare(share)"><i class="fa fa-edit"></i>&nbsp;</a>
-                                                            <a @click.prevent="deleteShare(share)"><i class="fa fa-trash-o"></i>&nbsp;</a>
+                                                            <a @click.prevent="updateShare(share)"><i
+                                                                    class="fa fa-edit"></i>&nbsp;</a>
+                                                            <a @click.prevent="deleteShare(share)"><i
+                                                                    class="fa fa-trash-o"></i>&nbsp;</a>
                                                             <a @click="enterSharePage(share.shareId)"><i
                                                                     class="fa fa-eye"></i>&nbsp;</a>
                                                             <a @click="copySharePage(share.shareId)"><i
@@ -174,7 +180,15 @@
                                                     </td>
                                                 </tr>
                                             </tbody>
+                                            <tfoot>
+                                                <tr>
+                                                    <td colspan="14">
+                                                        <ul class="pagination pull-right"></ul>
+                                                    </td>
+                                                </tr>
+                                            </tfoot>
                                         </table>
+
                                     </div>
                                 </div>
                             </div>
@@ -196,7 +210,7 @@
                                 <div class="ibox-content">
                                     <div class="m-b-lg">
                                         <div class="input-group">
-                                            <input type="text" placeholder="输入要查找的分享......" class=" form-control">
+                                            <input type="text" placeholder="输入要查找的分享......" class=" form-control" id="filter2">
                                             <span class="input-group-btn">
                                                 <button type="button" class="btn btn-white"> 查找</button>
                                             </span>
@@ -212,7 +226,9 @@
                                         </div>
                                     </div>
                                     <div class="table-responsive ibox">
-                                        <table class="table table-hover issue-tracker ibox-content">
+                                        <table
+                                            class="table table-hover issue-tracker ibox-content footable table table-stripped toggle-arrow-tiny"
+                                            data-page-size="8" data-filter=#filter2>
                                             <div class="sk-spinner sk-spinner-cube-grid" v-show="loading">
                                                 <div class="sk-cube"></div>
                                                 <div class="sk-cube"></div>
@@ -225,15 +241,17 @@
                                                 <div class="sk-cube"></div>
                                             </div>
                                             <thead>
-                                                <td>状态</td>
-                                                <td></td><!--图标-->
-                                                <td>名称</td>
-                                                <td>权限</td>
-                                                <td>接收者</td>
-                                                <td>接收用户组</td>
-                                                <td>分享时间</td>
-                                                <td>到期时间</td>
-                                                <td>操作</td>
+                                                <tr>
+                                                    <th>状态</th>
+                                                    <th></th><!--图标-->
+                                                    <th>名称</th>
+                                                    <th>权限</th>
+                                                    <th>接收者</th>
+                                                    <th>接收用户组</th>
+                                                    <th>分享时间</th>
+                                                    <th>到期时间</th>
+                                                    <th>操作</th>
+                                                </tr>
                                             </thead>
                                             <tbody>
                                                 <tr v-for="(share, index) in acceptions" :key="index" @dblclick=""
@@ -292,6 +310,13 @@
                                                     </td>
                                                 </tr>
                                             </tbody>
+                                            <tfoot>
+                                                <tr>
+                                                    <td colspan="14">
+                                                        <ul class="pagination pull-right"></ul>
+                                                    </td>
+                                                </tr>
+                                            </tfoot>
                                         </table>
                                     </div>
                                 </div>
@@ -309,6 +334,7 @@
 
 <script>
 import $ from 'jquery'
+import '../assets/js/plugins/footable/footable.all.min.js'
 import "../assets/js/plugins/metisMenu/jquery.metisMenu.js"
 import "../assets/js/plugins/slimscroll/jquery.slimscroll.min.js"
 import "../assets/js/plugins/peity/jquery.peity.min.js"
@@ -479,6 +505,9 @@ export default {
                     this.$swal.fire('时间必须为数字', '请重新输入', 'error');
                     return;
                 }
+                if (formValues.accepter == '所有人') {
+                    formValues.accepter = '';
+                }
                 if (formValues.accepter) {
                     if (formValues.accepter == this.userData.userName) {
                         this.$swal.fire('不能分享给自己', '请重新输入', 'error');
@@ -492,13 +521,12 @@ export default {
                     }
                     userId = data.userId
                 }
-                if (formValues.acceptGroupName == '所有用户组')
-                {
+                if (formValues.acceptGroupName == '所有用户组') {
                     formValues.acceptGroupName = '';
-                } 
+                }
                 if (formValues.acceptGroupName) {
                     const response = await axios.post('/api/findUserGroupByName?name=' + formValues.acceptGroupName);
-                    
+
                     const data = response.data.data
                     if (data.state == 0) {
                         this.$swal.fire('用户组不存在', '请重新输入', 'error');
@@ -509,7 +537,7 @@ export default {
                 const oldDueTime = new Date(share.dueTime);
                 const dueTime = new Date(oldDueTime.getTime() + formValues.day * 24 * 60 * 60 * 1000 + formValues.hour * 60 * 60 * 1000 + formValues.minute * 60 * 1000);
                 const shareData = {
-                    shareId:share.shareId,
+                    shareId: share.shareId,
                     fileId: share.fileId,
                     folderId: share.folderId,
                     sharerId: share.sharerId,
@@ -522,11 +550,11 @@ export default {
                 };
                 await axios.post('api/updateShare', [shareData])
                 this.$swal.fire('修改成功', '', 'success');
-                
+
             }
             await this.getShares();
         },
-        async deleteShare(share){
+        async deleteShare(share) {
             const result = await this.$swal.fire({
                 title: '是否将分享删除',
                 icon: 'warning',
@@ -555,6 +583,12 @@ export default {
         TopBar,
         UserItem,
         FootBar
+    },
+    updated() {
+        this.$nextTick(() => {
+            $('.footable').footable();
+            $('.footable').init();
+        });
     },
 }
 </script>

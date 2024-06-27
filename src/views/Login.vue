@@ -102,7 +102,7 @@ async function login() {
 				if(response1.data== null||response1.data==""){
 					toastr.error("用户名错误！请重新登录！", "错误");
 				}else{
-					var remainingAttempts =5- response1.data.failedAttempts;
+					var remainingAttempts = 5 - response1.data.failedAttempts;	
 					toastr.error("密码错误！请重新登录！您还有"+remainingAttempts+"次机会!", "错误");
 				}
 				username.value = '';
