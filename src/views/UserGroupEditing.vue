@@ -98,45 +98,45 @@
                                                                     <tr v-for="(user) in users" class="read">
                                                                         <td>{{ user.userName }}</td>
                                                                         <td><a v-if="user.userId!=userData.userId&&user.userId!=1"
-                                                                                @click.prevent="updateUserName(user.userId)"><i
+                                                                                @click.prevent="updateUserName(user.userId,user.userName)"><i
                                                                                     class="fa fa-edit"></i></a></td>
                                                                         <td>{{ user.groupName }}</td>
                                                                         <td>
                                                                             <a v-if="user.userId!=userData.userId&&user.userId!=1"
-                                                                                @click.prevent="updateGroup(user.userId)">
+                                                                                @click.prevent="updateGroup(user.userId,user.userName)">
                                                                                 <i class="fa fa-arrows"></i>&nbsp;
                                                                             </a>
                                                                         </td>
                                                                         <td>{{ user.email }}</td>
                                                                         <td><a v-if="user.userId!=userData.userId&&user.userId!=1"
-                                                                                @click.prevent="updateEmail(user.userId)"><i
+                                                                                @click.prevent="updateEmail(user.userId,user.userName)"><i
                                                                                     class="fa fa-edit"></i></a>
                                                                         </td>
                                                                         <td>{{ user.phone }}</td>
                                                                         <td><a v-if="user.userId!=userData.userId&&user.userId!=1"
-                                                                                @click.prevent="updatePhone(user.userId)"><i
+                                                                                @click.prevent="updatePhone(user.userId,user.userName)"><i
                                                                                     class="fa fa-edit"></i></a>
                                                                         </td>
                                                                         <td v-if="user.accountLocked">已冻结</td>
                                                                         <td v-else>正常</td>
                                                                         <td>
                                                                             <a v-if="user.accountLocked&&user.userId!=userData.userId&&user.userId!=1"
-                                                                                @click.prevent="defrost(user.userId)">
+                                                                                @click.prevent="defrost(user.userId,user.userName)">
                                                                                 <i class="fa fa-fire"></i>&nbsp;
                                                                             </a>
                                                                             <a v-else v-if="user.userId!=userData.userId&&user.userId!=1"
-                                                                                @click.prevent="freeze(user.userId)">
+                                                                                @click.prevent="freeze(user.userId,user.userName)">
                                                                                 <i class="fa fa-empire"></i>&nbsp;
                                                                             </a>
                                                                         </td>
                                                                         <td>
                                                                             <div class="btn-group">
                                                                                 <a v-if="user.userId!=userData.userId&&user.userId!=1"
-                                                                                    @click.prevent="resetPsw(user.userId)">
+                                                                                    @click.prevent="resetPsw(user.userId,user.userName)">
                                                                                     <i class="fa fa-key"></i>&nbsp;
                                                                                 </a>
                                                                                 <a v-if="user.userId!=userData.userId&&user.userId!=1"
-                                                                                    @click.prevent="unsubscribe(user.userId)">
+                                                                                    @click.prevent="unsubscribe(user.userId,user.userName)">
                                                                                     <i class="fa fa-trash-o"></i>&nbsp;
                                                                                 </a>
                                                                             </div>
@@ -173,7 +173,7 @@
                                                                                     class="fa fa-edit"></i></a>
                                                                         </td>
                                                                         <td>
-                                                                            <a @click="deleteGroup(group.groupId)"><i
+                                                                            <a @click="deleteGroup(group.groupId,group.groupName)"><i
                                                                                     class="fa fa-trash-o"></i></a>
                                                                         </td>
                                                                     </tr>
@@ -305,8 +305,10 @@ export default {
             }
             return true;
         },
-        async unsubscribe(userId) {
+        async unsubscribe(userId,userName) {
             const actionCallback = async () => {
+                const act="注销"+userName+"的账户";
+                await axios.post('/api/insertLog', { "userId": this.userData.userId ,"act":act,"importance":2});
                 await axios.post('/api/UserCollectionDelete', { "userId": userId });
                 await axios.post('/api/UserDelete', { "userId": userId });
                 toastr.success('已注销账户', '成功');
@@ -314,19 +316,22 @@ export default {
             };
             await this.validateUser(actionCallback);
         },
-        async resetPsw(userId) {
+        async resetPsw(userId,userName) {
             const actionCallback = async () => {
                 const response1 = await axios.post('/api/resetPsw', { "userId": userId });
                 const response2 = await axios.get('/api/findAllUsers');
                 this.users = response2.data;
-                if (response1.data != null)
+                if (response1.data != null){
+                    const act="重置"+userName+"的密码";
+                    await axios.post('/api/insertLog', { "userId": this.userData.userId ,"act":act,"importance":1});
                     toastr.success('已重置该用户密码为123456！', '成功');
+                }
                 else
                     toastr.error('该用户不存在！', '错误');
             };
             await this.validateUser(actionCallback);
         },
-        async freeze(userId) {
+        async freeze(userId,userName) {
             const additionalInput = {
                 title: '冻结时间设置(小时)',
                 input: 'text',
@@ -344,26 +349,32 @@ export default {
                 const response1 = await axios.post('/api/setFreezingTime', { "userId": userId, "time": time });
                 const response2 = await axios.get('/api/findAllUsers');
                 this.users = response2.data;
-                if (response1.data != null)
+                if (response1.data != null){
+                    const act="冻结"+userName+time+"小时";
+                    await axios.post('/api/insertLog', { "userId": this.userData.userId ,"act":act,"importance":1});
                     toastr.success('成功冻结该用户！', '成功');
+                } 
                 else
                     toastr.error('该用户不存在！', '错误');
             };
             await this.validateUser(actionCallback, additionalInput);
         },
-        async defrost(userId) {
+        async defrost(userId,userName) {
             const actionCallback = async () => {
                 const response1 = await axios.post('/api/defrost', { "userId": userId });
                 const response2 = await axios.get('/api/findAllUsers');
                 this.users = response2.data;
-                if (response1.data != null)
-                    toastr.success('已解冻该用户！', '成功');
+                if (response1.data != null){
+                    const act="解冻"+userName;
+                    await axios.post('/api/insertLog', { "userId": this.userData.userId ,"act":act,"importance":1});
+                    toastr.success('已解冻该用户！', '成功');                    
+                }
                 else
                     toastr.error('该用户不存在！', '错误');
             };
             await this.validateUser(actionCallback);
         },
-        async updateUserName(userId) {
+        async updateUserName(userId,oldName) {
             const additionalInput = {
                 title: '用户名更改',
                 input: 'text',
@@ -385,6 +396,8 @@ export default {
                     this.$swal.fire('用户名已存在', '请重新输入', 'error');
                     return;
                 }
+                const act="更改用户名"+oldName+"为"+userName;
+                await axios.post('/api/insertLog', { "userId": this.userData.userId ,"act":act,"importance":1});
                 await axios.post('/api/updateUserName', { "userId": userId, "userName": userName });
                 toastr.success('用户名更改成功', '成功');
                 await this.updateUserInfo();
@@ -392,7 +405,7 @@ export default {
             await this.validateUser(actionCallback, additionalInput);
 
         },
-        async updateEmail(userId) {
+        async updateEmail(userId,userName) {
             const additionalInput = {
                 title: '邮箱更改',
                 input: 'text',
@@ -412,6 +425,8 @@ export default {
                     this.$swal.fire('邮箱已存在', '请重新输入', 'error');
                     return;
                 }
+                const act="更改"+userName+"邮箱为"+email;
+                await axios.post('/api/insertLog', { "userId": this.userData.userId ,"act":act,"importance":1});
                 await axios.post('/api/UpdateEmail', { "userId": userId, "newEmail": email });
                 toastr.success('邮箱更改成功', '成功');
                 await this.updateUserInfo();
@@ -419,7 +434,7 @@ export default {
             await this.validateUser(actionCallback, additionalInput);
 
         },
-        async updatePhone(userId) {
+        async updatePhone(userId,userName) {
             const additionalInput = {
                 title: '电话号码更改',
                 input: 'text',
@@ -439,6 +454,8 @@ export default {
                     this.$swal.fire('号码已存在', '请重新输入', 'error');
                     return;
                 }
+                const act="更改"+userName+"电话号码为"+phone;
+                await axios.post('/api/insertLog', { "userId": this.userData.userId ,"act":act,"importance":1});
                 await axios.post('/api/UpdatePhone', { "userId": userId, "newPhone": phone });
                 toastr.success('电话号码更改成功', '成功');
                 await this.updateUserInfo();
@@ -446,7 +463,7 @@ export default {
             await this.validateUser(actionCallback, additionalInput);
 
         },
-        async updateGroup(userId) {
+        async updateGroup(userId,userName) {
             const additionalInput = {
                 title: '用户组更改',
                 input: 'text',
@@ -467,6 +484,8 @@ export default {
                     this.$swal.fire('用户组不存在', '请重新输入', 'error');
                     return;
                 }
+                const act="更改"+userName+"的用户组为"+groupName;
+                await axios.post('/api/insertLog', { "userId": this.userData.userId ,"act":act,"importance":1});
                 const acceptGroupId = data.userGroup.groupId;
                 await axios.post('/api/updateGroup', { "userId": userId, "groupId": acceptGroupId });
                 toastr.success('用户组更改成功', '成功');
@@ -514,14 +533,18 @@ export default {
                     this.$swal.fire('用户组已存在', '请重新输入', 'error');
                     return;
                 }
+                const act="新建用户组:"+name;
+                await axios.post('/api/insertLog', { "userId": this.userData.userId ,"act":act,"importance":1});
                 await axios.post('/api/insertGroup', { "auth": auth, "name": name });
                 toastr.success('新建用户组成功', '成功');
                 await this.updateUserInfo();
             };
             await this.validateUser(actionCallback, additionalInput);
         },
-        async deleteGroup(groupId) {
+        async deleteGroup(groupId,groupName) {
             const actionCallback = async () => {
+                const act="删除用户组:"+groupName;
+                await axios.post('/api/insertLog', { "userId": this.userData.userId ,"act":act,"importance":1});
                 await axios.post('/api/updateUsersGroup', {"groupId": groupId })
                 await axios.post('/api/deleteUserGroupByGroupId', {"groupId": groupId })
                 toastr.success('用户组删除成功', '成功');
@@ -560,6 +583,8 @@ export default {
                     this.$swal.fire('用户组已存在', '请重新输入', 'error');
                     return;
                 }
+                const act="更改用户组名"+group.groupName+"为"+groupName;
+                await axios.post('/api/insertLog', { "userId": this.userData.userId ,"act":act,"importance":1});
                 await axios.post('/api/updateGroupName', { "groupId": group.groupId, "groupName": groupName });
                 toastr.success('用户组名更改成功', '成功');
                 await this.updateUserInfo();
@@ -591,6 +616,8 @@ export default {
             };
             const actionCallback = async (data) => {
                 const { auth } = data;
+                const act="更改用户组"+group.groupName+"权限";
+                await axios.post('/api/insertLog', { "userId": this.userData.userId ,"act":act,"importance":1});
                 await axios.post('/api/updateAuth', { "groupId": group.groupId, "auth": auth });
                 toastr.success('更改用户组权限成功', '成功');
                 await this.updateUserInfo();
