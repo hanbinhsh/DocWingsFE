@@ -79,7 +79,9 @@
                                         </div>
                                     </div>
                                     <div class="table-responsive ibox">
-                                        <table class="table table-hover issue-tracker ibox-content">
+                                        <table
+                                            class="table table-hover issue-tracker ibox-content footable table-stripped toggle-arrow-tiny"
+                                            data-page-size="8">
                                             <div class="sk-spinner sk-spinner-cube-grid" v-show="loading">
                                                 <div class="sk-cube"></div>
                                                 <div class="sk-cube"></div>
@@ -159,8 +161,10 @@
                                                     <td></td>
                                                     <td>
                                                         <div class="btn-group">
-                                                            <a @click.prevent="updateShare(share)"><i class="fa fa-edit"></i>&nbsp;</a>
-                                                            <a @click.prevent="deleteShare(share)"><i class="fa fa-trash-o"></i>&nbsp;</a>
+                                                            <a @click.prevent="updateShare(share)"><i
+                                                                    class="fa fa-edit"></i>&nbsp;</a>
+                                                            <a @click.prevent="deleteShare(share)"><i
+                                                                    class="fa fa-trash-o"></i>&nbsp;</a>
                                                             <a @click="enterSharePage(share.shareId)"><i
                                                                     class="fa fa-eye"></i>&nbsp;</a>
                                                             <a @click="copySharePage(share.shareId)"><i
@@ -170,6 +174,9 @@
                                                 </tr>
                                             </tbody>
                                         </table>
+                                        <div class="col-sm-12">
+                                            <ul class="pagination pull-right"></ul>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -207,7 +214,8 @@
                                         </div>
                                     </div>
                                     <div class="table-responsive ibox">
-                                        <table class="table table-hover issue-tracker ibox-content">
+                                        <table
+                                            class="table table-hover issue-tracker ibox-content">
                                             <div class="sk-spinner sk-spinner-cube-grid" v-show="loading">
                                                 <div class="sk-cube"></div>
                                                 <div class="sk-cube"></div>
@@ -304,6 +312,7 @@
 
 <script>
 import $ from 'jquery'
+import '../assets/js/plugins/footable/footable.all.min.js'
 import "../assets/js/plugins/metisMenu/jquery.metisMenu.js"
 import "../assets/js/plugins/slimscroll/jquery.slimscroll.min.js"
 import "../assets/js/plugins/peity/jquery.peity.min.js"
@@ -477,13 +486,12 @@ export default {
                     }
                     userId = data.userId
                 }
-                if (formValues.acceptGroupName == '所有用户组')
-                {
+                if (formValues.acceptGroupName == '所有用户组') {
                     formValues.acceptGroupName = '';
-                } 
+                }
                 if (formValues.acceptGroupName) {
                     const response = await axios.post('/api/findUserGroupByName?name=' + formValues.acceptGroupName);
-                    
+
                     const data = response.data.data
                     if (data.state == 0) {
                         this.$swal.fire('用户组不存在', '请重新输入', 'error');
@@ -494,7 +502,7 @@ export default {
                 const oldDueTime = new Date(share.dueTime);
                 const dueTime = new Date(oldDueTime.getTime() + formValues.day * 24 * 60 * 60 * 1000 + formValues.hour * 60 * 60 * 1000 + formValues.minute * 60 * 1000);
                 const shareData = {
-                    shareId:share.shareId,
+                    shareId: share.shareId,
                     fileId: share.fileId,
                     folderId: share.folderId,
                     sharerId: share.sharerId,
@@ -507,11 +515,11 @@ export default {
                 };
                 await axios.post('api/updateShare', [shareData])
                 this.$swal.fire('修改成功', '', 'success');
-                
+
             }
             await this.getShares();
         },
-        async deleteShare(share){
+        async deleteShare(share) {
             const result = await this.$swal.fire({
                 title: '是否将分享删除',
                 icon: 'warning',
@@ -540,6 +548,11 @@ export default {
         TopBar,
         UserItem,
         FootBar
+    },
+    updated() {
+        this.$nextTick(() => {
+            $('.footable').footable();
+        });
     },
 }
 </script>
