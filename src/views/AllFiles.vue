@@ -152,11 +152,11 @@
                                 </div>
                                 <h2>
                                     {{ (isTrash ? '回收站' : category == 0 ? '图片' : category == 1 ? '文档' :
-                                        category == 3 ? '视频' : category == 2 ? '音乐' : category == 4 ? '其他' :
-                                            currentFolder.folderName) + (' (' +
-                                                (this.selectedFiles.length + this.selectedFolders.length <= 0 ? '' :
-                                                    this.selectedFiles.length + this.selectedFolders.length + '/') +
-                                                this.currentFFsCount + ')') }} </h2>
+                                        category == 3 ? '视频' : category == 2 ? '音乐' : category == 4 ? '其他' : category == -2 ? currentTag :
+                                        currentFolder.folderName) + 
+                                            (' (' + (this.selectedFiles.length + this.selectedFolders.length <= 0 ? '' :
+                                                     this.selectedFiles.length + this.selectedFolders.length + '/') +
+                                                     (this.folders.length + this.files.length) + ')') }} </h2>
                                 <div class="mail-tools tooltip-demo m-t-md">
                                     <div :class="{ 'disabled': isTrash }" class="btn-group pull-right">
                                         <button :class="{ 'disabled': isTrash }" class="btn btn-white btn-sm"
@@ -487,8 +487,8 @@ export default {
             tags: [],
             viewerOptions: {},
             images: [],
+            currentTag: null,
             currentFolder: JSON.parse(sessionStorage.getItem("currentFolder")) || {},
-            currentFFsCount: sessionStorage.getItem("currentFFsCount") || {},
             loading: false,
             isAllfiles: false,
             category: -1,
@@ -684,7 +684,6 @@ export default {
             this.cancelCheckbox();
             await this.findFFsByParentId(id);
             await this.findFolderById(id);
-            this.currentFFsCount = this.folders.length + this.files.length;
             this.isAllfiles = true; this.category = -1;
             const imageFiles = await axios.get(`/api/findImagesByParentId?parentId=${this.currentFolder.folderId ?? 0}`);
             this.images = imageFiles.data.data.imageList  // 更新图片列表
@@ -703,6 +702,8 @@ export default {
         },
         async findFFsByTag(tag) {
             if (this.isTrash) return;
+            this.isAllfiles = true; this.category = -2;
+            this.currentTag = tag;
             this.showLoading();  // 显示加载页面
             const response = await axios.get('/api/findFFsByTag?tag=' + tag);
             this.files = response.data.data.files;
@@ -717,7 +718,6 @@ export default {
             this.folders = [];
             const response = await axios.get('/api/findFilesByCategory?category=' + category);
             this.files = response.data.data.files;
-            this.currentFFsCount = this.folders.length + this.files.length;
             this.checkAllFFsCollectionStatus();
             this.findTags();
             this.queryCategoryCapacity();

@@ -98,7 +98,6 @@ export default {
         }
     },
     mounted() {
-        console.log(this.userAuth);
         if (this.userAuth == 10) {
             const vm = this;
             var idleTimer = $(document).idleTimer(300000);
@@ -113,7 +112,6 @@ export default {
                 $(document).off('idle.idleTimer');
             });
         }
-
     },
 }
 </script>
