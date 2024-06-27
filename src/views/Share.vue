@@ -228,15 +228,17 @@
                                                 <div class="sk-cube"></div>
                                             </div>
                                             <thead>
-                                                <td>状态</td>
-                                                <td></td><!--图标-->
-                                                <td>名称</td>
-                                                <td>权限</td>
-                                                <td>接收者</td>
-                                                <td>接收用户组</td>
-                                                <td>分享时间</td>
-                                                <td>到期时间</td>
-                                                <td>操作</td>
+                                                <tr>
+                                                    <th>状态</th>
+                                                    <th></th><!--图标-->
+                                                    <th>名称</th>
+                                                    <th>权限</th>
+                                                    <th>接收者</th>
+                                                    <th>接收用户组</th>
+                                                    <th>分享时间</th>
+                                                    <th>到期时间</th>
+                                                    <th>操作</th>
+                                                </tr>
                                             </thead>
                                             <tbody>
                                                 <tr v-for="(share, index) in acceptions" :key="index" @dblclick=""
