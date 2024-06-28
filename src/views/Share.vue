@@ -246,8 +246,7 @@
                                                                             }}/1</span>
                                                                     </td>
                                                                     <td></td>
-                                                                    <td v-if="share.isFolder == 1"></td>
-                                                                    <td v-if="!share.isFolder == 1" :key="new Date().getTime()">&nbsp;&nbsp;&nbsp;
+                                                                    <td :key="new Date().getTime()">&nbsp;&nbsp;&nbsp;
                                                                         {{ share.downloadCount }}
                                                                     </td>
                                                                     <td>
@@ -321,6 +320,7 @@
                                                                     <th>接收用户组</th>
                                                                     <th>分享时间</th>
                                                                     <th>到期时间</th>
+                                                                    <th>下载次数</th>
                                                                     <th>操作</th>
                                                                 </tr>
                                                             </thead>
@@ -356,6 +356,9 @@
                                                                         <span v-if="share.lastRatio > 0"
                                                                             class="pie">{{ share.lastRatio
                                                                             }}/1</span>
+                                                                    </td>
+                                                                    <td :key="new Date().getTime()">&nbsp;&nbsp;&nbsp;
+                                                                        {{ share.downloadCount }}
                                                                     </td>
                                                                     <td>
                                                                         <div class="btn-group">
@@ -454,15 +457,16 @@ export default {
                 this.initializePeity();
             });
             this.shares.forEach(share => {
-                if (!share.isFolder) {
-                    this.getDownloadCount(share);
-                }
+                this.getDownloadCount(share);
+            });
+            this.allShares.forEach(share => {
+                this.getDownloadCount(share);
             });
             this.hideLoading()
         },
         async getDownloadCount(share){
-            const result = await axios.post('api/getDownloadCount' ,{"shareId": share.shareId, "fileId": share.fileId});
-            share.downloadCount = result.data.count;
+            const response = await axios.post('api/getDownloadCountByShareId' ,{"shareId": share.shareId});
+            share.downloadCount = response.data.data.count;
         },
         initializePeity() {
             $('span.pie').peity('pie', {

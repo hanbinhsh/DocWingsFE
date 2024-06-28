@@ -162,10 +162,10 @@
                             <a> <i class="fa fa-circle text-info"></i> 有效时间
                               <span class="label label-primary pull-right">{{ formattedLastTime }}</span></a>
                           </li>
-                          <!-- <li>
-                            <a> <i class="fa fa-circle text-warning"></i> 其他
-                              <span class="label label-primary pull-right"></span></a>
-                          </li> -->
+                          <li>
+                            <a> <i class="fa fa-circle text-warning"></i> 下载总次数
+                              <span class="label label-primary pull-right">{{ this.downloadTotalCount }}</span></a>
+                          </li>
                         </ul>
                       </div>
                     </div>
@@ -232,6 +232,7 @@ export default {
       exist: null,
       share: null,
       outOfDate: null,
+      downloadTotalCount: 0,
       showPlayer: false,
       audioOptions: {
         autoplay: false,
@@ -347,6 +348,8 @@ export default {
     async enterPath(id) {
       if (!this.isFolder) return;
       await this.findFFsByParentId(id);
+      const response = await axios.post('/api/getDownloadCountByShareId', {"shareId": this.shareId});
+      this.downloadTotalCount = response.data.data.count;
     },
     async findFFsByParentId(id) {
       const response = await axios.get('/api/findFFsByParentId?parentId=' + id);
@@ -417,6 +420,8 @@ export default {
       this.share.downloadCount.push(result.data.count);
     },
     async updateShare() {
+      const response = await axios.post('/api/getDownloadCountByShareId', {"shareId": this.shareId});
+      this.downloadTotalCount = response.data.data.count;
       if (this.share.isFolder == 0) {
         const response = await axios.get('/api/findFileById?id=' + this.share.fileId);
         if (response.data.data.file.isDeleted == 1) {
