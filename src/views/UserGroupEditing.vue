@@ -78,7 +78,15 @@
                                                 <div class="panel-body">
                                                     <div class="tab-content">
                                                         <div class="tab-pane active table-responsive" id="tab-1">
-                                                            <table class="table table-striped ibox-content">
+                                                            <div class="input-group">
+                                                                <input type="text" placeholder="输入要查找的用户信息......"
+                                                                class="form-control" id="filter1">
+                                                                    <span class="input-group-btn">
+                                                                        <button type="button" class="btn btn-white">查找</button>
+                                                                    </span>
+                                                            </div>
+                                                            <table class="table table-striped ibox-content footable table table-stripped toggle-arrow-tiny"
+                                                            data-page-size="14" :class="{ 'sk-loading': loading }">
                                                                 <thead>
                                                                     <tr>
                                                                         <th>用户名</th>
@@ -143,10 +151,25 @@
                                                                         </td>
                                                                     </tr>
                                                                 </tbody>
+                                                                <tfoot>
+                                                                <tr>
+                                                                    <td colspan="14">
+                                                                        <ul class="pagination pull-right"></ul>
+                                                                    </td>
+                                                                </tr>
+                                                            </tfoot>
                                                             </table>
                                                         </div>
                                                         <div class="tab-pane table-responsive" id="tab-2">
-                                                            <table class="table table-striped ibox-content">
+                                                            <div class="input-group">
+                                                                <input type="text" placeholder="输入要查找的用户信息......"
+                                                                class="form-control" id="filter1">
+                                                                    <span class="input-group-btn">
+                                                                        <button type="button" class="btn btn-white">查找</button>
+                                                                 </span>
+                                                            </div>
+                                                            <table class="table table-striped ibox-content footable table table-stripped toggle-arrow-tiny"
+                                                            data-page-size="14" :class="{ 'sk-loading': loading }">
                                                                 <thead>
                                                                     <tr>
                                                                         <th>用户组名</th>
@@ -180,6 +203,13 @@
                                                                         </td>
                                                                     </tr>
                                                                 </tbody>
+                                                                <tfoot>
+                                                                <tr>
+                                                                    <td colspan="14">
+                                                                        <ul class="pagination pull-right"></ul>
+                                                                    </td>
+                                                                </tr>
+                                                            </tfoot>
                                                             </table>
                                                         </div>
                                                     </div>
@@ -623,6 +653,12 @@ export default {
             };
             await this.validateUser(actionCallback, additionalInput);
         },
-    }
+    },
+    updated() {
+        this.$nextTick(() => {
+            $('.footable').footable();
+            $('.footable').init();
+        });
+    },
 }
 </script>

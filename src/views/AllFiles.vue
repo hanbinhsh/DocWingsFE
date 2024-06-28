@@ -944,41 +944,41 @@ export default {
         },
         async collectionFile(fileId) {await this.collectionItem(fileId, 'file');},
         async collectionFolder(folderId) {await this.collectionItem(folderId, 'folder');},
-        async shareFile(file) {
+        async shareItem(item, isFolder) {
             const { value: formValues } = await this.$swal.fire({
                 title: '创建分享',
                 html: `
-                        <label class="control-label">权限</label>
-                        <div class="form-group">
-                            <select id="share_select" class="form-control">
-                                <option value="1">全部权限</option>
-                                <option value="2">仅查看</option>
-                            </select>
+                    <label class="control-label">权限</label>
+                    <div class="form-group">
+                        <select id="share_select" class="form-control">
+                            <option value="1">全部权限</option>
+                            <option value="2">仅查看</option>
+                        </select>
+                    </div>
+                    <label class="control-label">有效时间(为空表示永久有效)</label>
+                    <div>
+                        <div class="col-md-4">
+                            <input type="text" id="share_day" class="form-control" placeholder="0" style="text-align: center;">
+                            <span>天</span>
                         </div>
-                        <label class="control-label">有效时间(为空表示永久有效)</label>
-                        <div>
-                            <div class="col-md-4">
-                                <input type="text" id="share_day" class="form-control" placeholder="0" style="text-align: center;">
-                                <span>天</span>
-                            </div>
-                            <div class="col-md-4">
-                                <input type="text" id="share_hour" class="form-control" placeholder="0" style="text-align: center;">
-                                <span>时</span>
-                            </div>
-                            <div class="col-md-4">
-                                <input type="text" id="share_minute" class="form-control" placeholder="0" style="text-align: center;">
-                                <span>分</span>
-                            </div>
+                        <div class="col-md-4">
+                            <input type="text" id="share_hour" class="form-control" placeholder="0" style="text-align: center;">
+                            <span>时</span>
                         </div>
-                        <label class="control-label">接收者</label>
-                        <div class="form-group">
-                            <input type="text" id="share_accepter" class="form-control" placeholder="接收者用户名(为空表示所有用户)" style="text-align: center;">
+                        <div class="col-md-4">
+                            <input type="text" id="share_minute" class="form-control" placeholder="0" style="text-align: center;">
+                            <span>分</span>
                         </div>
-                        <label class="control-label">接收用户组</label>
-                        <div class="form-group">
-                            <input type="text" id="share_acceptgroup" class="form-control" placeholder="接收者用户组名(为空表示所有用户组)" style="text-align: center;">
-                        </div>
-                    `,
+                    </div>
+                    <label class="control-label">接收者</label>
+                    <div class="form-group">
+                        <input type="text" id="share_accepter" class="form-control" placeholder="接收者用户名(为空表示所有用户)" style="text-align: center;">
+                    </div>
+                    <label class="control-label">接收用户组</label>
+                    <div class="form-group">
+                        <input type="text" id="share_acceptgroup" class="form-control" placeholder="接收者用户组名(为空表示所有用户组)" style="text-align: center;">
+                    </div>
+                `,
                 showCancelButton: true,
                 confirmButtonText: '确定',
                 cancelButtonText: '取消',
@@ -994,156 +994,57 @@ export default {
                 }
             });
             if (formValues) {
-                let userId = null
-                let acceptGroupId = null
+                let userId = null;
+                let acceptGroupId = null;
                 if (formValues.day < 0 || formValues.hour < 0 || formValues.minute < 0) {
                     this.$swal.fire('时间不能为负数', '请重新输入', 'error');
                     return;
                 }
-                // 判断输入是否是数字
                 if (isNaN(formValues.day) || isNaN(formValues.hour) || isNaN(formValues.minute)) {
                     this.$swal.fire('时间必须为数字', '请重新输入', 'error');
                     return;
                 }
                 if (formValues.accepter) {
-                    if (formValues.accepter == this.userData.userName) {
+                    if (formValues.accepter === this.userData.userName) {
                         this.$swal.fire('不能分享给自己', '请重新输入', 'error');
                         return;
                     }
-                    const response = await axios.post('/api/queryIfExistsUserByUserName?userName=' + formValues.accepter);
-                    const data = response.data.data
-                    if (data.state == 0) {
+                    const userResponse = await axios.post(`/api/queryIfExistsUserByUserName?userName=${formValues.accepter}`);
+                    const userData = userResponse.data.data;
+                    if (userData.state === 0) {
                         this.$swal.fire('用户不存在', '请重新输入', 'error');
                         return;
                     }
-                    userId = data.userId
+                    userId = userData.userId;
                 }
                 if (formValues.acceptGroupName) {
-                    const response = await axios.post('/api/findUserGroupByName?name=' + formValues.acceptGroupName);
-                    const data = response.data.data
-                    if (data.state == 0) {
+                    const groupResponse = await axios.post(`/api/findUserGroupByName?name=${formValues.acceptGroupName}`);
+                    const groupData = groupResponse.data.data;
+                    if (groupData.state === 0) {
                         this.$swal.fire('用户组不存在', '请重新输入', 'error');
                         return;
                     }
-                    acceptGroupId = data.userGroup.groupId
+                    acceptGroupId = groupData.userGroup.groupId;
                 }
                 const shareTime = new Date();
                 const dueTime = new Date(shareTime.getTime() + formValues.day * 24 * 60 * 60 * 1000 + formValues.hour * 60 * 60 * 1000 + formValues.minute * 60 * 1000);
                 const shareData = {
-                    fileId: file.fileId,
-                    folderId: -2,
+                    fileId: isFolder ? -2 : item.fileId,
+                    folderId: isFolder ? item.folderId : -2,
                     sharerId: this.userData.userId,
                     auth: formValues.permission,
                     shareTime: shareTime,
                     dueTime: dueTime,
                     accepterId: userId ?? -2,
                     acceptGroupId: acceptGroupId ?? -2,
-                    isFolder: 0
+                    isFolder: isFolder ? 1 : 0
                 };
-                await axios.post('api/insertShare', [shareData])
+                await axios.post('api/insertShare', [shareData]);
                 this.$swal.fire('分享成功', '', 'success');
             }
         },
-        async shareFolder(folder) {
-            const { value: formValues } = await this.$swal.fire({
-                title: '创建分享',
-                html: `
-                        <label class="control-label">权限</label>
-                        <div class="form-group">
-                            <select id="share_select" class="form-control">
-                                <option value="1">全部权限</option>
-                                <option value="2">仅查看</option>
-                            </select>
-                        </div>
-                        <label class="control-label">有效时间(为空表示永久有效)</label>
-                        <div>
-                            <div class="col-md-4">
-                                <input type="text" id="share_day" class="form-control" placeholder="0" style="text-align: center;">
-                                <span>天</span>
-                            </div>
-                            <div class="col-md-4">
-                                <input type="text" id="share_hour" class="form-control" placeholder="0" style="text-align: center;">
-                                <span>时</span>
-                            </div>
-                            <div class="col-md-4">
-                                <input type="text" id="share_minute" class="form-control" placeholder="0" style="text-align: center;">
-                                <span>分</span>
-                            </div>
-                        </div>
-                        <label class="control-label">接收者</label>
-                        <div class="form-group">
-                            <input type="text" id="share_accepter" class="form-control" placeholder="接收者用户名(为空表示所有用户)" style="text-align: center;">
-                        </div>
-                        <label class="control-label">接收用户组</label>
-                        <div class="form-group">
-                            <input type="text" id="share_acceptgroup" class="form-control" placeholder="接收者用户组名(为空表示所有用户组)" style="text-align: center;">
-                        </div>
-                    `,
-                showCancelButton: true,
-                confirmButtonText: '确定',
-                cancelButtonText: '取消',
-                preConfirm: () => {
-                    return {
-                        permission: document.getElementById('share_select').value,
-                        day: document.getElementById('share_day').value || 0,
-                        hour: document.getElementById('share_hour').value || 0,
-                        minute: document.getElementById('share_minute').value || 0,
-                        accepter: document.getElementById('share_accepter').value,
-                        acceptGroupName: document.getElementById('share_acceptgroup').value,
-                    }
-                }
-            });
-            if (formValues) {
-                let userId = null
-                let acceptGroupId = null
-                if (formValues.day < 0 || formValues.hour < 0 || formValues.minute < 0) {
-                    this.$swal.fire('时间不能为负数', '请重新输入', 'error');
-                    return;
-                }
-                // 判断输入是否是数字
-                if (isNaN(formValues.day) || isNaN(formValues.hour) || isNaN(formValues.minute)) {
-                    this.$swal.fire('时间必须为数字', '请重新输入', 'error');
-                    return;
-                }
-                if (formValues.accepter) {
-                    if (formValues.accepter == this.userData.userName) {
-                        this.$swal.fire('不能分享给自己', '请重新输入', 'error');
-                        return;
-                    }
-                    const response = await axios.post('/api/queryIfExistsUserByUserName?userName=' + formValues.accepter);
-                    const data = response.data.data
-                    if (data.state == 0) {
-                        this.$swal.fire('用户不存在', '请重新输入', 'error');
-                        return;
-                    }
-                    userId = data.userId
-                }
-                if (formValues.acceptGroupName) {
-                    const response = await axios.post('/api/findUserGroupByName?name=' + formValues.acceptGroupName);
-                    const data = response.data.data
-                    if (data.state == 0) {
-                        this.$swal.fire('用户组不存在', '请重新输入', 'error');
-                        return;
-                    }
-                    acceptGroupId = data.userGroup.groupId
-                }
-                const shareTime = new Date();
-                const dueTime = new Date(shareTime.getTime() + formValues.day * 24 * 60 * 60 * 1000 + formValues.hour * 60 * 60 * 1000 + formValues.minute * 60 * 1000);
-                const shareData = {
-                    fileId: -2,
-                    folderId: folder.folderId,
-                    sharerId: this.userData.userId,
-                    auth: formValues.permission,
-                    shareTime: shareTime,
-                    dueTime: dueTime,
-                    accepterId: userId ?? -2,
-                    acceptGroupId: acceptGroupId ?? -2,
-                    isFolder: 1
-                };
-                await axios.post('api/insertShare', [shareData])
-                this.$swal.fire('分享成功', '', 'success');
-            }
-        },
+        async shareFile(file) {await this.shareItem(file, false);},
+        async shareFolder(folder) {await this.shareItem(folder, true);},
         async checkAllFFsCollectionStatus() {
             const response = await axios.post('/api/findCollectionFFs?userId=' + this.userData.userId);
             const data = response.data
