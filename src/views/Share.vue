@@ -603,7 +603,7 @@ export default {
                 }
                 if(share.dueTime == null)
                 {
-                    share.dueTime = share.shareTime;
+                    share.dueTime = new Date();
                 }
                 const oldDueTime = new Date(share.dueTime);
                 const dueTime = new Date(oldDueTime.getTime() + formValues.day * 24 * 60 * 60 * 1000 + formValues.hour * 60 * 60 * 1000 + formValues.minute * 60 * 1000);
