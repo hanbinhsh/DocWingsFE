@@ -401,26 +401,18 @@ export default {
             this.files = response.data.data.files;
             this.folders = response.data.data.folders;
         },
-        async collectionFile(fileId){
-            const exist = this.fileCollectionStatus[fileId]//判断是否被收藏
-            if(exist){//被收藏删除
-                await axios.post('api/CollectionsDeleteFile',{"fileId":fileId,"userId":this.userData.userId});
-            }
-            else{//没被收藏插入
-                await axios.post('api/CollectionsInsertFile',{"fileId":fileId,"userId":this.userData.userId});
-            }
-            this.enterPath()
+        async toggleCollection(itemId, isFolder) {
+            const collectionStatus = isFolder ? this.folderCollectionStatus[itemId] : this.fileCollectionStatus[itemId];
+            const apiEndpoint = isFolder 
+                ? collectionStatus ? 'api/CollectionsDeleteFolder' : 'api/CollectionsInsertFolder'
+                : collectionStatus ? 'api/CollectionsDeleteFile' : 'api/CollectionsInsertFile';
+            const itemKey = isFolder ? 'folderId' : 'fileId';
+
+            await axios.post(apiEndpoint, { [itemKey]: itemId, userId: this.userData.userId });
+            this.enterPath();
         },
-        async collectionFolder(folderId){
-            const exist = this.folderCollectionStatus[folderId]//判断是否被收藏
-            if(exist){//被收藏删除
-                await axios.post('api/CollectionsDeleteFolder',{"folderId":folderId,"userId":this.userData.userId});
-            }
-            else{//没被收藏插入
-                await axios.post('api/CollectionsInsertFolder',{"folderId":folderId,"userId":this.userData.userId});
-            }
-            this.enterPath()
-        },
+        async collectionFile(fileId) {await this.toggleCollection(fileId, false);},
+        async collectionFolder(folderId) {await this.toggleCollection(folderId, true);},
         async checkAllFFsCollectionStatus() {
             const response = await axios.post('/api/findCollectionFFs?userId=' + this.userData.userId);
             const data = response.data
@@ -454,42 +446,28 @@ export default {
                 }
             })
         },
-        async recycleBinFile(fileId,fileName){
+        async recycleBinItem(itemId, itemName, isFolder) {
             const result = await this.$swal.fire({
-                title: '是否将文件放入回收站',
+                title: `是否将${isFolder ? '文件夹' : '文件'}放入回收站`,
                 icon: 'warning',
                 showCancelButton: true,
-                confirmButtonText: '确定',  
+                confirmButtonText: '确定',
                 cancelButtonText: '取消',
             });
             if (result.isConfirmed) {
-                await axios.post('/api/recycleBinFile', { "fileId": fileId, "status": 1 });
-                await axios.post('/api/insertRecycleFileLog', { "userId":this.userData.userId,"fileName": fileName});
-                this.$swal.fire('操作成功', '文件已放入回收站', 'success');
+                const apiEndpoint = isFolder ? '/api/recycleBinFolder' : '/api/recycleBinFile';
+                const logEndpoint = isFolder ? '/api/insertRecycleFolderLog' : '/api/insertRecycleFileLog';
+                const itemKey = isFolder ? 'folderId' : 'fileId';
+                await axios.post(apiEndpoint, { [itemKey]: itemId, status: 1 });
+                await axios.post(logEndpoint, { userId: this.userData.userId, [isFolder ? 'folderName' : 'fileName']: itemName });
+                this.$swal.fire('操作成功', `${isFolder ? '文件夹' : '文件'}已放入回收站`, 'success');
                 this.enterPath();
-            }
-            else{
-                this.$swal.fire('操作取消', '文件未放入回收站', 'info');
+            } else {
+                this.$swal.fire('操作取消', `${isFolder ? '文件夹' : '文件'}未放入回收站`, 'info');
             }
         },
-        async recycleBinFolder(folderId,folderName){
-            const result = await this.$swal.fire({
-                title: '是否将文件夹放入回收站',
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonText: '确定',  
-                cancelButtonText: '取消',
-            });
-            if (result.isConfirmed) {
-                await axios.post('/api/recycleBinFolder', { "folderId": folderId, "status": 1 });
-                await axios.post('/api/insertRecycleFolderLog', { "userId":this.userData.userId,"folderName": folderName});
-                this.$swal.fire('操作成功', '文件夹已放入回收站', 'success');
-                this.enterPath();
-            }
-            else{
-                this.$swal.fire('操作取消', '文件夹未放入回收站', 'info');
-            }
-        },
+        async recycleBinFile(fileId, fileName) {await this.recycleBinItem(fileId, fileName, false);},
+        async recycleBinFolder(folderId, folderName) {await this.recycleBinItem(folderId, folderName, true);},
         async findFFsByTag(tag) {
             this.showLoading();  // 显示加载页面
             const response = await axios.get('/api/findFFsByTag?tag=' + tag);
