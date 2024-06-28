@@ -86,7 +86,7 @@
                                                                     </span>
                                                             </div>
                                                             <table class="table table-striped ibox-content footable table table-stripped toggle-arrow-tiny"
-                                                            data-page-size="14" :class="{ 'sk-loading': loading }">
+                                                            data-page-size="14" data-filter=#filter1 :class="{ 'sk-loading': loading }">
                                                                 <thead>
                                                                     <tr>
                                                                         <th>用户名</th>
@@ -163,13 +163,13 @@
                                                         <div class="tab-pane table-responsive" id="tab-2">
                                                             <div class="input-group">
                                                                 <input type="text" placeholder="输入要查找的用户信息......"
-                                                                class="form-control" id="filter1">
+                                                                class="form-control" id="filter2">
                                                                     <span class="input-group-btn">
                                                                         <button type="button" class="btn btn-white">查找</button>
                                                                  </span>
                                                             </div>
                                                             <table class="table table-striped ibox-content footable table table-stripped toggle-arrow-tiny"
-                                                            data-page-size="14" :class="{ 'sk-loading': loading }">
+                                                            data-page-size="14" data-filter=#filter2 :class="{ 'sk-loading': loading }">
                                                                 <thead>
                                                                     <tr>
                                                                         <th>用户组名</th>

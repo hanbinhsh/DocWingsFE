@@ -68,6 +68,7 @@ export default {
     },
     methods: {
         logout() {
+            
             window.sessionStorage.clear();
             this.$router.push('/login');
             $(document).off('idle.idleTimer');

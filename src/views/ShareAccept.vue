@@ -398,7 +398,9 @@ export default {
             return;
           } else if (
             this.userData.userId != response.data.data.share.accepterId &&
-            this.userData.userId != response.data.data.share.sharerId
+            this.userData.userId != response.data.data.share.sharerId &&
+            this.userData.isAdmin != 1 &&
+            this.userData.acceptGroupName != response.data.share.acceptGroupName
           ) {
             toastr.error('您没有权限查看该分享', '错误');
             return;

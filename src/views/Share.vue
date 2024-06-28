@@ -95,7 +95,7 @@
                                                                     <th></th><!--图标-->
                                                                     <th>名称</th>
                                                                     <th>权限</th>
-                                                                    <th>接收者</th>
+                                                                    <th>分享者</th>
                                                                     <th>接收用户组</th>
                                                                     <th>分享时间</th>
                                                                     <th>到期时间</th>
@@ -121,7 +121,7 @@
                                                                         share.folderName }}</td>
                                                                     <td>{{ share.auth == 1 ? '全部权限' : '仅查看' }}
                                                                     </td>
-                                                                    <td>{{ share.accepterName }}</td>
+                                                                    <td>{{ share.sharerName }}</td>
                                                                     <td>{{ share.acceptGroupName }}</td>
                                                                     <td>{{ new
                                                                         Date(share.shareTime).toLocaleString()
@@ -316,6 +316,7 @@
                                                                     <th>状态</th>
                                                                     <th></th><!--图标-->
                                                                     <th>名称</th>
+                                                                    <th>分享者</th>
                                                                     <th>权限</th>
                                                                     <th>接收者</th>
                                                                     <th>接收用户组</th>
@@ -340,6 +341,7 @@
                                                                     </td>
                                                                     <td v-if="share.isFolder == 0">{{
                                                                         share.fileName }}</td>
+                                                                    <td>{{ share.sharerName }}</td>
                                                                     <td v-if="share.isFolder == 1">{{
                                                                         share.folderName }}</td>
                                                                     <td>{{ share.auth == 1 ? '全部权限' : '仅查看' }}
@@ -510,7 +512,7 @@ export default {
                                 <option value="2">仅查看</option>
                             </select>
                         </div>
-                        <label class="control-label">延长时间</label>
+                        <label class="control-label">延长时间(为空表示永久有效)</label>
                         <div>
                             <div class="col-md-4">
                                 <input type="text" id="share_day" class="form-control" placeholder="0" style="text-align: center;">
@@ -595,6 +597,10 @@ export default {
                     }
                     acceptGroupId = data.userGroup.groupId
                 }
+                if(share.dueTime == null)
+                {
+                    share.dueTime = share.shareTime;
+                }
                 const oldDueTime = new Date(share.dueTime);
                 const dueTime = new Date(oldDueTime.getTime() + formValues.day * 24 * 60 * 60 * 1000 + formValues.hour * 60 * 60 * 1000 + formValues.minute * 60 * 1000);
                 const shareData = {
@@ -603,7 +609,7 @@ export default {
                     folderId: share.folderId,
                     sharerId: share.sharerId,
                     auth: share.auth,
-                    shareTime: share.shareTime,
+                    shareTime: oldDueTime,
                     dueTime: dueTime,
                     accepterId: userId ?? -2,
                     acceptGroupId: acceptGroupId ?? -2,
@@ -669,6 +675,7 @@ export default {
     },
     updated() {
         this.$nextTick(() => {
+            console.log(share);
             $('.footable').footable();
             $('.footable').init();
         });
