@@ -50,14 +50,20 @@
                     <div class="col-lg-12">
                         <div class="wrapper wrapper-content animated fadeInUp">
                             <div class="ibox">
-                                <div class="ibox-content">
+                                <div class="ibox-content" style="padding-bottom: 0px">
                                     <div class="row">
                                         <div class="col-lg-12">
                                             <div class="m-b-md">
-                                                <a @click.prevent="insertGroup()"
-                                                    class="btn btn-success  btn-xs pull-right">
-                                                    新增用户组
-                                                </a>
+                                                <div class="btn-group pull-right">
+                                                    <a @click.prevent="updateUserInfo()"
+                                                        class="btn btn-primary  btn-m">
+                                                        <i class="fa fa-refresh"></i>
+                                                    </a>
+                                                    <a @click.prevent="insertGroup()"
+                                                        class="btn btn-success  btn-m">
+                                                        新增用户组
+                                                    </a>
+                                                </div>
                                                 <h2>操作</h2>
                                             </div>
                                         </div>
@@ -68,25 +74,26 @@
                                                 <div class="panel-heading">
                                                     <div class="panel-options">
                                                         <ul class="nav nav-tabs">
-                                                            <li class="active"><a href="project_detail.html#tab-1"
+                                                            <li class="active" @click="updateUserInfo()"><a href="project_detail.html#tab-1"
                                                                     data-toggle="tab">用户信息</a></li>
-                                                            <li class=""><a href="project_detail.html#tab-2"
+                                                            <li class="" @click="updateUserInfo()"><a href="project_detail.html#tab-2"
                                                                     data-toggle="tab">用户组信息</a></li>
                                                         </ul>
                                                     </div>
                                                 </div>
-                                                <div class="panel-body">
+                                                <div class="panel-body" style="padding-bottom: 0px">
                                                     <div class="tab-content">
-                                                        <div class="tab-pane active table-responsive" id="tab-1">
+                                                        <div class="tab-pane active table-responsive animated fadeInUp" id="tab-1">
                                                             <div class="input-group">
                                                                 <input type="text" placeholder="输入要查找的用户信息......"
                                                                 class="form-control" id="filter1">
-                                                                    <span class="input-group-btn">
-                                                                        <button type="button" class="btn btn-white">查找</button>
-                                                                    </span>
+                                                                <span class="input-group-btn">
+                                                                    <button type="button" class="btn btn-white">查找</button>
+                                                                </span>
                                                             </div>
                                                             <table class="table table-striped ibox-content footable table table-stripped toggle-arrow-tiny"
                                                             data-page-size="14" data-filter=#filter1 :class="{ 'sk-loading': loading }">
+                                                                <Spinner :loading="loading" />
                                                                 <thead>
                                                                     <tr>
                                                                         <th>用户名</th>
@@ -152,24 +159,25 @@
                                                                     </tr>
                                                                 </tbody>
                                                                 <tfoot>
-                                                                <tr>
-                                                                    <td colspan="14">
-                                                                        <ul class="pagination pull-right"></ul>
-                                                                    </td>
-                                                                </tr>
-                                                            </tfoot>
+                                                                    <tr>
+                                                                        <td colspan="14">
+                                                                            <ul class="pagination pull-right"></ul>
+                                                                        </td>
+                                                                    </tr>
+                                                                </tfoot>
                                                             </table>
                                                         </div>
-                                                        <div class="tab-pane table-responsive" id="tab-2">
+                                                        <div class="tab-pane table-responsive animated fadeInUp" id="tab-2">
                                                             <div class="input-group">
                                                                 <input type="text" placeholder="输入要查找的用户信息......"
                                                                 class="form-control" id="filter2">
-                                                                    <span class="input-group-btn">
-                                                                        <button type="button" class="btn btn-white">查找</button>
+                                                                <span class="input-group-btn">
+                                                                    <button type="button" class="btn btn-white">查找</button>
                                                                  </span>
                                                             </div>
                                                             <table class="table table-striped ibox-content footable table table-stripped toggle-arrow-tiny"
                                                             data-page-size="14" data-filter=#filter2 :class="{ 'sk-loading': loading }">
+                                                                <Spinner :loading="loading" />
                                                                 <thead>
                                                                     <tr>
                                                                         <th>用户组名</th>
@@ -180,8 +188,7 @@
                                                                     </tr>
                                                                 </thead>
                                                                 <tbody>
-                                                                    <tr v-for="(group, index) in usergroups"
-                                                                        :key="index" class="read">
+                                                                    <tr v-for="(group, index) in usergroups" :key="index" class="read">
                                                                         <td>{{ group.groupName }}</td>
                                                                         <td>
                                                                             <a @click="editGroupName(group)"><i
@@ -204,12 +211,12 @@
                                                                     </tr>
                                                                 </tbody>
                                                                 <tfoot>
-                                                                <tr>
-                                                                    <td colspan="14">
-                                                                        <ul class="pagination pull-right"></ul>
-                                                                    </td>
-                                                                </tr>
-                                                            </tfoot>
+                                                                    <tr>
+                                                                        <td colspan="14">
+                                                                            <ul class="pagination pull-right"></ul>
+                                                                        </td>
+                                                                    </tr>
+                                                                </tfoot>
                                                             </table>
                                                         </div>
                                                     </div>
@@ -232,6 +239,7 @@
 
 <script>
 import $ from 'jquery'
+import '../assets/js/plugins/footable/footable.all.min.js'
 import "../assets/js/plugins/metisMenu/jquery.metisMenu.js"
 import "../assets/js/plugins/slimscroll/jquery.slimscroll.min.js"
 import "../assets/js/inspinia.js"
@@ -264,7 +272,8 @@ export default {
             userData: JSON.parse(sessionStorage.getItem('userData')) || {},
             userAuth: sessionStorage.getItem("authData") || 3,
             users: [],
-            usergroups: []
+            usergroups: [],
+            loading: false,
         }
     },
     components: {
@@ -587,9 +596,11 @@ export default {
             return response.data;
         },
         async updateUserInfo() {
+            this.loading = true
             const response = await axios.get('/api/findAllUsers');
             this.users = response.data;
             this.findUserGroups();
+            this.loading = false
         },
         async editGroupName(group){
             const additionalInput = {

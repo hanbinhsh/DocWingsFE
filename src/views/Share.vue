@@ -119,8 +119,7 @@
                                                                         share.fileName }}</td>
                                                                     <td v-if="share.isFolder == 1">{{
                                                                         share.folderName }}</td>
-                                                                    <td>{{ share.auth == 1 ? '全部权限' : '仅查看' }}
-                                                                    </td>
+                                                                    <td>{{ share.auth == 1 ? '全部权限' : '仅查看' }}</td>
                                                                     <td>{{ share.sharerName }}</td>
                                                                     <td>{{ share.acceptGroupName }}</td>
                                                                     <td>{{ new
