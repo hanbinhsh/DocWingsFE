@@ -679,7 +679,6 @@ export default {
     },
     updated() {
         this.$nextTick(() => {
-            console.log(share);
             $('.footable').footable();
             $('.footable').init();
         });
