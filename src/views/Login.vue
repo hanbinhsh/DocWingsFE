@@ -71,7 +71,7 @@ toastr.options = {
 	"showMethod": "fadeIn",
 	"hideMethod": "fadeOut"
 }
-
+document.body.style.backgroundColor = '';
 const router = useRouter();
 const username = ref('');
 const password = ref('');
