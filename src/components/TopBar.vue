@@ -1,6 +1,6 @@
 <template>
     <div class="row border-bottom">
-        <nav class="navbar navbar-static-top  " role="navigation" style="margin-bottom: 0">
+        <nav class="navbar navbar-static-top" role="navigation" style="margin-bottom: 0">
             <div class="navbar-header" @mouseleave="closeDropdown">
                 <a style="height:30px" class="navbar-minimalize minimalize-styl-2 btn btn-primary "><i
                         style="margin-top:4px" class="fa fa-bars"></i> </a>
@@ -38,6 +38,33 @@
             </div>
             <ul class="nav navbar-top-links navbar-right">
                 <li>
+                    <span class="m-r-sm text-muted welcome-message">主题</span>
+                </li>
+                <li class="btn-group">
+                    <div>
+                        <div class="radio radio-inline" @click="updateskin(0)">
+                            <input type="radio" name="radio2"  :checked="skin==0">
+                            <label for="radio3">
+                            </label>
+                        </div>
+                        <div class="radio radio-success radio-inline" @click="updateskin(1)">
+                            <input type="radio" name="radio2" :checked="skin==1">
+                            <label for="radio3">
+                            </label>
+                        </div>
+                        <div class="radio radio-primary radio-inline" @click="updateskin(2)">
+                            <input type="radio" name="radio2" :checked="skin==2">
+                            <label for="radio3">
+                            </label>
+                        </div>
+                        <div class="radio radio-warning radio-inline" @click="updateskin(3)">
+                            <input type="radio" name="radio2" :checked="skin==3">
+                            <label for="radio3">
+                            </label>
+                        </div>
+                    </div>
+                </li>
+                <li>&nbsp;&nbsp;&nbsp;
                     <span class="m-r-sm text-muted welcome-message">欢迎来到文档之翼</span>
                 </li>
                 <li>
@@ -63,10 +90,36 @@ export default {
             name: '',
             files: [],
             folders: [],
-            userAuth: sessionStorage.getItem("authData") || 3
+            userAuth: sessionStorage.getItem("authData") || 3,
+            skin: sessionStorage.getItem("skin") || 0,
         }
     },
     methods: {
+        updateskin(skin){
+            sessionStorage.setItem("skin",skin)
+            this.skin = skin;
+            if(this.skin == 0){
+                document.body.style.backgroundColor = '#3B3B3B';
+                $("body").removeClass("skin-3");
+                $("body").removeClass("skin-2");
+                $("body").removeClass("skin-1");
+            }else if(this.skin == 1){
+                document.body.style.backgroundColor = '';
+                $("body").removeClass("skin-3");
+                $("body").removeClass("skin-2");
+                $("body").addClass("skin-1");
+            }else if(this.skin == 2){
+                document.body.style.backgroundColor = '';
+                $("body").removeClass("skin-1");
+                $("body").removeClass("skin-3");
+                $("body").addClass("skin-2");
+            }else if(this.skin == 3){
+                document.body.style.backgroundColor = '';
+                $("body").removeClass("skin-1");
+                $("body").removeClass("skin-2");
+                $("body").addClass("skin-3");
+            }
+        },
         logout() {
             
             window.sessionStorage.clear();
@@ -97,6 +150,22 @@ export default {
         }
     },
     mounted() {
+        this.skin = sessionStorage.getItem("skin") || 0;
+        if(this.skin == 0){
+            document.body.style.backgroundColor = '#3B3B3B';
+        }else if(this.skin == 1){
+            $("body").removeClass("skin-3");
+            $("body").removeClass("skin-2");
+            $("body").addClass("skin-1");
+        }else if(this.skin == 2){
+            $("body").removeClass("skin-1");
+            $("body").removeClass("skin-3");
+            $("body").addClass("skin-2");
+        }else if(this.skin == 3){
+            $("body").removeClass("skin-1");
+            $("body").removeClass("skin-2");
+            $("body").addClass("skin-3");
+        }
         if (this.userAuth == 10) {
             const vm = this;
             var idleTimer = $(document).idleTimer(300000);
