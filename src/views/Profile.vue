@@ -196,7 +196,19 @@
                     this.$swal.fire('密码未输入','','error');
                 }
                 else if(response.data.accountLocked==true){
-                    this.$swal.fire('用户已冻结,请两小时后再试','','error');
+                    const twoHoursInMilliseconds = 2 * 60 * 60 * 1000;
+				    const databaseDate = new Date(response.data.lockTime)+twoHoursInMilliseconds;
+				    const timePlusTwoHours = new Date(databaseDate + twoHoursInMilliseconds);
+				    const currentTime = new Date();
+				    const timeDifference = timePlusTwoHours - currentTime;		
+      			    const diff = timeDifference;
+      			    const seconds = Math.floor((diff+7200000) / 1000);
+      			    const minutes = Math.floor(seconds / 60);
+      			    const hours = Math.floor(minutes / 60);
+      			    const days = Math.floor(hours / 24);
+      			    const formattedTimeDifference = `${days}天${hours % 24}小时 ${minutes % 60}分钟${seconds % 60}秒`;
+				    //toastr.error("账户已冻结！请"+formattedTimeDifference+"后再试！", "错误");
+                    this.$swal.fire("账户已冻结！请"+formattedTimeDifference+"后再试！",'','error');
                     window.sessionStorage.clear();
                     this.$router.push('/login');
                 }
