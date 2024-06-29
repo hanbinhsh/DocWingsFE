@@ -2,8 +2,8 @@
     <div class="row border-bottom">
         <nav class="navbar navbar-static-top" role="navigation" style="margin-bottom: 0">
             <div class="navbar-header" @mouseleave="closeDropdown">
-                <a style="height:30px" class="navbar-minimalize minimalize-styl-2 btn btn-primary "><i
-                        style="margin-top:4px" class="fa fa-bars"></i> </a>
+                <a style="height:30px" class="navbar-minimalize minimalize-styl-2 btn btn-primary" @click="toggleNavbar"><i
+                        style="margin-top:4px" class="fa fa-bars"></i></a>
                 <div role="search" class="navbar-form-custom">
                     <div class="form-group" v-if="userAuth != 3">
                         <input type="text" placeholder="输入要查找的文件......" class="form-control" name="top-search"
@@ -92,9 +92,14 @@ export default {
             folders: [],
             userAuth: sessionStorage.getItem("authData") || 3,
             skin: sessionStorage.getItem("skin") || 0,
+            isMiniNavbar: JSON.parse(sessionStorage.getItem('isMiniNavbar')) || false,
         }
     },
     methods: {
+        toggleNavbar() {
+            this.isMiniNavbar = !this.isMiniNavbar;
+            sessionStorage.setItem('isMiniNavbar', this.isMiniNavbar);
+        },
         updateskin(skin){
             sessionStorage.setItem("skin",skin)
             this.skin = skin;
@@ -121,7 +126,6 @@ export default {
             }
         },
         logout() {
-            
             window.sessionStorage.clear();
             this.$router.push('/login');
             $(document).off('idle.idleTimer');
@@ -150,18 +154,29 @@ export default {
         }
     },
     mounted() {
+        if (this.isMiniNavbar) {
+            document.body.classList.add('mini-navbar');
+        }else{
+            document.body.classList.remove('mini-navbar');
+        }
         this.skin = sessionStorage.getItem("skin") || 0;
         if(this.skin == 0){
             document.body.style.backgroundColor = '#3B3B3B';
+            $("body").removeClass("skin-3");
+            $("body").removeClass("skin-2");
+            $("body").removeClass("skin-1");
         }else if(this.skin == 1){
+            document.body.style.backgroundColor = '';
             $("body").removeClass("skin-3");
             $("body").removeClass("skin-2");
             $("body").addClass("skin-1");
         }else if(this.skin == 2){
+            document.body.style.backgroundColor = '';
             $("body").removeClass("skin-1");
             $("body").removeClass("skin-3");
             $("body").addClass("skin-2");
         }else if(this.skin == 3){
+            document.body.style.backgroundColor = '';
             $("body").removeClass("skin-1");
             $("body").removeClass("skin-2");
             $("body").addClass("skin-3");
