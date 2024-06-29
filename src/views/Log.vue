@@ -138,6 +138,7 @@ export default {
             userData: JSON.parse(sessionStorage.getItem('userData')) || {},
             userAuth: sessionStorage.getItem("authData") || 3,
             users: [],
+            loading: false,
         };
     },
     created() {

@@ -17,5 +17,6 @@ import "./assets/js/bootstrap.min.js";
 import './assets/font-awesome/css/font-awesome.css';
 import './assets/css/animate.css';
 import './assets/css/style.css';
+import "./assets/css/plugins/awesome-bootstrap-checkbox/awesome-bootstrap-checkbox.css"
 
 createApp(App).use(store).use(router).component('Spinner', Spinner).use(sweetAlertPlugin).use(ElementPlus).use(Viewer).mount('#app')
