@@ -639,6 +639,7 @@ export default {
         async findFolderById(id) {
             const responseFiles = await axios.get('/api/findFolderById?id=' + id);
             sessionStorage.setItem("currentFolder", JSON.stringify(responseFiles.data.data.folder));
+            this.currentFolder = responseFiles.data.data.folder;
         },
         async findFFsByParentId(id) {  // 寻找文件和文件夹
             const response = await axios.get('/api/findFFsByParentId?parentId=' + id);
