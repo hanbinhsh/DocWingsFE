@@ -324,8 +324,20 @@ export default {
                 return false; // 用户取消了，不做任何操作
             }
             const response = await axios.post('/api/login', { "userName": this.userData.userName, "password": password });
-            if (response.data.accountLocked) {
-                this.$swal.fire('用户已冻结,请两小时后再试', '', 'error');
+            if (response.data.accountLocked==true) {
+                
+                const twoHoursInMilliseconds = 2 * 60 * 60 * 1000;
+				const databaseDate = new Date(response.data.lockTime)+twoHoursInMilliseconds;
+				const timePlusTwoHours = new Date(databaseDate + twoHoursInMilliseconds);
+				const currentTime = new Date();
+				const timeDifference = timePlusTwoHours - currentTime;		
+      			const diff = timeDifference;
+      			const seconds = Math.floor((diff+7200000) / 1000);
+      			const minutes = Math.floor(seconds / 60);
+      			const hours = Math.floor(minutes / 60);
+      			const days = Math.floor(hours / 24);
+      			const formattedTimeDifference = `${days}天${hours % 24}小时 ${minutes % 60}分钟${seconds % 60}秒`;
+                this.$swal.fire("账户已冻结！请"+formattedTimeDifference+"后再试！",'','error');
                 window.sessionStorage.clear();
                 this.$router.push('/login');
                 return false;

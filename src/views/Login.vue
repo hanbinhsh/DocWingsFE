@@ -95,7 +95,18 @@ async function login() {
 		} else {
 			const response = await axios.post('/api/login', { userName: username.value, password: password.value });
 			if(response.data.accountLocked==true){
-				toastr.error("账户已冻结！请两个小时后再试！", "错误");
+				const twoHoursInMilliseconds = 2 * 60 * 60 * 1000;
+				const databaseDate = new Date(response.data.lockTime);
+				const timePlusTwoHours = new Date(databaseDate + twoHoursInMilliseconds);
+				const currentTime = new Date();
+				const timeDifference = timePlusTwoHours - currentTime;		
+      			const diff = timeDifference;
+      			const seconds = Math.floor((diff+7200000) / 1000);
+      			const minutes = Math.floor(seconds / 60);
+      			const hours = Math.floor(minutes / 60);
+      			const days = Math.floor(hours / 24);
+      			const formattedTimeDifference = `${days}天${hours % 24}小时 ${minutes % 60}分钟${seconds % 60}秒`;
+				toastr.error("账户已冻结！请"+formattedTimeDifference+"后再试！", "错误");
 			}
 			else if (response.data == null||response.data=="") {  // 登陆失败
 				const response1=await axios.post('/api/findUserByName', { userName: username.value});
