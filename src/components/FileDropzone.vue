@@ -33,7 +33,7 @@
         isTrashDisplayed.value = status.detail.status;
       };
       const getUrl = () => {  
-        const url = `http://localhost:8848/uploadOneFile?userId=${user.userId}&parentId=${currentFolderId}`
+        const url = `/api/uploadOneFile?userId=${user.userId}&parentId=${currentFolderId}`
         return url;
       };
       const store = useStore()

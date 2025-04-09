@@ -6,6 +6,7 @@ module.exports = defineConfig({
 
   // 配置Vue开发服务器相关选项
   devServer: {
+    port: 8081, // 设置开发服务器端口为8081
     //禁止全屏报错
     client: {
       overlay: false,

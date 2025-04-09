@@ -914,11 +914,11 @@ export default {
             if (result.isConfirmed) {
                 for (const folder of this.selectedFolders) {
                     await axios.post('/api/deleteFolder', { "folderId": folder.folderId });
-                    await axios.post('/api/insertDeleteFolderLog', { "userId": this.userData.userId, "folderId": folder.folderName });
+                    await axios.post('/api/insertDeleteFolderLog', { "userId": this.userData.userId, "folderName": folder.folderName });
                 }
                 for (const file of this.selectedFiles) {
                     await axios.post('/api/deleteFile', { "fileId": file.fileId });
-                    await axios.post('/api/insertDeleteFileLog', { "userId": this.userData.userId, "fileId": file.fileName });
+                    await axios.post('/api/insertDeleteFileLog', { "userId": this.userData.userId, "fileName": file.fileName });
                 }
                 this.$swal.fire('操作成功', '文件和文件夹已删除', 'success');
                 //更新容量
@@ -1213,11 +1213,11 @@ export default {
             if (result.isConfirmed) {
                 for (const folder of this.selectedFolders) {
                     await axios.post('/api/recycleBinFolder', { "folderId": folder.folderId, "status": 1 });
-                    await axios.post('/api/insertRecycleFolderLog', { "userId": this.userData.userId, "folderId": folder.folderName });
+                    await axios.post('/api/insertRecycleFolderLog', { "userId": this.userData.userId, "folderName": folder.folderName });
                 }
                 for (const file of this.selectedFiles) {
                     await axios.post('/api/recycleBinFile', { "fileId": file.fileId, "status": 1 });
-                    await axios.post('/api/insertRecycleFileLog', { "userId": this.userData.userId, "folderfileIdId": file.fileName });
+                    await axios.post('/api/insertRecycleFileLog', { "userId": this.userData.userId, "fileName": file.fileName });
                 }
                 this.$swal.fire('操作成功', '所选文件和文件夹已放入回收站', 'success');
                 this.enterPath(this.currentFolder.folderId);
